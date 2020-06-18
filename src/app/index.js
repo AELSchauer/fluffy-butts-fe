@@ -1,32 +1,38 @@
 import React from "react";
 import { Link, Route, Switch } from "react-router-dom";
 import routes from "./routes";
-import "./index.css";
+import "./index.scss";
 
 function App() {
   return (
-    <div className="App">
-      <header className="App-header">
-        <nav>
-          <h1>Fluffy Butts</h1>
-          {routes.map(({ path, title }, i) => (
-            <Link to={path} key={i}>{title}</Link>
-          ))}
+    <React.Fragment>
+      <header>
+        <nav className="site-nav">
+          <h1 className="site-title">Fluffy Butts</h1>
+          <ul className="nav-links">
+            {routes.map(({ path, title }, i) => (
+              <li className="nav-link">
+                <Link to={path} key={i}>
+                  {title}
+                </Link>
+              </li>
+            ))}
+          </ul>
         </nav>
-        <Switch>
-          {routes.map((route, i) => (
-            <Route
-              path={route.path}
-              key={i}
-              render={(props) => (
-                <route.component {...props} routes={route.routes} />
-              )}
-            />
-          ))}
-        </Switch>
       </header>
-    </div>
+      <Switch>
+        {routes.map((route, i) => (
+          <Route
+            path={route.path}
+            key={i}
+            render={(props) => (
+              <route.component {...props} routes={route.routes} />
+            )}
+          />
+        ))}
+      </Switch>
+    </React.Fragment>
   );
-};
+}
 
 export default App;

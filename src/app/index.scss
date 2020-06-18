@@ -1,0 +1,24 @@
+.site-nav {
+  align-items: center;
+  display: flex;
+  height: 100%;
+  justify-content: space-between;
+
+  .site-title {
+    font-family: Chewy, cursive;
+    font-size: 3.5rem;
+    margin: 8px 16px;
+  }
+
+  .nav-links {
+    font-weight: bold;
+    list-style: none;
+    margin: 0 16px;
+    padding: 0;
+
+    a {
+      color: black;
+      text-decoration: none;
+    }
+  }
+}
