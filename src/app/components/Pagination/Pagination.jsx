@@ -1,5 +1,6 @@
 import React from "react";
 import classNames from "classnames";
+import './pagination.scss'
 
 const PaginationItem = ({
   active,
@@ -28,7 +29,6 @@ const PaginationItem = ({
 };
 
 const Pagination = ({ currentPage, description, maxPages, query, url }) => {
-  console.log("currentPage", currentPage);
   const getPageItem = (pageNum) => (
     <PaginationItem
       active={pageNum === currentPage}

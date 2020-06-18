@@ -1,5 +1,5 @@
-import BrandPage from "../pages/BrandPage";
-import SearchPage from "../pages/SearchPage";
+import BrandPage from "./pages/BrandPage";
+import SearchPage from "./pages/SearchPage";
 
 export default [
   {

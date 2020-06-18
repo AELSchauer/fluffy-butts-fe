@@ -1,3 +1,11 @@
+// Custom bootstrap overrides
+@import './styles/_fonts.scss';
+@import './styles/_colors.scss';
+
+// Bootstrap
+@import "~bootstrap/scss/bootstrap";
+
+
 .site-nav {
   align-items: center;
   display: flex;
