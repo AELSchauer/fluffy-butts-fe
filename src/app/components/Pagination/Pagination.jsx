@@ -43,7 +43,7 @@ const Pagination = ({ currentPage, description, maxPages, query, url }) => {
 
   const getEllipsisItem = (index) => (
     <PaginationItem disabled={true} key={`elipsis-${index}`}>
-      <i class="fas fa-ellipsis-h" />
+      <i className="fas fa-ellipsis-h" />
     </PaginationItem>
   );
 
@@ -87,7 +87,7 @@ const Pagination = ({ currentPage, description, maxPages, query, url }) => {
   };
 
   return (
-    <nav aria-label={description}>
+    <nav aria-label={description} className="pagination-nav">
       <ul className="pagination">
         <PaginationItem
           disabled={currentPage === 1}

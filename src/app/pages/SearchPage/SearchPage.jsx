@@ -4,6 +4,7 @@ import axios from "../../utils/axios";
 import { findOne } from "../../utils/json-api";
 import { useQuery } from "../../utils/query-params";
 import Pagination from "../../components/Pagination";
+import SearchFilter from "./SearchFilter";
 import "./_search-page.scss";
 
 const SearchPage = (props) => {
@@ -157,7 +158,10 @@ const SearchPage = (props) => {
       {isLoading ? (
         <Ellipsis className="loading" color="#42b983" />
       ) : (
-        getProductsGrid()
+        <React.Fragment>
+          {getProductsGrid()}
+          <SearchFilter query={query}/>
+        </React.Fragment>
       )}
     </div>
   );

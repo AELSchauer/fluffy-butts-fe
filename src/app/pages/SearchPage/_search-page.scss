@@ -15,7 +15,7 @@ $light-green: #c2e7d6;
       display: flex;
       flex-direction: row;
       flex-wrap: wrap;
-      justify-content: space-around;
+      justify-content: flex-start;
       padding: 20px;
 
       .product-container {
@@ -62,6 +62,47 @@ $light-green: #c2e7d6;
           }
         }
       }
+    }
+  }
+
+  .product-search {
+    text-align: left;
+    width: 25%;
+
+    .category-group {
+      padding: 20px;
+    }
+
+    .category-heading {
+      display: flex;
+      align-items: center;
+
+      h5 {
+        margin: 0;
+      }
+      svg {
+        width: 10%;
+      }
+    }
+
+    .category-tags {
+      margin: 0 28px;
+      padding: 0;
+    }
+
+    .category-tag {
+      display: flex;
+      align-items: center;
+
+      label {
+        margin: 0px 6px;
+      }
+    }
+
+    .submission-buttons {
+      display: flex;
+      align-items: center;
+      justify-content: space-evenly;
     }
   }
 }

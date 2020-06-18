@@ -1,5 +1,9 @@
 @import "~bootstrap/scss/bootstrap";
+.pagination-nav {
+  display: flex;
+  justify-content: center;
 
-.pagination {
-  font-family: $font-family-sans-serif;
+  .pagination {
+    font-family: $font-family-sans-serif;
+  }
 }
