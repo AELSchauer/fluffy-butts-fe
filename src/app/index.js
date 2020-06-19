@@ -8,7 +8,13 @@ function App() {
     <React.Fragment>
       <header>
         <nav className="site-nav">
-          <h1 className="site-title">Fluffy Butts</h1>
+          <div className="site-logo">
+            <img
+              className="site-logo-image"
+              src="https://storage.googleapis.com/fluffy-butts/Fluffy%20Butts/logo.png"
+            />
+            <h1 className="site-title">Fluffy Butts</h1>
+          </div>
           <ul className="nav-links">
             {routes.map(({ path, title }, i) => (
               <li className="nav-link">
@@ -31,6 +37,9 @@ function App() {
           />
         ))}
       </Switch>
+      <a href="https://www.freepik.com/free-photos-vectors/baby">
+        Fluffy Butts Logo created by freepik - www.freepik.com
+      </a>
     </React.Fragment>
   );
 }

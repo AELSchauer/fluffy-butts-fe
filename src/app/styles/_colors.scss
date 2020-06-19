@@ -1,6 +1,10 @@
-$green: #42b883;
-$light-green: #c2e7d6;
+// $green: #42b883;
+$green: #5fc0a8;
+$light-green: #bce784;
+$blue: #348aa7;
+$dark-blue: #225a6d;
 
 $theme-colors: (
-  "primary": $green
+  "primary": $green,
+  "info": $blue,
 );

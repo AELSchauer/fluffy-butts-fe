@@ -10,6 +10,7 @@ import "./_search-page.scss";
 const SearchPage = (props) => {
   const params = new URLSearchParams(props.location.search);
   const [currentPage] = useState(parseInt(params.get("page") || 1));
+  const [hasError, setHasError] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const [maxPages, setMaxPages] = useState(1);
   const [products, setProducts] = useState([]);
@@ -43,55 +44,65 @@ const SearchPage = (props) => {
         sort: ["brand.name", "product-line.name", "name"],
         ...convertPageQueryToJsonApiQuery(),
       },
-    }).then(
-      ({
-        data: { data = [], included = [], links: { last: lastPageLink } = {} },
-      }) => ({
-        maxPages: parseInt(lastPageLink.match(/&page%5Bnumber%5D=(\d+)/)[1]),
-        products: data.map(
-          ({
-            id,
-            type,
-            attributes,
-            relationships: {
-              brand: { data: brandRel = {} } = {},
-              images: { data: [imageRel = {}] = [] } = {},
-              pattern: { data: patternRel = {} } = {},
-              "product-line": { data: productLineRel = {} } = {},
-            },
-          }) => {
-            const brand = findOne(included, brandRel);
-            const logo = findOne(included, imageRel) || {
-              attributes: { link: "", name: "" },
-            };
-            const pattern = findOne(included, patternRel);
-            const productLine = findOne(included, productLineRel);
-
-            const {
-              relationships: { tags: { data: patternTags = [] } = {} } = {},
-            } = pattern;
-            const {
-              relationships: { tags: { data: productLineTags = [] } = {} } = {},
-            } = productLine;
-
-            const tags = [...patternTags, ...productLineTags]
-              .map((tag) => findOne(included, tag))
-              .sort((a, b) => (a.attributes.name > b.attributes.name ? 1 : -1));
-
-            return {
+    })
+      .then(
+        ({
+          data: {
+            data = [],
+            included = [],
+            links: { last: lastPageLink } = {},
+          },
+        }) => ({
+          maxPages: parseInt(lastPageLink.match(/&page%5Bnumber%5D=(\d+)/)[1]),
+          products: data.map(
+            ({
               id,
               type,
               attributes,
-              brand,
-              logo,
-              pattern,
-              productLine,
-              tags,
-            };
-          }
-        ),
-      })
-    );
+              relationships: {
+                brand: { data: brandRel = {} } = {},
+                images: { data: [imageRel = {}] = [] } = {},
+                pattern: { data: patternRel = {} } = {},
+                "product-line": { data: productLineRel = {} } = {},
+              },
+            }) => {
+              const brand = findOne(included, brandRel);
+              const logo = findOne(included, imageRel) || {
+                attributes: { link: "", name: "" },
+              };
+              const pattern = findOne(included, patternRel);
+              const productLine = findOne(included, productLineRel);
+
+              const {
+                relationships: { tags: { data: patternTags = [] } = {} } = {},
+              } = pattern;
+              const {
+                relationships: {
+                  tags: { data: productLineTags = [] } = {},
+                } = {},
+              } = productLine;
+
+              const tags = [...patternTags, ...productLineTags]
+                .map((tag) => findOne(included, tag))
+                .sort((a, b) =>
+                  a.attributes.name > b.attributes.name ? 1 : -1
+                );
+
+              return {
+                id,
+                type,
+                attributes,
+                brand,
+                logo,
+                pattern,
+                productLine,
+                tags,
+              };
+            }
+          ),
+        })
+      )
+      .catch((error) => setHasError(true) && setIsLoading(false));
 
   useEffect(() => {
     async function fetchData() {
@@ -103,13 +114,28 @@ const SearchPage = (props) => {
     fetchData();
   }, []);
 
+  const getPagination = () => {
+    return products.length ? (
+      <Pagination
+        currentPage={currentPage}
+        description="Search page pagination"
+        maxPages={maxPages}
+        query={query}
+        url="/search"
+      />
+    ) : (
+      ""
+    );
+  };
+
   const getProductsGrid = () => {
     return (
       <div className="products-grid">
+        {getPagination()}
         <ul className="products-list">
-          {products.map((product) => (
-            <li key={product.id} className="product-container">
-              <div className="product">
+          {products.length ? (
+            products.map((product) => (
+              <li key={product.id} className="product-container">
                 <a className="product" href={`products/${product.id}`}>
                   <img
                     className="product-image"
@@ -123,7 +149,7 @@ const SearchPage = (props) => {
                     {product.productLine.attributes.name}
                   </p>
                   <p className="product-attribute product-name">
-                    {product.attributes["name"]}
+                    {product.attributes.name}
                   </p>
                   <div className="product-tags">
                     {product.tags.map((tag) => (
@@ -132,23 +158,21 @@ const SearchPage = (props) => {
                           className="product-tag-link"
                           href={`search?tags=${tag.attributes.name}&page=1`}
                         >
-                          {tag.attributes.name.replace(/ /g, "\u00a0")}
+                          {tag.attributes.name
+                            .replace(/ /g, "\u00a0")
+                            .replace(/-/g, "\u2011")}
                         </a>
                       </span>
                     ))}
                   </div>
                 </a>
-              </div>
-            </li>
-          ))}
+              </li>
+            ))
+          ) : (
+            <div class="no-results">Sorry, no results were found!</div>
+          )}
         </ul>
-        <Pagination
-          currentPage={currentPage}
-          description="Search page pagination"
-          maxPages={maxPages}
-          query={query}
-          url="/search"
-        />
+        {getPagination()}
       </div>
     );
   };
@@ -160,7 +184,7 @@ const SearchPage = (props) => {
       ) : (
         <React.Fragment>
           {getProductsGrid()}
-          <SearchFilter query={query}/>
+          <SearchFilter query={query} />
         </React.Fragment>
       )}
     </div>

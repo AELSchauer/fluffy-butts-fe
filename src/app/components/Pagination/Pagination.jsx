@@ -1,6 +1,6 @@
 import React from "react";
 import classNames from "classnames";
-import './pagination.scss'
+import "./pagination.scss";
 
 const PaginationItem = ({
   active,
@@ -15,10 +15,11 @@ const PaginationItem = ({
     active,
     disabled,
   };
+  query.set("page", pageNumber)
   const href =
     active || disabled
       ? undefined
-      : `${url}?${query.toString().replace(/page=\d+/, `page=${pageNumber}`)}`;
+      : `${url}?${query.toString()}`;
   return (
     <li className={classNames(pageItemClasses)}>
       <a className="page-link" href={href}>
@@ -28,7 +29,7 @@ const PaginationItem = ({
   );
 };
 
-const Pagination = ({ currentPage, description, maxPages, query, url }) => {
+const Pagination = ({ currentPage = 1, description, maxPages, query, url }) => {
   const getPageItem = (pageNum) => (
     <PaginationItem
       active={pageNum === currentPage}

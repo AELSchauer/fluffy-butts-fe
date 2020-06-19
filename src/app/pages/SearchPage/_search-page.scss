@@ -1,15 +1,21 @@
-$green: #42b983;
-$light-green: #c2e7d6;
+@import "../../styles/colors";
+@import "~bootstrap/scss/bootstrap";
 
 .search-page {
   display: flex;
+  border-bottom: solid $green;
 
-  .loading div {
-    background-color: $green;
+  .loading {
+    text-align: center;
+    margin: 20px;
+
+    div {
+      background-color: $green;
+    }
   }
-
   .products-grid {
     width: 75%;
+    // border-right: solid $green;
 
     .products-list {
       display: flex;
@@ -23,8 +29,11 @@ $light-green: #c2e7d6;
         width: 33.3%;
 
         .product {
-          padding: 10px;
+          align-items: center;
           color: black;
+          display: flex;
+          flex-direction: column;
+          padding: 10px;
 
           &:hover {
             text-decoration: none;
@@ -42,21 +51,26 @@ $light-green: #c2e7d6;
             font-size: 1.5rem;
           }
 
-          .product-tag {
-            font-size: 0.9rem;
-            + .product-tag::before {
-              content: ", ";
-            }
+          .product-tags {
+            text-align: center;
 
-            .product-tag-link {
-              color: black;
-              border-bottom-color: black;
-              border-bottom-style: dotted;
-              border-bottom-width: 1px;
-              text-decoration: none;
+            .product-tag {
+              font-size: 0.9rem;
 
-              &:hover {
-                background-color: $light-green;
+              + .product-tag::before {
+                content: ", ";
+              }
+
+              .product-tag-link {
+                color: black;
+                border-bottom-color: black;
+                border-bottom-style: dotted;
+                border-bottom-width: 1px;
+                text-decoration: none;
+
+                &:hover {
+                  background-color: $green;
+                }
               }
             }
           }
@@ -69,24 +83,27 @@ $light-green: #c2e7d6;
     text-align: left;
     width: 25%;
 
-    .category-group {
+    .category-group,
+    .submission-buttons {
       padding: 20px;
     }
 
-    .category-heading {
-      display: flex;
+    .category-header {
       align-items: center;
+      display: flex;
+      margin: 0;
 
-      h5 {
-        margin: 0;
+      .fas {
+        padding-top: 2px;
       }
-      svg {
-        width: 10%;
+
+      .category-name {
+        margin: 0 10px;
       }
     }
 
     .category-tags {
-      margin: 0 28px;
+      margin: 2px 16px;
       padding: 0;
     }
 
@@ -96,6 +113,10 @@ $light-green: #c2e7d6;
 
       label {
         margin: 0px 6px;
+      }
+
+      input {
+        background-color: $green;
       }
     }
 
