@@ -1,0 +1,29 @@
+@import "~bootstrap/scss/bootstrap";
+
+.home-page {
+  .home-page-content {
+    display: flex;
+    align-items: center;
+    flex-direction: column;
+
+    .home-page-image {
+      background-image: url("https://storage.googleapis.com/fluffy-butts/Fluffy%20Butts/parents-changing-baby-diaper.jpg");
+      background-size: cover;
+      background-repeat: no-repeat;
+      background-position: center center;
+      height: 300px;
+      margin-bottom: 20px;
+      max-width: 800px;
+      width: 75%;
+
+      @include media-breakpoint-down(sm) {
+        height: 200px;
+        background-position: -1rem 0rem;
+      }
+
+      @include media-breakpoint-up(lg) {
+        height: 400px;
+      }
+    }
+  }
+}

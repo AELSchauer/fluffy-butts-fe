@@ -8,21 +8,23 @@ function App() {
     <React.Fragment>
       <header>
         <nav className="site-nav">
-          <div className="site-logo">
+          <a className="site-logo" href="/">
             <img
               className="site-logo-image"
               src="https://storage.googleapis.com/fluffy-butts/Fluffy%20Butts/logo.png"
             />
             <h1 className="site-title">Fluffy Butts</h1>
-          </div>
+          </a>
           <ul className="nav-links">
-            {routes.map(({ path, title }, i) => (
-              <li className="nav-link">
-                <Link to={path} key={i}>
-                  {title}
-                </Link>
-              </li>
-            ))}
+            {routes
+              .filter(({ includeInNavBar }) => includeInNavBar)
+              .map(({ path, title }, i) => (
+                <li className="nav-link">
+                  <Link to={path} key={i}>
+                    {title}
+                  </Link>
+                </li>
+              ))}
           </ul>
         </nav>
       </header>
@@ -37,9 +39,14 @@ function App() {
           />
         ))}
       </Switch>
-      <a href="https://www.freepik.com/free-photos-vectors/baby">
-        Fluffy Butts Logo created by freepik - www.freepik.com
-      </a>
+      <footer>
+        <a href="https://www.freepik.com/free-photos-vectors/baby">
+          Fluffy Butts Logo created by freepik - www.freepik.com
+        </a>
+        <a href="https://www.freepik.com/free-photos-vectors/baby">
+          Home page image created by grmarc - www.freepik.com
+        </a>
+      </footer>
     </React.Fragment>
   );
 }

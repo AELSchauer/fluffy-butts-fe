@@ -17,7 +17,6 @@ const SearchPage = (props) => {
   const query = useQuery();
 
   const convertPageQueryToJsonApiQuery = () => {
-    console.log(query.get("page"));
     return Object.assign(
       !!query.get("tags") && {
         "filter[tags.name]": query.get("tags"),
@@ -178,7 +177,7 @@ const SearchPage = (props) => {
   };
 
   return (
-    <div className="search-page">
+    <section className="search-page page">
       {isLoading ? (
         <Ellipsis className="loading" color="#42b983" />
       ) : (
@@ -187,7 +186,7 @@ const SearchPage = (props) => {
           <SearchFilter query={query} />
         </React.Fragment>
       )}
-    </div>
+    </section>
   );
 };
 

@@ -1,7 +1,7 @@
 import React, { Component } from "react";
 import axios from "../../utils/axios";
 import { findOne } from "../../utils/json-api";
-import "./brand-page.scss";
+import "./_brand-page.scss";
 
 class BrandPage extends Component {
   constructor(props) {
@@ -40,7 +40,7 @@ class BrandPage extends Component {
 
   render() {
     return (
-      <div className="brands brand-page">
+      <section className="brands brand-page page">
         {this.state.brands.map((brand) => (
           <li className="brand col-3" key={brand.id}>
             <a
@@ -55,7 +55,7 @@ class BrandPage extends Component {
             </a>
           </li>
         ))}
-      </div>
+      </section>
     );
   }
 }

@@ -3,7 +3,6 @@
 
 .search-page {
   display: flex;
-  border-bottom: solid $green;
 
   .loading {
     text-align: center;
@@ -15,7 +14,6 @@
   }
   .products-grid {
     width: 75%;
-    // border-right: solid $green;
 
     .products-list {
       display: flex;
@@ -69,7 +67,7 @@
                 text-decoration: none;
 
                 &:hover {
-                  background-color: $green;
+                  background-color: $light-green;
                 }
               }
             }
