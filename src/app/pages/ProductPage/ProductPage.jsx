@@ -20,6 +20,18 @@ const chunk = (array, groups) => {
   return chunked_arr;
 };
 
+const formatMoney = (currency, amount) => {
+  try {
+    let symbol;
+    if (currency === "USD") {
+      symbol = "US$";
+    }
+    return symbol + amount.toFixed(2);
+  } catch (e) {
+    console.log(e);
+  }
+};
+
 const ProductPage = (props) => {
   const [hasError, setHasError] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
@@ -262,13 +274,34 @@ const ProductPage = (props) => {
             )}
           </div>
         </div>
-        <ul className="product-listings">
-          {listings.map((listing) => (
-            <li>
-              {JSON.stringify(listing.attributes)}
-            </li>
-          ))}
-        </ul>
+        <div>
+          <h3 className="section-header listings-header">Product Listings</h3>
+          <table className="product-listings">
+            {_.sortBy(listings, "attributes.price").map(
+              ({
+                attributes: { currency, link, price, quantity, company } = {},
+              }) => (
+                <tr className="listing">
+                  <td>
+                    <a className="listing-link" href={link}>
+                      <img
+                        className="company-icon"
+                        src="https://www.alvababy.com/favicon.ico"
+                      />
+                      {company || "AlvaBaby"}
+                    </a>
+                  </td>
+                  <td>{formatMoney(currency, parseFloat(price))}</td>
+                  <td>Qty: {quantity || 1}</td>
+                  <td>
+                    {formatMoney(currency, parseFloat(price) / (quantity || 1))}{" "}
+                    / Count
+                  </td>
+                </tr>
+              )
+            )}
+          </table>
+        </div>
       </div>
     );
   };

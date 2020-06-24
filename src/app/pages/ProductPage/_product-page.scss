@@ -61,7 +61,7 @@
 
       .swatches {
         padding: 0;
-        
+
         .swatch-row {
           display: flex;
           flex-wrap: wrap;
@@ -77,7 +77,7 @@
           padding: 5px;
           text-decoration: underline;
           width: 60px;
-          
+
           &.selected {
             border: 2px solid darkslategrey;
           }
@@ -87,6 +87,25 @@
           }
         }
       }
+    }
+  }
+
+  .listings-header {
+    padding: 5px 15px;
+    margin-bottom: 15px;
+  }
+
+  .listing {
+    td {
+      padding: 5px 15px;
+    }
+    .listing-link {
+      color: black;
+    }
+    .company-icon {
+      height: 20px;
+      width: 20px;
+      margin-right: 8px;
     }
   }
 }
