@@ -1,5 +1,5 @@
 import React from "react";
-import classNames from "classnames";
+import dynamicClassNames from "classnames";
 import "./pagination.scss";
 
 const PaginationItem = ({
@@ -21,7 +21,7 @@ const PaginationItem = ({
       ? undefined
       : `${url}?${query.toString()}`;
   return (
-    <li className={classNames(pageItemClasses)}>
+    <li className={dynamicClassNames(pageItemClasses)}>
       <a className="page-link" href={href}>
         {children}
       </a>

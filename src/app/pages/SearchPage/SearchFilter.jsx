@@ -1,70 +1,86 @@
-import React, { useState, useEffect } from "react";
+import React, { Component } from "react";
 import axios from "../../utils/axios";
 import groupBy from "lodash.groupby";
 import Accordion from "react-bootstrap/Accordion";
+import { camelToPascalCase } from "../../utils/case-helper";
 
-const SearchFilter = ({ query }) => {
-  const [brands, setBrands] = useState([]);
-  const [categories, setCategories] = useState([]);
-  const [filterTags, setFilterTags] = useState(
-    (query.get("tags") || "").split(",")
-  );
-  const [filterBrand, setFilterBrand] = useState(query.get("brand") || "");
+class SearchFilter extends Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      brands: [],
+      categories: [],
+      filterBrands: (props.query.get("brands") || "").split(","),
+      filterTags: (props.query.get("tags") || "").split(","),
+    };
+  }
 
-  const getTags = async () =>
-    axios({
-      method: "get",
-      url: "/tags",
-      params: {
-        sort: ["category", "name"],
-      },
-    }).then(({ data: { data = [] } }) => data);
-
-  const getBrands = async () =>
-    axios({
+  async getBrands() {
+    return axios({
       method: "get",
       url: "/brands",
       params: {
         sort: ["name_insensitive"],
       },
-    }).then(({ data: { data = [] } }) => data);
+    }).then(({ data: { data = [] } }) => this.setState({ brands: data }));
+  }
 
-  useEffect(() => {
-    async function fetchData() {
-      const brandResult = await getBrands();
-      setBrands(brandResult);
-      const tagResult = await getTags();
-      const categories = groupBy(tagResult, "attributes.category");
-      setCategories(categories);
-    }
-    fetchData();
-  }, []);
+  async getTags() {
+    return axios({
+      method: "get",
+      url: "/tags",
+      params: {
+        sort: ["category", "name"],
+      },
+    }).then(({ data: { data = [] } }) =>
+      this.setState({ categories: groupBy(data, "attributes.category") })
+    );
+  }
 
-  const isTagActive = (tagName) => (filterTags || []).includes(tagName);
+  componentDidMount() {
+    this.getBrands();
+    this.getTags();
+  }
 
-  const toggleTag = (tagName) => {
-    const filterTagsTemp = filterTags || [];
-    console.log(filterTags);
-    const idx = filterTagsTemp.indexOf(tagName);
-    idx < 0 ? filterTagsTemp.push(tagName) : filterTagsTemp.splice(idx, 1);
-    setFilterTags(filterTagsTemp.filter(Boolean).sort());
-  };
+  isParamActive(categoryName, paramName) {
+    const filterName = `filter${camelToPascalCase(categoryName)}`;
+    console.log(
+      categoryName,
+      paramName,
+      this.state[filterName],
+      (this.state[filterName] || []).includes(paramName)
+    );
+    return (this.state[filterName] || []).includes(paramName);
+  }
 
-  const getLinkWithQuery = () => {
-    const newQuery = new URLSearchParams(query);
-    const filterTagsTemp = filterTags.filter(Boolean).sort()
+  toggleParam(categoryName, paramName) {
+    const filterName = `filter${camelToPascalCase(categoryName)}`;
+    const filterTemp = this.state[filterName] || [];
+    const idx = filterTemp.indexOf(paramName);
+    idx < 0 ? filterTemp.push(paramName) : filterTemp.splice(idx, 1);
+    this.setState({
+      [filterName]: filterTemp.filter(Boolean).sort(),
+    });
+  }
+
+  getLinkWithQuery() {
+    const newQuery = new URLSearchParams(this.props.query);
+    const filterBrands = this.state.filterBrands.filter(Boolean).sort();
+    const filterTags = this.state.filterTags.filter(Boolean).sort();
     newQuery.set("page", 1);
-    filterTagsTemp.length
-      ? newQuery.set("tags", filterTagsTemp)
+    filterBrands.length
+      ? newQuery.set("brands", filterBrands)
+      : newQuery.delete("brands");
+    filterTags.length
+      ? newQuery.set("tags", filterTags)
       : newQuery.delete("tags");
-    filterBrand ? newQuery.set("brand", filterBrand) : newQuery.delete("brand");
     return `/search?${newQuery.toString()}`;
-  };
+  }
 
-  const getSubmissionButtons = () => {
+  getSubmissionButtons() {
     return (
       <div className="submission-buttons">
-        <a className="btn btn-secondary" href={getLinkWithQuery()}>
+        <a className="btn btn-secondary" href={this.getLinkWithQuery()}>
           Search
         </a>
         <a className="btn btn-secondary" href="/search?page=1">
@@ -72,87 +88,95 @@ const SearchFilter = ({ query }) => {
         </a>
       </div>
     );
-  };
+  }
 
-  return (
-    <div className="product-search">
-      {getSubmissionButtons()}
-      <Accordion className="category-group" key="brands">
-        <Accordion.Toggle
-          as={"h5"}
-          eventKey="brands"
-          className="category-header"
-        >
-          <i className="fas fa-caret-right" />
-          <span className="category-name">Brands</span>
-        </Accordion.Toggle>
-        <Accordion.Collapse eventKey="brands">
-          <ul className="category-tags">
-            <li className="category-tag" key={0}>
-              <input
-                type="radio"
-                checked={filterBrand === ""}
-                id={`radio-all-brands`}
-                onChange={() => setFilterBrand("")}
-              />
-              <label htmlFor={`radio-all-brands`}>All Brands</label>
-            </li>
-            {brands.map((brand, index) => {
-              const brandNameSlug = brand.attributes.name.replace(/ /g, "-");
-              return (
-                <li className="category-tag" key={index + 1}>
-                  <input
-                    type="radio"
-                    checked={filterBrand === brand.attributes.name}
-                    id={`radio-${brandNameSlug}`}
-                    onChange={() => setFilterBrand(brand.attributes.name)}
-                  />
-                  <label htmlFor={`radio-${brandNameSlug}`}>
-                    {brand.attributes.name}
-                  </label>
-                </li>
-              );
-            })}
-          </ul>
-        </Accordion.Collapse>
-      </Accordion>
-      {Object.entries(categories).map(([categoryName, tags], index) => {
-        return (
-          <Accordion className="category-group" key={index}>
-            <Accordion.Toggle
-              as={"h5"}
-              eventKey={index}
-              className="category-header"
-            >
-              <i className="fas fa-caret-right" />
-              <span className="category-name">{categoryName}</span>
-            </Accordion.Toggle>
-            <Accordion.Collapse eventKey={index}>
-              <ul className="category-tags">
-                {tags.map((tag, index) => {
-                  const tagNameSlug = tag.attributes.name.replace(/ /g, "-");
-                  return (
-                    <li className="category-tag" key={index}>
-                      <input
-                        type="checkbox"
-                        checked={isTagActive(tag.attributes.name)}
-                        id={`checkbox-${tagNameSlug}`}
-                        onChange={() => toggleTag(tag.attributes.name)}
-                      />
-                      <label htmlFor={`checkbox-${tagNameSlug}`}>
-                        {tag.attributes.name}
-                      </label>
-                    </li>
-                  );
-                })}
-              </ul>
-            </Accordion.Collapse>
-          </Accordion>
-        );
-      })}
-      {getSubmissionButtons()}
-    </div>
-  );
-};
+  render() {
+    return (
+      <div className="product-search">
+        {this.getSubmissionButtons()}
+        <Accordion className="category-group" key="brands">
+          <Accordion.Toggle
+            as={"h5"}
+            eventKey="brands"
+            className="category-header"
+          >
+            <i className="fas fa-caret-right" />
+            <span className="category-name">Brands</span>
+          </Accordion.Toggle>
+          <Accordion.Collapse eventKey="brands">
+            <ul className="category-items">
+              {this.state.brands.map((brand, index) => {
+                const brandNameSlub = brand.attributes.name.replace(/ /g, "-");
+                return (
+                  <li className="category-item" key={index}>
+                    <input
+                      type="checkbox"
+                      checked={this.isParamActive(
+                        "brands",
+                        brand.attributes.name
+                      )}
+                      id={`checkbox-${brandNameSlub}`}
+                      onChange={() =>
+                        this.toggleParam("brands", brand.attributes.name)
+                      }
+                    />
+                    <label htmlFor={`checkbox-${brandNameSlub}`}>
+                      {brand.attributes.name}
+                    </label>
+                  </li>
+                );
+              })}
+            </ul>
+          </Accordion.Collapse>
+        </Accordion>
+        {Object.entries(this.state.categories).map(
+          ([categoryName, tags], index) => {
+            return (
+              <Accordion className="category-group" key={index}>
+                <Accordion.Toggle
+                  as={"h5"}
+                  eventKey={index}
+                  className="category-header"
+                >
+                  <i className="fas fa-caret-right" />
+                  <span className="category-name">{categoryName}</span>
+                </Accordion.Toggle>
+                <Accordion.Collapse eventKey={index}>
+                  <ul className="category-items">
+                    {tags.map((tag, index) => {
+                      const tagNameSlug = tag.attributes.name.replace(
+                        / /g,
+                        "-"
+                      );
+                      return (
+                        <li className="category-item" key={index}>
+                          <input
+                            type="checkbox"
+                            checked={this.isParamActive(
+                              "tags",
+                              tag.attributes.name
+                            )}
+                            id={`checkbox-${tagNameSlug}`}
+                            onChange={() =>
+                              this.toggleParam("tags", tag.attributes.name)
+                            }
+                          />
+                          <label htmlFor={`checkbox-${tagNameSlug}`}>
+                            {tag.attributes.name}
+                          </label>
+                        </li>
+                      );
+                    })}
+                  </ul>
+                </Accordion.Collapse>
+              </Accordion>
+            );
+          }
+        )}
+        {this.getSubmissionButtons()}
+      </div>
+    );
+  }
+}
 
 export default SearchFilter;

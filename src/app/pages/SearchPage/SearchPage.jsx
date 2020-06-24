@@ -21,8 +21,8 @@ const SearchPage = (props) => {
       !!query.get("tags") && {
         "filter[tags.name]": query.get("tags"),
       },
-      !!query.get("brand") && {
-        "filter[brand.name]": query.get("brand"),
+      !!query.get("brands") && {
+        "filter[brands.name]": query.get("brands"),
       },
       !!query.get("page") && { "page[number]": query.get("page") }
     );
@@ -101,13 +101,17 @@ const SearchPage = (props) => {
           ),
         })
       )
-      .catch((error) => setHasError(true) && setIsLoading(false));
+      .catch(() => {
+        setHasError(true);
+        setIsLoading(false);
+        return {};
+      });
 
   useEffect(() => {
     async function fetchData() {
       const result = await getProducts();
-      setProducts(result.products);
-      setMaxPages(result.maxPages);
+      result.maxPages && setMaxPages(result.maxPages);
+      result.products && setProducts(result.products);
       setIsLoading(false);
     }
     fetchData();
@@ -182,8 +186,8 @@ const SearchPage = (props) => {
         <Ellipsis className="loading" color="#42b983" />
       ) : (
         <React.Fragment>
-          {getProductsGrid()}
           <SearchFilter query={query} />
+          {getProductsGrid()}
         </React.Fragment>
       )}
     </section>

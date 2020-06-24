@@ -9,10 +9,10 @@ const HomePage = () => {
         <div className="home-page-image"></div>
         <p>
           Our goal is to build a site for anyone to search for different brands,
-          styles, and sizes of cloth diapers around the world!
+          styles, and sizes of cloth diapers around the world.
         </p>
         <p>
-          This site is still very much in development mode, so please excuse our
+          This site is still very much in beta, so please excuse our
           bugs!
         </p>
       </div>
