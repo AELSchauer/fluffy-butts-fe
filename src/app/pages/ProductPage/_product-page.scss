@@ -6,11 +6,12 @@
 }
 
 .product-page {
-  .product-page-content {
-    padding: 60px;
+  .product-info {
+    align-items: center;
     color: black;
     display: flex;
     justify-content: space-around;
+    padding: 60px;
 
     .product-image {
       max-height: 500px;
@@ -19,6 +20,7 @@
     .info-section {
       display: flex;
       flex-direction: column;
+      text-align: center;
 
       .product-attribute {
         font-size: 2.5rem;
@@ -54,36 +56,31 @@
       }
 
       .related-products-section {
-        width: 60%;
         align-self: center;
       }
 
-      .product-color {
-        align-self: flex-start;
-      }
-
       .swatches {
-        display: flex;
-        flex-wrap: wrap;
-        justify-content: center;
         padding: 0;
-
-        & .selected {
-          border: 2px solid darkslategrey;
-        }
-
-        li {
-          list-style: none;
-          color: red;
-          font-weight: bold;
-          font-size: 1rem;
-          text-decoration: underline;
+        
+        .swatch-row {
+          display: flex;
+          flex-wrap: wrap;
+          justify-content: center;
         }
 
         .swatch {
-          height: 55px;
-          width: 55px;
+          color: red;
+          font-size: 1rem;
+          font-weight: bold;
+          height: 60px;
+          list-style: none;
           padding: 5px;
+          text-decoration: underline;
+          width: 60px;
+          
+          &.selected {
+            border: 2px solid darkslategrey;
+          }
 
           .swatch-image {
             max-width: 100%;

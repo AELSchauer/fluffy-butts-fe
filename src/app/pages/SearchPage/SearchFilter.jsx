@@ -44,12 +44,6 @@ class SearchFilter extends Component {
 
   isParamActive(categoryName, paramName) {
     const filterName = `filter${camelToPascalCase(categoryName)}`;
-    console.log(
-      categoryName,
-      paramName,
-      this.state[filterName],
-      (this.state[filterName] || []).includes(paramName)
-    );
     return (this.state[filterName] || []).includes(paramName);
   }
 

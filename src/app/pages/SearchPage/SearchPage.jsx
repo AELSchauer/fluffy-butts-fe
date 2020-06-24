@@ -8,13 +8,12 @@ import SearchFilter from "./SearchFilter";
 import "./_search-page.scss";
 
 const SearchPage = (props) => {
-  const params = new URLSearchParams(props.location.search);
-  const [currentPage] = useState(parseInt(params.get("page") || 1));
+  const query = useQuery();
+  const [currentPage] = useState(parseInt(query.get("page") || 1));
   const [hasError, setHasError] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const [maxPages, setMaxPages] = useState(1);
   const [products, setProducts] = useState([]);
-  const query = useQuery();
 
   const convertPageQueryToJsonApiQuery = () => {
     return Object.assign(
@@ -23,6 +22,9 @@ const SearchPage = (props) => {
       },
       !!query.get("brands") && {
         "filter[brands.name]": query.get("brands"),
+      },
+      !!query.get("product-lines") && {
+        "filter[product-line]": query.get("product-lines"),
       },
       !!query.get("page") && { "page[number]": query.get("page") }
     );
@@ -72,16 +74,14 @@ const SearchPage = (props) => {
               const pattern = findOne(included, patternRel);
               const productLine = findOne(included, productLineRel);
 
-              const {
-                relationships: { tags: { data: patternTags = [] } = {} } = {},
-              } = pattern;
-              const {
-                relationships: {
-                  tags: { data: productLineTags = [] } = {},
-                } = {},
-              } = productLine;
-
-              const tags = [...patternTags, ...productLineTags]
+              const tags = [pattern, productLine]
+                .reduce(
+                  (
+                    tags,
+                    { relationships: { tags: { data } = {} } = {} } = {}
+                  ) => tags.concat(data),
+                  []
+                )
                 .map((tag) => findOne(included, tag))
                 .sort((a, b) =>
                   a.attributes.name > b.attributes.name ? 1 : -1

@@ -4,11 +4,13 @@ const findOne = (includedList, findRecord) =>
   );
 
 const findMany = (includedList, findRecords) =>
-  includedList.filter((record) =>
-    findRecords.includes(
-      (findRecord) =>
-        findRecord.id === record.id && findRecord.type === record.type
+  findRecords
+    .map((findRecord) =>
+      includedList.find(
+        (record) =>
+          findRecord.id === record.id && findRecord.type === record.type
+      )
     )
-  );
+    .filter(Boolean);
 
 export { findOne, findMany };
