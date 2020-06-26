@@ -45,7 +45,7 @@ class BrandPage extends Component {
           <li className="brand col-3" key={brand.id}>
             <a
               className="brand-link"
-              href={`/search?brand=${brand.attributes.name}&page=1`}
+              href={`/search?brands=${brand.attributes.name}&page=1`}
             >
               <img
                 className="brand-logo"

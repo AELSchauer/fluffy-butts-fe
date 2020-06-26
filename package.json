@@ -18,7 +18,8 @@
     "react-dom": "^16.13.1",
     "react-router-dom": "^5.2.0",
     "react-scripts": "3.4.1",
-    "react-spinners-css": "^1.1.9"
+    "react-spinners-css": "^1.1.9",
+    "traverse": "^0.6.6"
   },
   "scripts": {
     "start": "PORT=8000 react-scripts start",

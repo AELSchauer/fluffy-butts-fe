@@ -91,17 +91,46 @@
   }
 
   .listings-header {
-    padding: 5px 15px;
-    margin-bottom: 15px;
+    margin-bottom: 10px;
+    padding: 0 5px;
   }
 
-  .listing {
-    td {
-      padding: 5px 15px;
-    }
+  .listings {
+    margin: 0;
+    padding: 0;
+
+
     .listing-link {
       color: black;
+      display: flex;
+      border: solid transparent 1px;
+      width: fit-content;
+
+      &:hover {
+        text-decoration: none;
+        border-color: #e6e6e6;
+        border-radius: 4px;
+      }
+
+      .listing-prop {
+        padding: 5px;
+      }
+
+      .listing-title {
+        width: 300px;
+      }
+
+      .listing-price {
+        width: 100px;
+      }
+      .listing-quantity {
+        width: 60px;
+      }
+      .listing-price-count {
+        width: 160px;
+      }
     }
+
     .company-icon {
       height: 20px;
       width: 20px;

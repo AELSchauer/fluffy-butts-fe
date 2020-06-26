@@ -92,8 +92,10 @@ const ProductPage = (props) => {
 
           const tags = [pattern, productLine]
             .reduce(
-              (tags, { relationships: { tags: { data } = {} } = {} } = {}) =>
-                tags.concat(data),
+              (
+                tags,
+                { relationships: { tags: { data = [] } = {} } = {} } = {}
+              ) => tags.concat(data),
               []
             )
             .map((tag) => findOne(included, tag))
@@ -276,31 +278,41 @@ const ProductPage = (props) => {
         </div>
         <div>
           <h3 className="section-header listings-header">Product Listings</h3>
-          <table className="product-listings">
+          <div className="container listings">
             {_.sortBy(listings, "attributes.price").map(
               ({
                 attributes: { currency, link, price, quantity, company } = {},
-              }) => (
-                <tr className="listing">
-                  <td>
-                    <a className="listing-link" href={link}>
+              }) => {
+                const title = company || link.match(/\w*\.com/g)[0];
+                return (
+                  <a className="listing listing-link" href={link}>
+                    <div className="listing-title listing-prop">
                       <img
                         className="company-icon"
-                        src="https://www.alvababy.com/favicon.ico"
+                        src={`https://storage.cloud.google.com/fluffy-butts/Favicons/${
+                          company || "default"
+                        }.png`}
                       />
-                      {company || "AlvaBaby"}
-                    </a>
-                  </td>
-                  <td>{formatMoney(currency, parseFloat(price))}</td>
-                  <td>Qty: {quantity || 1}</td>
-                  <td>
-                    {formatMoney(currency, parseFloat(price) / (quantity || 1))}{" "}
-                    / Count
-                  </td>
-                </tr>
-              )
+                      {title}
+                    </div>
+                    <div className="listing-price listing-prop">
+                      {formatMoney(currency, parseFloat(price))}
+                    </div>
+                    <div className="listing-quantity listing-prop">
+                      Qty: {quantity || 1}
+                    </div>
+                    <div className="listing-price-count listing-prop">
+                      {formatMoney(
+                        currency,
+                        parseFloat(price) / (quantity || 1)
+                      )}
+                      {" / Count"}
+                    </div>
+                  </a>
+                );
+              }
             )}
-          </table>
+          </div>
         </div>
       </div>
     );

@@ -21,7 +21,7 @@ const SearchPage = (props) => {
         "filter[tags.name]": query.get("tags"),
       },
       !!query.get("brands") && {
-        "filter[brands.name]": query.get("brands"),
+        "filter[brand.name]": query.get("brands"),
       },
       !!query.get("product-lines") && {
         "filter[product-line]": query.get("product-lines"),
@@ -46,6 +46,10 @@ const SearchPage = (props) => {
         ...convertPageQueryToJsonApiQuery(),
       },
     })
+      .then((response) => {
+        console.log(response.data.data);
+        return response;
+      })
       .then(
         ({
           data: {
@@ -73,12 +77,11 @@ const SearchPage = (props) => {
               };
               const pattern = findOne(included, patternRel);
               const productLine = findOne(included, productLineRel);
-
               const tags = [pattern, productLine]
                 .reduce(
                   (
                     tags,
-                    { relationships: { tags: { data } = {} } = {} } = {}
+                    { relationships: { tags: { data = [] } = {} } = {} } = {}
                   ) => tags.concat(data),
                   []
                 )
@@ -101,6 +104,11 @@ const SearchPage = (props) => {
           ),
         })
       )
+      .then((result) => {
+        result.maxPages && setMaxPages(result.maxPages);
+        result.products && setProducts(result.products);
+        setIsLoading(false);
+      })
       .catch(() => {
         setHasError(true);
         setIsLoading(false);
@@ -108,13 +116,7 @@ const SearchPage = (props) => {
       });
 
   useEffect(() => {
-    async function fetchData() {
-      const result = await getProducts();
-      result.maxPages && setMaxPages(result.maxPages);
-      result.products && setProducts(result.products);
-      setIsLoading(false);
-    }
-    fetchData();
+    getProducts();
   }, []);
 
   const getPagination = () => {
@@ -172,7 +174,7 @@ const SearchPage = (props) => {
               </li>
             ))
           ) : (
-            <div class="no-results">Sorry, no results were found!</div>
+            <div className="no-results">Sorry, no results were found!</div>
           )}
         </ul>
         {getPagination()}

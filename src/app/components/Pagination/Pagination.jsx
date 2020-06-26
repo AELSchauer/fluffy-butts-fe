@@ -63,11 +63,11 @@ const Pagination = ({ currentPage = 1, description, maxPages, query, url }) => {
     } else if (currentPage >= maxPages - 4) {
       for (
         let pageNum = maxPages - (currentPage === maxPages - 4 ? 5 : 4);
-        pageNum < maxPages;
+        pageNum <= maxPages;
         pageNum++
-      ) {
-        displayItems.push(getPageItem(pageNum));
-      }
+        ) {
+          displayItems.push(getPageItem(pageNum));
+        }
       return [getPageItem(1), getEllipsisItem(), ...displayItems];
     } else {
       for (
