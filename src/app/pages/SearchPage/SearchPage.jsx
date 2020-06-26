@@ -26,7 +26,8 @@ const SearchPage = (props) => {
       !!query.get("product-lines") && {
         "filter[product-line]": query.get("product-lines"),
       },
-      !!query.get("page") && { "page[number]": query.get("page") }
+      !!query.get("page") && { "page[number]": query.get("page") },
+      !!query.get("size") && { "page[size]": query.get("size") }
     );
   };
 
@@ -42,14 +43,10 @@ const SearchPage = (props) => {
           "product-line",
           "product-line.tags",
         ],
-        sort: ["brand.name", "product-line.name", "name"],
+        // sort: ["brand.name", "product-line.name", "name"],
         ...convertPageQueryToJsonApiQuery(),
       },
     })
-      .then((response) => {
-        console.log(response.data.data);
-        return response;
-      })
       .then(
         ({
           data: {
@@ -90,6 +87,7 @@ const SearchPage = (props) => {
                   a.attributes.name > b.attributes.name ? 1 : -1
                 );
 
+                console.log(productLine, included[included.length - 1])
               return {
                 id,
                 type,
@@ -161,7 +159,7 @@ const SearchPage = (props) => {
                       <span key={tag.id} className="product-tag">
                         <a
                           className="product-tag-link"
-                          href={`search?tags=${tag.attributes.name}&page=1`}
+                          href={`search?tags=${encodeURIComponent(tag.attributes.name)}&page=1`}
                         >
                           {tag.attributes.name
                             .replace(/ /g, "\u00a0")
