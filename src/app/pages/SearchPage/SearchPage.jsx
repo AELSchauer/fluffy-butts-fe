@@ -43,7 +43,7 @@ const SearchPage = (props) => {
           "product-line",
           "product-line.tags",
         ],
-        // sort: ["brand.name", "product-line.name", "name"],
+        sort: ["brand.name", "product-line.name", "name"],
         ...convertPageQueryToJsonApiQuery(),
       },
     })
@@ -87,7 +87,6 @@ const SearchPage = (props) => {
                   a.attributes.name > b.attributes.name ? 1 : -1
                 );
 
-                console.log(productLine, included[included.length - 1])
               return {
                 id,
                 type,
@@ -131,10 +130,58 @@ const SearchPage = (props) => {
     );
   };
 
+  const getActiveTags = () => {
+    const getUpdatedHref = (categoryName, itemName) => {
+      return query
+        .toString()
+        .split("&")
+        .map((str) => {
+          return str.indexOf(categoryName) >= 0
+            ? str
+                .replace(itemName, "")
+                .replace("=%2C", "=")
+                .replace("%2C%2C", "%2C")
+                .replace(/%2C$/, "")
+                .replace(new RegExp(categoryName + "=$"), "")
+            : str;
+        })
+        .filter(Boolean)
+        .join("&");
+    };
+
+    query.sort();
+    const activeTags = [];
+    for (var [key, values] of query.entries()) {
+      if (key !== "page" && key !== "size") {
+        values
+          .split(",")
+          .sort()
+          .forEach((value) => {
+            activeTags.push(
+              <div className="active-tag">
+                <span>{value}</span>
+                <a
+                  className="close-active-tag"
+                  href={`/search?${getUpdatedHref(
+                    key,
+                    encodeURI(value.replace(/ /g, "+"))
+                  )}`}
+                >
+                  <i className="fas fa-times" />
+                </a>
+              </div>
+            );
+          });
+      }
+    }
+    return activeTags;
+  };
+
   const getProductsGrid = () => {
     return (
       <div className="products-grid">
         {getPagination()}
+        <div className="active-tags">{getActiveTags()}</div>
         <ul className="products-list">
           {products.length ? (
             products.map((product) => (
@@ -159,7 +206,9 @@ const SearchPage = (props) => {
                       <span key={tag.id} className="product-tag">
                         <a
                           className="product-tag-link"
-                          href={`search?tags=${encodeURIComponent(tag.attributes.name)}&page=1`}
+                          href={`search?tags=${encodeURIComponent(
+                            tag.attributes.name
+                          )}&page=1`}
                         >
                           {tag.attributes.name
                             .replace(/ /g, "\u00a0")
