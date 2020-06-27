@@ -48,7 +48,8 @@ const ProductPage = (props) => {
   const getProduct = async () => {
     return axios({
       method: "get",
-      url: `/products/${props.match.params.id}`,
+      url: `/products/${props.match.params.id
+        .match(/\d+$/)[0]}`,
       params: {
         include: [
           "brand",
@@ -169,12 +170,25 @@ const ProductPage = (props) => {
     getProduct();
   }, []);
 
+  const slugifyProductName = ({
+    id,
+    attributes: { name } = {},
+    productLine: { attributes: { name: productLineName } = {} } = {},
+  } = {}) => {
+    return `${product.brand.attributes.name}-${productLineName}-${name}-${id}`
+      .toLowerCase()
+      .replace(/ /g, "-");
+  };
+
   const renderRelatedProductsList = (
     { products = [], total = 0 },
     tooltipTextPath
   ) => {
     const productRows = chunk(products, products.length > 8 ? 2 : 1);
-    const { brand, productLine } = product;
+    const {
+      brand: { attributes: { name: brandName } = {} } = {},
+      productLine: { attributes: { name: productLineName } = {} } = {},
+    } = product;
     return (
       <ul className="swatches">
         {productRows.map((productRow, index) => (
@@ -189,19 +203,30 @@ const ProductPage = (props) => {
                   swatch: true,
                   selected: product.id === id,
                 };
+                const href =
+                  id !== product.id &&
+                  slugifyProductName({ id, ...relProduct });
                 return (
                   <Tooltip
                     placement="top"
                     content={_.get(relProduct, tooltipTextPath)}
                   >
                     <li className={dynamicClassNames(classNames)} key={id}>
-                      <a href={`/products/${id}`}>
+                      {href ? (
+                        <a href={`/products/${href}`}>
+                          <img
+                            className="swatch-image"
+                            src={image.link}
+                            alt={image.name}
+                          />
+                        </a>
+                      ) : (
                         <img
                           className="swatch-image"
                           src={image.link}
                           alt={image.name}
                         />
-                      </a>
+                      )}
                     </li>
                   </Tooltip>
                 );
@@ -211,7 +236,11 @@ const ProductPage = (props) => {
         ))}
         {total > products.length ? (
           <li className="see-more">
-            <a href={`/search?brands=${brand.attributes.name}&product-lines=${productLine.attributes.name}`}>See More</a>
+            <a
+              href={`/search?brands=${brandName}&product-lines=${productLineName}`}
+            >
+              See More
+            </a>
           </li>
         ) : (
           ""

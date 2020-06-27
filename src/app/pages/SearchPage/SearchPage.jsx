@@ -208,6 +208,17 @@ const SearchPage = () => {
     return activeTags;
   };
 
+    const slugifyProductName = ({
+      id,
+      attributes: { name } = {},
+      brand: { attributes: { name: brandName } = {} } = {},
+      productLine: { attributes: { name: productLineName } = {} } = {},
+    } = {}) => {
+      return `${brandName}-${productLineName}-${name}-${id}`
+        .toLowerCase()
+        .replace(/ /g, "-");
+    };
+
   const getProductsGrid = () => {
     return (
       <div className="products-grid">
@@ -257,7 +268,7 @@ const SearchPage = () => {
           {products.length ? (
             products.map((product) => (
               <li key={product.id} className="product-container">
-                <a className="product" href={`products/${product.id}`}>
+                <a className="product" href={`products/${slugifyProductName(product)}`}>
                   <img
                     className="product-image"
                     alt={product.logo.attributes.name}
