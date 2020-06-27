@@ -2,9 +2,11 @@ import React, { useState, useEffect } from "react";
 import Ellipsis from "@bit/joshk.react-spinners-css.ellipsis";
 import axios from "../../utils/axios";
 import { findOne } from "../../utils/json-api";
-import { useQuery } from "../../utils/query-params";
+import groupBy from "lodash.groupby";
+import Modal from "react-bootstrap/Modal";
 import Pagination from "../../components/Pagination";
 import SearchFilter from "./SearchFilter";
+import { useQuery } from "../../utils/query-params";
 import "./_search-page.scss";
 
 const SearchPage = (props) => {
@@ -13,7 +15,10 @@ const SearchPage = (props) => {
   const [hasError, setHasError] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const [maxPages, setMaxPages] = useState(1);
+  const [brands, setBrands] = useState([]);
   const [products, setProducts] = useState([]);
+  const [categories, setCategories] = useState([]);
+  const [show, setShow] = useState(false);
 
   const convertPageQueryToJsonApiQuery = () => {
     return Object.assign(
@@ -28,6 +33,28 @@ const SearchPage = (props) => {
       },
       !!query.get("page") && { "page[number]": query.get("page") },
       !!query.get("size") && { "page[size]": query.get("size") }
+    );
+  };
+
+  const getBrands = async () => {
+    return axios({
+      method: "get",
+      url: "/brands",
+      params: {
+        sort: ["name_insensitive"],
+      },
+    }).then(({ data: { data = [] } }) => setBrands(data));
+  };
+
+  const getTags = async () => {
+    return axios({
+      method: "get",
+      url: "/tags",
+      params: {
+        sort: ["category", "name"],
+      },
+    }).then(({ data: { data = [] } }) =>
+      setCategories(groupBy(data, "attributes.category"))
     );
   };
 
@@ -113,7 +140,7 @@ const SearchPage = (props) => {
       });
 
   useEffect(() => {
-    getProducts();
+    Promise.all([getBrands(), getProducts(), getTags()]);
   }, []);
 
   const getPagination = () => {
@@ -146,7 +173,8 @@ const SearchPage = (props) => {
             : str;
         })
         .filter(Boolean)
-        .join("&");
+        .join("&")
+        .replace(/page=\d+/g, "page=1");
     };
 
     query.sort();
@@ -180,6 +208,27 @@ const SearchPage = (props) => {
   const getProductsGrid = () => {
     return (
       <div className="products-grid">
+        <div class="modal-toggle">
+          <div className="btn-secondary" onClick={() => setShow(true)}>
+            Filter
+          </div>
+          <Modal
+            show={show}
+            onHide={() => setShow(false)}
+            dialogClassName="woohoo"
+            aria-labelledby="example-custom-modal-styling-title"
+            scrollable={true}
+          >
+            <Modal.Header closeButton />
+            <Modal.Body>
+              <SearchFilter
+                brands={brands}
+                categories={categories}
+                query={query}
+              />
+            </Modal.Body>
+          </Modal>
+        </div>
         {getPagination()}
         <div className="active-tags">{getActiveTags()}</div>
         <ul className="products-list">
@@ -235,7 +284,13 @@ const SearchPage = (props) => {
         <Ellipsis className="loading" color="#42b983" />
       ) : (
         <React.Fragment>
-          <SearchFilter query={query} />
+          <div className="product-search">
+            <SearchFilter
+              brands={brands}
+              categories={categories}
+              query={query}
+            />
+          </div>
           {getProductsGrid()}
         </React.Fragment>
       )}

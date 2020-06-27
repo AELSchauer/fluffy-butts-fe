@@ -1,6 +1,5 @@
 import React, { Component } from "react";
 import axios from "../../utils/axios";
-import groupBy from "lodash.groupby";
 import Accordion from "react-bootstrap/Accordion";
 import { camelToPascalCase } from "../../utils/case-helper";
 
@@ -8,38 +7,11 @@ class SearchFilter extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      brands: [],
-      categories: [],
+      brands: props.brands || [],
+      categories: props.categories || [],
       filterBrands: (props.query.get("brands") || "").split(","),
       filterTags: (props.query.get("tags") || "").split(","),
     };
-  }
-
-  async getBrands() {
-    return axios({
-      method: "get",
-      url: "/brands",
-      params: {
-        sort: ["name_insensitive"],
-      },
-    }).then(({ data: { data = [] } }) => this.setState({ brands: data }));
-  }
-
-  async getTags() {
-    return axios({
-      method: "get",
-      url: "/tags",
-      params: {
-        sort: ["category", "name"],
-      },
-    }).then(({ data: { data = [] } }) =>
-      this.setState({ categories: groupBy(data, "attributes.category") })
-    );
-  }
-
-  componentDidMount() {
-    this.getBrands();
-    this.getTags();
   }
 
   isParamActive(categoryName, paramName) {
@@ -74,10 +46,16 @@ class SearchFilter extends Component {
   getSubmissionButtons() {
     return (
       <div className="submission-buttons">
-        <a className="btn btn-secondary" href={this.getLinkWithQuery()}>
+        <a
+          className="submission-button btn btn-secondary"
+          href={this.getLinkWithQuery()}
+        >
           Search
         </a>
-        <a className="btn btn-secondary" href="/search?page=1">
+        <a
+          className="submission-button btn btn-secondary"
+          href="/search?page=1"
+        >
           Reset
         </a>
       </div>
@@ -86,7 +64,7 @@ class SearchFilter extends Component {
 
   render() {
     return (
-      <div className="product-search">
+      <div className="search-bar">
         {this.getSubmissionButtons()}
         <Accordion className="category-group" key="brands">
           <Accordion.Toggle
