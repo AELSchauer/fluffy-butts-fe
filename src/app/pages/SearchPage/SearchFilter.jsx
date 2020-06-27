@@ -1,6 +1,6 @@
 import React, { Component } from "react";
-import axios from "../../utils/axios";
-import Accordion from "react-bootstrap/Accordion";
+// import Accordion from "react-bootstrap/Accordion";
+import Collapse from "../../components/Collapse";
 import { camelToPascalCase } from "../../utils/case-helper";
 
 class SearchFilter extends Component {
@@ -66,16 +66,18 @@ class SearchFilter extends Component {
     return (
       <div className="search-bar">
         {this.getSubmissionButtons()}
-        <Accordion className="category-group" key="brands">
-          <Accordion.Toggle
-            as={"h5"}
-            eventKey="brands"
+        <div className="category-group" key="brands">
+          <h5
             className="category-header"
+            data-toggle="collapse"
+            data-target="#collapse-brands"
+            aria-expanded="false"
+            aria-controls="collapse-brands"
           >
             <i className="fas fa-caret-right" />
             <span className="category-name">Brands</span>
-          </Accordion.Toggle>
-          <Accordion.Collapse eventKey="brands">
+          </h5>
+          <div className="collapse" id="collapse-brands">
             <ul className="category-items">
               {this.state.brands.map((brand, index) => {
                 const brandNameSlub = brand.attributes.name.replace(/ /g, "-");
@@ -99,21 +101,23 @@ class SearchFilter extends Component {
                 );
               })}
             </ul>
-          </Accordion.Collapse>
-        </Accordion>
+          </div>
+        </div>
         {Object.entries(this.state.categories).map(
           ([categoryName, tags], index) => {
             return (
-              <Accordion className="category-group" key={index}>
-                <Accordion.Toggle
-                  as={"h5"}
-                  eventKey={index}
+              <div className="category-group" key={index}>
+                <h5
                   className="category-header"
+                  data-toggle="collapse"
+                  data-target="#collapse-brands"
+                  aria-expanded="false"
+                  aria-controls="collapse-brands"
                 >
                   <i className="fas fa-caret-right" />
                   <span className="category-name">{categoryName}</span>
-                </Accordion.Toggle>
-                <Accordion.Collapse eventKey={index}>
+                </h5>
+                <div className="collapse" id={`collapse-${categoryName}`}>
                   <ul className="category-items">
                     {tags.map((tag, index) => {
                       const tagNameSlug = tag.attributes.name.replace(
@@ -140,8 +144,8 @@ class SearchFilter extends Component {
                       );
                     })}
                   </ul>
-                </Accordion.Collapse>
-              </Accordion>
+                </div>
+              </div>
             );
           }
         )}

@@ -87,8 +87,13 @@ const Pagination = ({ currentPage = 1, description, maxPages, query, url }) => {
     }
   };
 
+  const paginationClasses = {
+    "pagination-nav": true,
+    "pagination-sm": window.innerWidth < 576,
+  };
+
   return (
-    <nav aria-label={description} className="pagination-nav">
+    <nav aria-label={description} className={dynamicClassNames(paginationClasses)}>
       <ul className="pagination">
         <PaginationItem
           disabled={currentPage === 1}

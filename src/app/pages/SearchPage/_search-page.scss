@@ -1,6 +1,4 @@
-@import "../../styles/colors";
-@import "~bootstrap/scss/bootstrap";
-@import "@trendmicro/react-sidenav/dist/react-sidenav";
+@import "../../../scss/styles.scss";
 
 .search-page {
   display: flex;
@@ -27,6 +25,10 @@
       @include media-breakpoint-down(md) {
         display: unset;
       }
+
+      .modal-button {
+        text-align: center;
+      }
     }
 
     .active-tags {
@@ -39,7 +41,7 @@
         border: solid lightgray 1px;
         margin-right: 5px;
         margin-top: 5px;
-        padding: 2px 6px 0 6px;
+        padding: 3px 6px 2px;
         width: fit-content;
       }
 
@@ -133,9 +135,6 @@
   .category-group {
     padding: 10px 0px;
   }
-  .submission-buttons {
-    padding: 20px;
-  }
 
   .category-header {
     align-items: center;
@@ -180,9 +179,11 @@
   .submission-buttons {
     align-items: center;
     display: flex;
-
+    padding: 20px 0px;
+    
     .submission-button {
-      margin: 0 10px;
+      font-weight: 600;
+      margin-right: 20px;
     }
   }
 }

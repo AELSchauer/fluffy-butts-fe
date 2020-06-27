@@ -3,13 +3,12 @@ import Ellipsis from "@bit/joshk.react-spinners-css.ellipsis";
 import axios from "../../utils/axios";
 import { findOne } from "../../utils/json-api";
 import groupBy from "lodash.groupby";
-import Modal from "react-bootstrap/Modal";
 import Pagination from "../../components/Pagination";
 import SearchFilter from "./SearchFilter";
 import { useQuery } from "../../utils/query-params";
 import "./_search-page.scss";
 
-const SearchPage = (props) => {
+const SearchPage = () => {
   const query = useQuery();
   const [currentPage] = useState(parseInt(query.get("page") || 1));
   const [hasError, setHasError] = useState(false);
@@ -18,7 +17,6 @@ const SearchPage = (props) => {
   const [brands, setBrands] = useState([]);
   const [products, setProducts] = useState([]);
   const [categories, setCategories] = useState([]);
-  const [show, setShow] = useState(false);
 
   const convertPageQueryToJsonApiQuery = () => {
     return Object.assign(
@@ -29,14 +27,14 @@ const SearchPage = (props) => {
         "filter[brand.name]": query.get("brands"),
       },
       !!query.get("product-lines") && {
-        "filter[product-line]": query.get("product-lines"),
+        "filter[product-line.name]": query.get("product-lines"),
       },
       !!query.get("page") && { "page[number]": query.get("page") },
       !!query.get("size") && { "page[size]": query.get("size") }
     );
   };
 
-  const getBrands = async () => {
+  const getBrands = () => {
     return axios({
       method: "get",
       url: "/brands",
@@ -46,7 +44,7 @@ const SearchPage = (props) => {
     }).then(({ data: { data = [] } }) => setBrands(data));
   };
 
-  const getTags = async () => {
+  const getTags = () => {
     return axios({
       method: "get",
       url: "/tags",
@@ -131,6 +129,12 @@ const SearchPage = (props) => {
       .then((result) => {
         result.maxPages && setMaxPages(result.maxPages);
         result.products && setProducts(result.products);
+      });
+
+  useEffect(() => {
+    Promise.all([getBrands(), getTags()])
+      .then(() => getProducts())
+      .then(() => {
         setIsLoading(false);
       })
       .catch(() => {
@@ -138,9 +142,6 @@ const SearchPage = (props) => {
         setIsLoading(false);
         return {};
       });
-
-  useEffect(() => {
-    Promise.all([getBrands(), getProducts(), getTags()]);
   }, []);
 
   const getPagination = () => {
@@ -179,6 +180,7 @@ const SearchPage = (props) => {
 
     query.sort();
     const activeTags = [];
+    let i = 0;
     for (var [key, values] of query.entries()) {
       if (key !== "page" && key !== "size") {
         values
@@ -186,7 +188,7 @@ const SearchPage = (props) => {
           .sort()
           .forEach((value) => {
             activeTags.push(
-              <div className="active-tag">
+              <div className="active-tag" key={i}>
                 <span>{value}</span>
                 <a
                   className="close-active-tag"
@@ -200,6 +202,7 @@ const SearchPage = (props) => {
               </div>
             );
           });
+        i++;
       }
     }
     return activeTags;
@@ -208,26 +211,45 @@ const SearchPage = (props) => {
   const getProductsGrid = () => {
     return (
       <div className="products-grid">
-        <div class="modal-toggle">
-          <div className="btn-secondary" onClick={() => setShow(true)}>
+        <div className="modal-toggle">
+          <div
+            className="bg-secondary modal-button text-body"
+            data-toggle="modal"
+            data-target="#exampleModal"
+          >
             Filter
           </div>
-          <Modal
-            show={show}
-            onHide={() => setShow(false)}
-            dialogClassName="woohoo"
-            aria-labelledby="example-custom-modal-styling-title"
-            scrollable={true}
+          <div
+            className="modal fade"
+            id="exampleModal"
+            tabindex="-1"
+            role="dialog"
+            aria-labelledby="exampleModalLabel"
+            aria-hidden="true"
           >
-            <Modal.Header closeButton />
-            <Modal.Body>
-              <SearchFilter
-                brands={brands}
-                categories={categories}
-                query={query}
-              />
-            </Modal.Body>
-          </Modal>
+            <div
+              className="modal-dialog modal-dialog-scrollable"
+              role="document"
+            >
+              <div className="modal-content">
+                <div className="modal-body">
+                  <button
+                    type="button"
+                    className="close"
+                    data-dismiss="modal"
+                    aria-label="Close"
+                  >
+                    <i className="fas fa-times" />
+                  </button>
+                  <SearchFilter
+                    brands={brands}
+                    categories={categories}
+                    query={query}
+                  />
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
         {getPagination()}
         <div className="active-tags">{getActiveTags()}</div>

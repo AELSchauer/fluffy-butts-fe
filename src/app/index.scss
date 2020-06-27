@@ -1,13 +1,4 @@
-// Custom bootstrap overrides
-@import "./styles/_colors.scss";
-@import "./styles/_fonts.scss";
-
-// Bootstrap
-@import "~bootstrap/scss/bootstrap";
-
-body {
-  background-color: $light;
-}
+@import "../scss/styles.scss";
 
 section.page {
   background-color: white;

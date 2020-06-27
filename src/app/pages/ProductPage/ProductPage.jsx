@@ -2,8 +2,7 @@ import React, { useState, useEffect } from "react";
 import axios from "../../utils/axios";
 import _ from "lodash";
 import dynamicClassNames from "classnames";
-import OverlayTrigger from "react-bootstrap/OverlayTrigger";
-import Tooltip from "react-bootstrap/Tooltip";
+import Tooltip from "../../components/Tooltip";
 import Ellipsis from "@bit/joshk.react-spinners-css.ellipsis";
 import { findMany, findOne } from "../../utils/json-api";
 import { useQuery } from "../../utils/query-params";
@@ -155,6 +154,8 @@ const ProductPage = (props) => {
               relatedProducts(siblings)
             ),
           });
+
+          setIsLoading(false);
         }
       )
       .catch(() => {
@@ -165,11 +166,7 @@ const ProductPage = (props) => {
   };
 
   useEffect(() => {
-    async function fetchData() {
-      await getProduct();
-      setIsLoading(false);
-    }
-    fetchData();
+    getProduct();
   }, []);
 
   const renderRelatedProductsList = (
@@ -177,7 +174,7 @@ const ProductPage = (props) => {
     tooltipTextPath
   ) => {
     const productRows = chunk(products, products.length > 8 ? 2 : 1);
-    const { productLine } = product;
+    const { brand, productLine } = product;
     return (
       <ul className="swatches">
         {productRows.map((productRow, index) => (
@@ -193,14 +190,9 @@ const ProductPage = (props) => {
                   selected: product.id === id,
                 };
                 return (
-                  <OverlayTrigger
-                    key={id}
-                    placement={"top"}
-                    overlay={
-                      <Tooltip id={`tooltip-${id}`}>
-                        {_.get(relProduct, tooltipTextPath)}
-                      </Tooltip>
-                    }
+                  <Tooltip
+                    placement="top"
+                    content={_.get(relProduct, tooltipTextPath)}
                   >
                     <li className={dynamicClassNames(classNames)} key={id}>
                       <a href={`/products/${id}`}>
@@ -211,15 +203,15 @@ const ProductPage = (props) => {
                         />
                       </a>
                     </li>
-                  </OverlayTrigger>
+                  </Tooltip>
                 );
               }
             )}
           </div>
         ))}
         {total > products.length ? (
-          <li style={{ text: "red" }}>
-            <a href={`/search?product-lines=${productLine.id}`}>See More</a>
+          <li className="see-more">
+            <a href={`/search?brands=${brand.attributes.name}&product-lines=${productLine.attributes.name}`}>See More</a>
           </li>
         ) : (
           ""
@@ -246,7 +238,7 @@ const ProductPage = (props) => {
             <p className="product-attribute product-brand">{brand.name}</p>
             <p className="product-attribute product-name">{productLine.name}</p>
             <div className="product-tags">
-              {tags.map(({ attributes: { id, name } = {} }, idx) => (
+              {tags.map(({ attributes: { name } = {} }, idx) => (
                 <span className="product-tag" key={idx}>
                   <a className="product-tag-link" href={`/search?tags=${name}`}>
                     {name.replace(/ /g, "\u00a0")}
@@ -283,7 +275,8 @@ const ProductPage = (props) => {
               ({
                 attributes: { currency, link, price, quantity, company } = {},
               }) => {
-                const title = company || link.match(/\w*\.com/g)[0];
+                console.log(link);
+                const title = company || (link.match(/\w*\.com/g) || [])[0];
                 return (
                   <a className="listing listing-link" href={link}>
                     <div className="listing-title listing-prop">
