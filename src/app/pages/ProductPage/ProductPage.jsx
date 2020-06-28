@@ -264,7 +264,7 @@ const ProductPage = (props) => {
         <div className="product-info">
           <img className="product-image" alt={image.name} src={image.link} />
           <div className="info-section">
-            <p className="product-attribute product-brand">{brand.name}</p>
+            <a className="product-attribute product-brand" href={`/search?brands=${brand.name}`}>{brand.name}</a>
             <p className="product-attribute product-name">{productLine.name}</p>
             <div className="product-tags">
               {tags.map(({ attributes: { name } = {} }, idx) => (

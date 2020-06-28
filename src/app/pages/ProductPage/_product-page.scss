@@ -28,6 +28,12 @@
 
       .product-brand {
         font-size: 1.5rem;
+        color: black;
+
+        &:hover {
+          text-decoration: none;
+          color: $green;
+        }
       }
 
       .section-heading {

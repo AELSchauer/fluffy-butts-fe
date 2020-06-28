@@ -105,19 +105,20 @@ class SearchFilter extends Component {
         </div>
         {Object.entries(this.state.categories).map(
           ([categoryName, tags], index) => {
+            const categorySlug = categoryName.replace(/ /g, '-').replace('&','')
             return (
               <div className="category-group" key={index}>
                 <h5
                   className="category-header"
                   data-toggle="collapse"
-                  data-target="#collapse-brands"
+                  data-target={`#collapse-${categorySlug}`}
                   aria-expanded="false"
-                  aria-controls="collapse-brands"
+                  aria-controls={`collapse-${categorySlug}`}
                 >
                   <i className="fas fa-caret-right" />
                   <span className="category-name">{categoryName}</span>
                 </h5>
-                <div className="collapse" id={`collapse-${categoryName}`}>
+                <div className="collapse" id={`collapse-${categorySlug}`}>
                   <ul className="category-items">
                     {tags.map((tag, index) => {
                       const tagNameSlug = tag.attributes.name.replace(

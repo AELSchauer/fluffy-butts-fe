@@ -16,13 +16,13 @@ const SiteNav = ({ routes = [] }) => {
         <span className="navbar-toggler-icon"></span>
       </button>
       <div className="collapse navbar-collapse" id="siteNavbar">
-        <div className="navbar-brand">
+        <a className="navbar-brand" href="/">
           <img
             className="navbar-brand-image"
             src="https://storage.googleapis.com/fluffy-butts/Fluffy%20Butts/logo.png"
           />
           <h1 className="navbar-brand-title">Fluffy Butts</h1>
-        </div>
+        </a>
         <ul className="navbar-nav ml-auto mt-2 mt-lg-0">
           {routes
             .filter(({ includeInNavBar }) => includeInNavBar)
