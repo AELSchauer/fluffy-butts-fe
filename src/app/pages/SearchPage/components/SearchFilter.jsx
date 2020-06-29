@@ -79,22 +79,22 @@ class SearchFilter extends Component {
           <div className="collapse" id="collapse-brands">
             <ul className="category-items">
               {this.state.brands.map((brand, index) => {
-                const brandNameSlub = brand.attributes.name.replace(/ /g, "-");
+                const brandNameSlug = brand.name.replace(/ /g, "-");
                 return (
                   <li className="category-item" key={index}>
                     <input
                       type="checkbox"
                       checked={this.isParamActive(
                         "brands",
-                        brand.attributes.name
+                        brand.name
                       )}
-                      id={`checkbox-${brandNameSlub}`}
+                      id={`checkbox-${brandNameSlug}`}
                       onChange={() =>
-                        this.toggleParam("brands", brand.attributes.name)
+                        this.toggleParam("brands", brand.name)
                       }
                     />
-                    <label htmlFor={`checkbox-${brandNameSlub}`}>
-                      {brand.attributes.name}
+                    <label htmlFor={`checkbox-${brandNameSlug}`}>
+                      {brand.name}
                     </label>
                   </li>
                 );
@@ -120,7 +120,7 @@ class SearchFilter extends Component {
                 <div className="collapse" id={`collapse-${categorySlug}`}>
                   <ul className="category-items">
                     {tags.map((tag, index) => {
-                      const tagNameSlug = tag.attributes.name.replace(
+                      const tagNameSlug = tag.name.replace(
                         / /g,
                         "-"
                       );
@@ -130,15 +130,15 @@ class SearchFilter extends Component {
                             type="checkbox"
                             checked={this.isParamActive(
                               "tags",
-                              tag.attributes.name
+                              tag.name
                             )}
                             id={`checkbox-${tagNameSlug}`}
                             onChange={() =>
-                              this.toggleParam("tags", tag.attributes.name)
+                              this.toggleParam("tags", tag.name)
                             }
                           />
                           <label htmlFor={`checkbox-${tagNameSlug}`}>
-                            {tag.attributes.name}
+                            {tag.name}
                           </label>
                         </li>
                       );

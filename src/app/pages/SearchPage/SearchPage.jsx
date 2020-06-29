@@ -55,7 +55,7 @@ const SearchPage = () => {
         sort: ["category", "name"],
       },
     }).then(({ data: { data = [] } }) =>
-      setCategories(groupBy(data, "attributes.category"))
+      setCategories(groupBy(data, "category"))
     );
   };
 
@@ -66,57 +66,15 @@ const SearchPage = () => {
         queryKeys.push(key);
       }
     });
-    return queryKeys.length !== 1 || queryKeys[0] !== "brands"
-      ? Promise.resolve({})
-      : axios({
+    return queryKeys.length === 1 && queryKeys[0] === "brands"
+      ? axios({
           method: "get",
           url: "/product-lines-display",
           params: {
             ...convertPageQueryToJsonApiQuery(),
           },
-        })
-          .then(({ data: { data = [], included = [] } }) =>
-            data.map(
-              ({
-                id,
-                type,
-                attributes,
-                relationships: {
-                  images: { data: [imageRel = {}] = [] } = {},
-                  "product-line": { data: productLineRel = {} } = {},
-                },
-              }) => {
-                const logo = findOne(included, imageRel) || {
-                  attributes: { link: "", name: "" },
-                };
-                const productLine = findOne(included, productLineRel);
-                const tags = [productLine]
-                  .reduce(
-                    (
-                      tags,
-                      { relationships: { tags: { data = [] } = {} } = {} } = {}
-                    ) => tags.concat(data),
-                    []
-                  )
-                  .map((tag) => findOne(included, tag))
-                  .sort((a, b) =>
-                    a.attributes.name > b.attributes.name ? 1 : -1
-                  );
-
-                return {
-                  id,
-                  type,
-                  attributes,
-                  logo,
-                  productLine,
-                  tags,
-                };
-              }
-            )
-          )
-          .then((result = []) => {
-            setDefaultProducts(result);
-          });
+        }).then(({ data: { data } = {} }) => setDefaultProducts(data))
+      : Promise.resolve({});
   };
 
   const getProducts = () => {
@@ -134,65 +92,10 @@ const SearchPage = () => {
         sort: ["brand.name", "product-line.name", "name"],
         ...convertPageQueryToJsonApiQuery(),
       },
-    })
-      .then(
-        ({
-          data: {
-            data = [],
-            included = [],
-            links: { last: lastPageLink } = {},
-          },
-        }) => ({
-          maxPages: parseInt(lastPageLink.match(/&page%5Bnumber%5D=(\d+)/)[1]),
-          products: data.map(
-            ({
-              id,
-              type,
-              attributes,
-              relationships: {
-                brand: { data: brandRel = {} } = {},
-                images: { data: [imageRel = {}] = [] } = {},
-                pattern: { data: patternRel = {} } = {},
-                "product-line": { data: productLineRel = {} } = {},
-              },
-            }) => {
-              const brand = findOne(included, brandRel);
-              const logo = findOne(included, imageRel) || {
-                attributes: { link: "", name: "" },
-              };
-              const pattern = findOne(included, patternRel);
-              const productLine = findOne(included, productLineRel);
-              const tags = [pattern, productLine]
-                .reduce(
-                  (
-                    tags,
-                    { relationships: { tags: { data = [] } = {} } = {} } = {}
-                  ) => tags.concat(data),
-                  []
-                )
-                .map((tag) => findOne(included, tag))
-                .sort((a, b) =>
-                  a.attributes.name > b.attributes.name ? 1 : -1
-                );
-
-              return {
-                id,
-                type,
-                attributes,
-                brand,
-                logo,
-                pattern,
-                productLine,
-                tags,
-              };
-            }
-          ),
-        })
-      )
-      .then((result) => {
-        result.maxPages && setMaxPages(result.maxPages);
-        result.products && setProducts(result.products);
-      });
+    }).then(({ data: { data = [], links: { last: lastPageLink } = {} } }) => {
+      setMaxPages(parseInt(lastPageLink.match(/&page%5Bnumber%5D=(\d+)/)[1]));
+      setProducts(data);
+    });
   };
 
   useEffect(() => {
@@ -221,44 +124,39 @@ const SearchPage = () => {
     );
   };
 
-  const renderActiveTags = () => {
-    const getUpdatedHref = (categoryName, itemName) => {
-      return query
-        .toString()
-        .split("&")
-        .map((str) => {
-          return str.indexOf(categoryName) >= 0
-            ? str
-                .replace(itemName, "")
-                .replace("=%2C", "=")
-                .replace("%2C%2C", "%2C")
-                .replace(/%2C$/, "")
-                .replace(new RegExp(categoryName + "=$"), "")
-            : str;
-        })
-        .filter(Boolean)
-        .join("&")
-        .replace(/page=\d+/g, "page=1");
-    };
+  const getUpdatedHref = (categoryName, itemName) => {
+    const tempQuery = new URLSearchParams(query.toString());
+    const newSet = tempQuery
+      .get(categoryName)
+      .split(",")
+      .filter((i) => i !== itemName);
 
+    if (newSet.length) {
+      tempQuery.set(categoryName, newSet);
+    } else {
+      tempQuery.delete(categoryName);
+      categoryName === "brands" && tempQuery.delete("product-lines");
+    }
+    tempQuery.set("page", 1);
+    return tempQuery.toString();
+  };
+
+  const renderActiveTags = () => {
     query.sort();
     const activeTags = [];
     let i = 0;
-    for (var [key, values] of query.entries()) {
-      if (key !== "page" && key !== "size") {
+    for (var [categoryName, values] of query.entries()) {
+      if (categoryName !== "page" && categoryName !== "size") {
         values
           .split(",")
           .sort()
-          .forEach((value) => {
+          .forEach((tagName) => {
             activeTags.push(
               <div className="active-tag" key={i}>
-                <span>{value}</span>
+                <span>{tagName}</span>
                 <a
                   className="close-active-tag"
-                  href={`/search?${getUpdatedHref(
-                    key,
-                    encodeURI(value.replace(/ /g, "+"))
-                  )}`}
+                  href={`/search?${getUpdatedHref(categoryName, tagName)}`}
                 >
                   <i className="fas fa-times" />
                 </a>
@@ -284,7 +182,7 @@ const SearchPage = () => {
         <div
           className="modal fade"
           id="exampleModal"
-          tabindex="-1"
+          tabIndex="-1"
           role="dialog"
           aria-labelledby="exampleModalLabel"
           aria-hidden="true"
@@ -319,14 +217,14 @@ const SearchPage = () => {
         <Ellipsis className="loading" color="#42b983" />
       ) : (
         <React.Fragment>
-          <div className="product-search">
+          <div className="search-filter">
             <SearchFilter
               brands={brands}
               categories={categories}
               query={query}
             />
           </div>
-          <div className="products-display">
+          <div className="search-display">
             {renderFilterModal()}
             {defaultProducts.length ? (
               <ProductLineGrid defaultProducts={defaultProducts} />
@@ -334,7 +232,13 @@ const SearchPage = () => {
             {renderPagination()}
             {renderActiveTags()}
             {products.length ? (
-              <ProductGrid />
+              <ProductGrid
+                headingText={
+                  defaultProducts.length &&
+                  `Browse All ${products[0].brand.name} Products`
+                }
+                products={products}
+              />
             ) : (
               <div className="no-results">Sorry, no results were found!</div>
             )}

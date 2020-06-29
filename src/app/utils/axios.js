@@ -1,4 +1,5 @@
 import axios from "axios";
+import { deserialize } from "deserialize-json-api";
 import traverse from "traverse";
 
 export default axios.create({
@@ -12,7 +13,7 @@ export default axios.create({
         .forEach(
           (path) => travData.get(path) === null && travData.set(path, undefined)
         );
-      return travData.value;
+      return deserialize(travData.value, { transformKeys: "camelCase" });
     },
   ],
 });

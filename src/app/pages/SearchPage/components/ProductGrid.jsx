@@ -1,60 +1,75 @@
 import React from "react";
 import "../_search-page.scss";
 
-const ProductGrid = ({ products = [] }) => {
+const ProductGrid = ({ headingText, products = [] }) => {
   const slugifyProductName = ({
     id,
-    attributes: { name } = {},
-    brand: { attributes: { name: brandName } = {} } = {},
-    productLine: { attributes: { name: productLineName } = {} } = {},
+    name,
+    brand = {},
+    productLine = {},
   } = {}) => {
-    return `${brandName}-${productLineName}-${name}-${id}`
+    return `${brand.name}-${productLine.name}-${name}-${id}`
       .toLowerCase()
       .replace(/ /g, "-");
   };
 
   return (
     <div className="product-grid">
-      <ul className="product-list">
-        {products.map((product) => (
-          <li key={product.id} className="product-container">
-            <a
-              className="product"
-              href={`products/${slugifyProductName(product)}`}
-            >
-              <img
-                className="product-image"
-                alt={product.logo.attributes.name}
-                src={product.logo.attributes.link}
-              />
-              <p className="product-attribute product-brand">
-                {product.brand.attributes.name}
-              </p>
-              <p className="product-attribute product-line">
-                {product.productLine.attributes.name}
-              </p>
-              <p className="product-attribute product-name">
-                {product.attributes.name}
-              </p>
-              <div className="product-tags">
-                {product.tags.map((tag) => (
-                  <span key={tag.id} className="product-tag">
-                    <a
-                      className="product-tag-link"
-                      href={`search?tags=${encodeURIComponent(
-                        tag.attributes.name
-                      )}&page=1`}
-                    >
-                      {tag.attributes.name
-                        .replace(/ /g, "\u00a0")
-                        .replace(/-/g, "\u2011")}
-                    </a>
-                  </span>
-                ))}
-              </div>
-            </a>
-          </li>
-        ))}
+      {headingText ? (
+        <h3 className="product-grid-heading">{headingText}</h3>
+      ) : undefined}
+      <ul className="products-list">
+        {products.map(
+          ({
+            id,
+            name,
+            brand = {},
+            images: [logo = {}] = [],
+            pattern: { tags: patternTags = [], ...pattern } = {},
+            productLine: { tags: productLineTags = [], ...productLine } = {},
+          }) => (
+            <li key={id} className="product-container">
+              <a
+                className="product"
+                href={`products/${slugifyProductName({
+                  id,
+                  name,
+                  brand,
+                  productLine,
+                })}`}
+              >
+                <img
+                  className="product-image"
+                  alt={logo.name}
+                  src={logo.link}
+                />
+                <p className="product-attribute product-brand product-heading">
+                  {brand.name}
+                </p>
+                <p className="product-attribute product-line">
+                  {productLine.name}
+                </p>
+                <p className="product-attribute product-name">{name}</p>
+                <div className="product-tags">
+                  {[...patternTags, ...productLineTags].map((tag) => (
+                    <span key={tag.id} className="product-tag">
+                      <a
+                        className="product-tag-link"
+                        href={`search?tags=${encodeURIComponent(
+                          tag.name
+                        )}&page=1`}
+                      >
+                        {tag.name
+                          .replace(/ /g, "\u00a0")
+                          .replace(/-/g, "\u2011")}
+                      </a>
+                    </span>
+                  ))}
+                </div>
+              </a>
+            </li>
+          )
+        )}
       </ul>
     </div>
   );
