@@ -1,7 +1,6 @@
 import React, { Component } from "react";
-// import Accordion from "react-bootstrap/Accordion";
-import Collapse from "../../components/Collapse";
-import { camelToPascalCase } from "../../utils/case-helper";
+import { camelToPascalCase } from "../../../utils/case-helper";
+import "../_search-page.scss";
 
 class SearchFilter extends Component {
   constructor(props) {

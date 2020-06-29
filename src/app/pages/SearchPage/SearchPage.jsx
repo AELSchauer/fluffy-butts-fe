@@ -1,10 +1,12 @@
 import React, { useState, useEffect } from "react";
-import Ellipsis from "@bit/joshk.react-spinners-css.ellipsis";
 import axios from "../../utils/axios";
 import { findOne } from "../../utils/json-api";
+import Ellipsis from "@bit/joshk.react-spinners-css.ellipsis";
 import groupBy from "lodash.groupby";
 import Pagination from "../../components/Pagination";
-import SearchFilter from "./SearchFilter";
+import ProductGrid from "./components/ProductGrid";
+import ProductLineGrid from "./components/ProductLineGrid";
+import SearchFilter from "./components/SearchFilter";
 import { useQuery } from "../../utils/query-params";
 import "./_search-page.scss";
 
@@ -16,6 +18,7 @@ const SearchPage = () => {
   const [maxPages, setMaxPages] = useState(1);
   const [brands, setBrands] = useState([]);
   const [products, setProducts] = useState([]);
+  const [defaultProducts, setDefaultProducts] = useState([]);
   const [categories, setCategories] = useState([]);
 
   const convertPageQueryToJsonApiQuery = () => {
@@ -56,8 +59,68 @@ const SearchPage = () => {
     );
   };
 
-  const getProducts = async () =>
-    axios({
+  const getDefaultProducts = () => {
+    const queryKeys = [];
+    query.forEach((value, key) => {
+      if (key !== "page" && key !== "size") {
+        queryKeys.push(key);
+      }
+    });
+    return queryKeys.length !== 1 || queryKeys[0] !== "brands"
+      ? Promise.resolve({})
+      : axios({
+          method: "get",
+          url: "/product-lines-display",
+          params: {
+            ...convertPageQueryToJsonApiQuery(),
+          },
+        })
+          .then(({ data: { data = [], included = [] } }) =>
+            data.map(
+              ({
+                id,
+                type,
+                attributes,
+                relationships: {
+                  images: { data: [imageRel = {}] = [] } = {},
+                  "product-line": { data: productLineRel = {} } = {},
+                },
+              }) => {
+                const logo = findOne(included, imageRel) || {
+                  attributes: { link: "", name: "" },
+                };
+                const productLine = findOne(included, productLineRel);
+                const tags = [productLine]
+                  .reduce(
+                    (
+                      tags,
+                      { relationships: { tags: { data = [] } = {} } = {} } = {}
+                    ) => tags.concat(data),
+                    []
+                  )
+                  .map((tag) => findOne(included, tag))
+                  .sort((a, b) =>
+                    a.attributes.name > b.attributes.name ? 1 : -1
+                  );
+
+                return {
+                  id,
+                  type,
+                  attributes,
+                  logo,
+                  productLine,
+                  tags,
+                };
+              }
+            )
+          )
+          .then((result = []) => {
+            setDefaultProducts(result);
+          });
+  };
+
+  const getProducts = () => {
+    return axios({
       method: "get",
       url: "/products",
       params: {
@@ -130,10 +193,10 @@ const SearchPage = () => {
         result.maxPages && setMaxPages(result.maxPages);
         result.products && setProducts(result.products);
       });
+  };
 
   useEffect(() => {
-    Promise.all([getBrands(), getTags()])
-      .then(() => getProducts())
+    Promise.all([getBrands(), getTags(), getDefaultProducts(), getProducts()])
       .then(() => {
         setIsLoading(false);
       })
@@ -144,7 +207,7 @@ const SearchPage = () => {
       });
   }, []);
 
-  const getPagination = () => {
+  const renderPagination = () => {
     return products.length ? (
       <Pagination
         currentPage={currentPage}
@@ -158,7 +221,7 @@ const SearchPage = () => {
     );
   };
 
-  const getActiveTags = () => {
+  const renderActiveTags = () => {
     const getUpdatedHref = (categoryName, itemName) => {
       return query
         .toString()
@@ -205,108 +268,47 @@ const SearchPage = () => {
         i++;
       }
     }
-    return activeTags;
+    return <div className="active-tags">{activeTags}</div>;
   };
 
-    const slugifyProductName = ({
-      id,
-      attributes: { name } = {},
-      brand: { attributes: { name: brandName } = {} } = {},
-      productLine: { attributes: { name: productLineName } = {} } = {},
-    } = {}) => {
-      return `${brandName}-${productLineName}-${name}-${id}`
-        .toLowerCase()
-        .replace(/ /g, "-");
-    };
-
-  const getProductsGrid = () => {
+  const renderFilterModal = () => {
     return (
-      <div className="products-grid">
-        <div className="modal-toggle">
-          <div
-            className="bg-secondary modal-button text-body"
-            data-toggle="modal"
-            data-target="#exampleModal"
-          >
-            Filter
-          </div>
-          <div
-            className="modal fade"
-            id="exampleModal"
-            tabindex="-1"
-            role="dialog"
-            aria-labelledby="exampleModalLabel"
-            aria-hidden="true"
-          >
-            <div
-              className="modal-dialog modal-dialog-scrollable"
-              role="document"
-            >
-              <div className="modal-content">
-                <div className="modal-body">
-                  <button
-                    type="button"
-                    className="close"
-                    data-dismiss="modal"
-                    aria-label="Close"
-                  >
-                    <i className="fas fa-times" />
-                  </button>
-                  <SearchFilter
-                    brands={brands}
-                    categories={categories}
-                    query={query}
-                  />
-                </div>
+      <div className="modal-toggle">
+        <div
+          className="bg-secondary modal-button text-body"
+          data-toggle="modal"
+          data-target="#exampleModal"
+        >
+          Filter
+        </div>
+        <div
+          className="modal fade"
+          id="exampleModal"
+          tabindex="-1"
+          role="dialog"
+          aria-labelledby="exampleModalLabel"
+          aria-hidden="true"
+        >
+          <div className="modal-dialog modal-dialog-scrollable" role="document">
+            <div className="modal-content">
+              <div className="modal-body">
+                <button
+                  type="button"
+                  className="close"
+                  data-dismiss="modal"
+                  aria-label="Close"
+                >
+                  <i className="fas fa-times" />
+                </button>
+                <SearchFilter
+                  brands={brands}
+                  categories={categories}
+                  query={query}
+                />
               </div>
             </div>
           </div>
         </div>
-        {getPagination()}
-        <div className="active-tags">{getActiveTags()}</div>
-        <ul className="products-list">
-          {products.length ? (
-            products.map((product) => (
-              <li key={product.id} className="product-container">
-                <a className="product" href={`products/${slugifyProductName(product)}`}>
-                  <img
-                    className="product-image"
-                    alt={product.logo.attributes.name}
-                    src={product.logo.attributes.link}
-                  />
-                  <p className="product-attribute product-brand">
-                    {product.brand.attributes.name}
-                  </p>
-                  <p className="product-attribute product-line">
-                    {product.productLine.attributes.name}
-                  </p>
-                  <p className="product-attribute product-name">
-                    {product.attributes.name}
-                  </p>
-                  <div className="product-tags">
-                    {product.tags.map((tag) => (
-                      <span key={tag.id} className="product-tag">
-                        <a
-                          className="product-tag-link"
-                          href={`search?tags=${encodeURIComponent(
-                            tag.attributes.name
-                          )}&page=1`}
-                        >
-                          {tag.attributes.name
-                            .replace(/ /g, "\u00a0")
-                            .replace(/-/g, "\u2011")}
-                        </a>
-                      </span>
-                    ))}
-                  </div>
-                </a>
-              </li>
-            ))
-          ) : (
-            <div className="no-results">Sorry, no results were found!</div>
-          )}
-        </ul>
-        {getPagination()}
       </div>
     );
   };
@@ -324,7 +326,20 @@ const SearchPage = () => {
               query={query}
             />
           </div>
-          {getProductsGrid()}
+          <div className="products-display">
+            {renderFilterModal()}
+            {defaultProducts.length ? (
+              <ProductLineGrid defaultProducts={defaultProducts} />
+            ) : undefined}
+            {renderPagination()}
+            {renderActiveTags()}
+            {products.length ? (
+              <ProductGrid />
+            ) : (
+              <div className="no-results">Sorry, no results were found!</div>
+            )}
+            {renderPagination()}
+          </div>
         </React.Fragment>
       )}
     </section>
