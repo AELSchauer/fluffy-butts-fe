@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from "react";
 import axios from "../../utils/axios";
-import { findOne } from "../../utils/json-api";
 import Ellipsis from "@bit/joshk.react-spinners-css.ellipsis";
 import groupBy from "lodash.groupby";
 import Pagination from "../../components/Pagination";
