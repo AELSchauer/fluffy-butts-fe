@@ -19,7 +19,7 @@ const SiteNav = ({ routes = [] }) => {
         <a className="navbar-brand" href="/">
           <img
             className="navbar-brand-image"
-            src="https://storage.googleapis.com/fluffy-butts/Fluffy%20Butts/logo.png"
+            src="https://fluffy-butts-product-images.s3.us-east-2.amazonaws.com/Fluffy+Butts/Logo.png"
           />
           <h1 className="navbar-brand-title">Fluffy Butts</h1>
         </a>

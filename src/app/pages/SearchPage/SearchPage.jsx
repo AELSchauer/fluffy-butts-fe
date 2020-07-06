@@ -1,10 +1,9 @@
 import React, { useState, useEffect } from "react";
 import axios from "../../utils/axios";
 import Ellipsis from "@bit/joshk.react-spinners-css.ellipsis";
-import groupBy from "lodash.groupby";
+import _ from "lodash";
 import Pagination from "../../components/Pagination";
 import ProductGrid from "./components/ProductGrid";
-import ProductLineGrid from "./components/ProductLineGrid";
 import SearchFilter from "./components/SearchFilter";
 import { useQuery } from "../../utils/query-params";
 import "./_search-page.scss";
@@ -54,7 +53,7 @@ const SearchPage = () => {
         sort: ["category", "name"],
       },
     }).then(({ data: { data = [] } }) =>
-      setCategories(groupBy(data, "category"))
+      setCategories(_.groupBy(data, "category"))
     );
   };
 
@@ -91,7 +90,7 @@ const SearchPage = () => {
         sort: ["brand.name", "product-line.name", "name"],
         ...convertPageQueryToJsonApiQuery(),
       },
-    }).then(({ data: { data = [], links: { last: lastPageLink } = {} } }) => {
+    }).then(({ data: { data = [], urls: { last: lastPageLink } = {} } }) => {
       setMaxPages(parseInt(lastPageLink.match(/&page%5Bnumber%5D=(\d+)/)[1]));
       setProducts(data);
     });
@@ -102,7 +101,8 @@ const SearchPage = () => {
       .then(() => {
         setIsLoading(false);
       })
-      .catch(() => {
+      .catch((error) => {
+        console.log(error)
         setHasError(true);
         setIsLoading(false);
         return {};
@@ -225,9 +225,6 @@ const SearchPage = () => {
           </div>
           <div className="search-display">
             {renderFilterModal()}
-            {defaultProducts.length ? (
-              <ProductLineGrid defaultProducts={defaultProducts} />
-            ) : undefined}
             {renderPagination()}
             {renderActiveTags()}
             {products.length ? (

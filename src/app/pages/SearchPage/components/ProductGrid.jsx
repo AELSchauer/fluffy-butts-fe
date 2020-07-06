@@ -8,7 +8,7 @@ const ProductGrid = ({ headingText, products = [] }) => {
     brand = {},
     productLine = {},
   } = {}) => {
-    return `${brand.name}-${productLine.name}-${name}-${id}`
+    return `/brands/${brand.name}/products/${productLine.name}-${productLine.id}?variant=${name}-${id}`
       .toLowerCase()
       .replace(/ /g, "-");
   };
@@ -31,12 +31,12 @@ const ProductGrid = ({ headingText, products = [] }) => {
             <li key={id} className="product-container">
               <a
                 className="product"
-                href={`products/${slugifyProductName({
+                href={slugifyProductName({
                   id,
                   name,
                   brand,
                   productLine,
-                })}`}
+                })}
               >
                 <img
                   className="product-image"

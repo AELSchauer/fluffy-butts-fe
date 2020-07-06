@@ -1,105 +1,76 @@
 import React, { useState, useEffect } from "react";
 import axios from "../../utils/axios";
 import _ from "lodash";
-import dynamicClassNames from "classnames";
 import Tooltip from "../../components/Tooltip";
 import Ellipsis from "@bit/joshk.react-spinners-css.ellipsis";
+import { useQuery } from "../../utils/query-params";
+import Listings from "./components/Listings";
+import SwatchCarousel from "./components/SwatchCarousel";
 import "./_product-page.scss";
 
-const chunk = (array, groups) => {
-  const size = Math.ceil(array.length / groups);
-  const chunked_arr = [];
-  let index = 0;
-  while (index < array.length) {
-    chunked_arr.push(array.slice(index, size + index));
-    index += size;
-  }
-  return chunked_arr;
-};
-
-const formatMoney = (currency, amount) => {
-  try {
-    let symbol;
-    if (currency === "USD") {
-      symbol = "US$";
-    }
-    return symbol + amount.toFixed(2);
-  } catch (e) {
-    console.log(e);
-  }
-};
-
 const ProductPage = (props) => {
+  const siblingPageSize = 24;
+  const query = useQuery();
   const [hasError, setHasError] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
+  const [productLine, setProductLine] = useState({});
   const [product, setProduct] = useState({});
-  const [cousinProducts, setCousinProducts] = useState({
-    total: 0,
-    products: [],
-  });
-  const [siblingProducts, setSiblingProducts] = useState({
-    total: 0,
-    products: [],
-  });
+  const [cousinProducts, setCousinProducts] = useState([]);
+  const [familyProducts, setFamilyProducts] = useState([]);
 
-  const relatedProducts = (productRelList) =>
-    productRelList
-      .slice(0, 15)
-      .map(({ images: [image] = {}, ...productRel }) => {
-        return { ...productRel, image };
-      })
-      .sort((a, b) => (a.name > b.name ? 1 : -1));
+  const setActiveProduct = (productId, productLine) => {
+    const { products = [] } = productLine;
+    const product = products.find(({ id }) => id === productId) || 0;
+    const { pattern: { products: cousins = [] } = {} } = product;
+    setProduct(product);
+    setCousinProducts(cousins.filter(({ id }) => product.id !== id));
+    setFamilyProducts(products);
+  };
 
   const getProduct = () => {
-    return axios({
-      method: "get",
-      url: `/products/${props.match.params.id.match(/\d+$/)[0]}`,
-      params: {
-        include: [
-          "brand",
-          "images",
-          "listings",
-          "listings.company",
-          "pattern.products.images",
-          "pattern.products.product-line",
-          "pattern.products",
-          "pattern.tags",
-          "product-line.products.images",
-          "product-line.products",
-          "product-line.tags",
-          "product-line",
-        ],
-      },
-    })
-      .then(({ data: { data = {} } = {} }) => {
-        console.log(data)
-        const { pattern, productLine, images: [image] = [] } = data;
-
-        const tags = [pattern, productLine]
-          .reduce((allTags, { tags } = {}) => allTags.concat(tags), [])
-          .sort((a, b) => (a.name > b.name ? 1 : -1));
-
-        const [cousins, siblings] = [
-          pattern,
-          productLine,
-        ].map(({ products = [] }) =>
-          products.filter((sib) => sib.id !== data.id)
-        );
-        
-        const pageProduct = { ...data, image, tags };
-        setProduct(pageProduct);
-        setCousinProducts({
-          total: cousins.length,
-          products: relatedProducts(cousins),
-        });
-        setSiblingProducts({
-          total: siblings.length,
-          products: [pageProduct].concat(relatedProducts(siblings)),
-        });
-        setIsLoading(false);
-      })
-      .catch((error) => {
-        console.log(error)
+    const productLineId = props.match.params.productLineSlug.match(/\d+$/)[0];
+    return Promise.all([
+      axios({
+        method: "get",
+        url: `/product-lines/${productLineId}`,
+        params: {
+          include: ["brand", "images"],
+        },
+      }),
+      axios({
+        method: "get",
+        url: `/products`,
+        params: {
+          "filter[product-line]": productLineId,
+          "filter[available]": true,
+          include: [
+            "images",
+            "listings",
+            "listings.retailer",
+            "pattern",
+            "pattern.products",
+            "pattern.products.images",
+          ],
+        },
+      }),
+    ])
+      .then(
+        ([
+          { data: { data = {} } = {} } = {},
+          { data: { data: productsData = {} } = {} } = {},
+        ] = []) => {
+          data.products = productsData;
+          console.log(data);
+          setProductLine(data);
+          if (/\d+$/.test(query.get("variant"))) {
+            setActiveProduct(query.get("variant").match(/\d+$/)[0], data);
+          } else {
+            setFamilyProducts(data.products);
+          }
+          setIsLoading(false);
+        }
+      )
+      .catch(() => {
         setHasError(true);
         setIsLoading(false);
       });
@@ -109,159 +80,114 @@ const ProductPage = (props) => {
     getProduct();
   }, []);
 
-  const slugifyProductName = ({
-    id,
-    name,
-    productLine: { name: productLineName } = {},
-  } = {}) => {
-    return `${product.brand.name}-${productLineName}-${name}-${id}`
-      .toLowerCase()
-      .replace(/ /g, "-");
+  const updateWindowQuery = ({ id, name }) => {
+    var newurl =
+      window.location.protocol +
+      "//" +
+      window.location.host +
+      window.location.pathname +
+      "?" +
+      new URLSearchParams(`variant=${name.toLowerCase()}--${id}`).toString();
+    window.history.replaceState({}, document.title, newurl);
   };
 
-  const renderRelatedProductsList = (
-    { products = [], total = 0 },
-    tooltipTextPath
-  ) => {
-    const productRows = chunk(products, products.length > 8 ? 2 : 1);
-    const {
-      brand: { name: brandName } = {},
-      productLine: { name: productLineName } = {},
-    } = product;
+  const clickSwatch = (swatchProduct) => {
+    if (swatchProduct.id !== product.id) {
+      setActiveProduct(swatchProduct.id, productLine);
+      updateWindowQuery(swatchProduct);
+    }
+  };
+
+  const renderFamilyProductsList = () => {
     return (
-      <ul className="swatches">
-        {productRows.map((productRow, index) => (
-          <div className="swatch-row" key={index}>
-            {productRow.map(({ id, image = {}, ...relProduct }) => {
-              const classNames = {
-                swatch: true,
-                selected: product.id === id,
-              };
-              const href =
-                id !== product.id && slugifyProductName({ id, ...relProduct });
-              return (
-                <Tooltip
-                  placement="top"
-                  content={_.get(relProduct, tooltipTextPath)}
-                  key={id}
-                >
-                  <li className={dynamicClassNames(classNames)}>
-                    {href ? (
-                      <a href={`/products/${href}`}>
-                        <img
-                          className="swatch-image"
-                          src={image.link}
-                          alt={image.name}
-                        />
-                      </a>
-                    ) : (
-                      <img
-                        className="swatch-image"
-                        src={image.link}
-                        alt={image.name}
-                      />
-                    )}
-                  </li>
-                </Tooltip>
-              );
-            })}
-          </div>
-        ))}
-        {total > products.length ? (
-          <li className="see-more">
-            <a
-              href={`/search?brands=${brandName}&product-lines=${productLineName}`}
-            >
-              See More
-            </a>
-          </li>
-        ) : (
-          ""
-        )}
-      </ul>
+      <SwatchCarousel
+        clickSwatch={clickSwatch}
+        pageProductId={product.id}
+        pageSize={siblingPageSize}
+        products={familyProducts}
+      />
     );
   };
 
   const renderContent = () => {
     const {
-      name: productName,
+      name: productLineName,
       brand = {},
-      image = {},
-      listings,
-      productLine = {},
-      tags = [],
-    } = product;
+      images: [defaultImage = {}] = [],
+    } = productLine;
+    const { name, images: [image = {}] = [], listings, tags = [] } = product;
 
     return (
       <div className="product-page-content">
         <div className="product-info">
-          <img className="product-image" alt={image.name} src={image.link} />
+          <img
+            className="product-image"
+            alt={image.name || productLineName}
+            src={image.url || defaultImage.url}
+          />
           <div className="info-section">
             <a
               className="product-attribute product-brand"
-              href={`/search?brands=${brand.name}`}
+              href={`/brands/${brand.name}-${brand.id}`}
             >
               {brand.name}
             </a>
             <p className="product-attribute product-name">{productLine.name}</p>
-            <div className="product-tags">
-              {tags.map((tag, idx) => (
-                <span className="product-tag" key={idx}>
-                  <a
-                    className="product-tag-link"
-                    href={`/search?tags=${tag.name}`}
-                  >
-                    {tag.name.replace(/ /g, "\u00a0")}
-                  </a>
-                </span>
-              ))}
-            </div>
             <hr />
             <div className="related-products-section">
-              <p className="product-color">
-                Pattern: <span className="bold">{productName}</span>
-              </p>
-              {renderRelatedProductsList(siblingProducts, "name")}
-            </div>
-            {cousinProducts.total ? (
-              <div className="related-products-section">
-                <p className="section-heading">
-                  Other Products in this Pattern
+              {Object.keys(product).length ? (
+                <p className="product-pattern">
+                  Pattern: <span className="bold">{name}</span>
                 </p>
-                {renderRelatedProductsList(cousinProducts, "productLine.name")}
-              </div>
-            ) : (
-              ""
-            )}
+              ) : (
+                ""
+              )}
+              {renderFamilyProductsList(familyProducts, "name")}
+            </div>
           </div>
         </div>
-        <div>
-          <h3 className="section-header listings-header">Product Listings</h3>
-          <div className="container listings">
-            {_.sortBy(listings, "price").map(
-              ({ currency, link, price, company, ...listing }) => {
-                const title =
-                  company.name || (link.match(/\w*\.com/g) || [])[0];
+        <Listings productLine={productLine} product={product} />
+        <hr />
+        {cousinProducts.length ? (
+          <div className="cousin-products-section">
+            <h3>Other Products in this Pattern</h3>
+            <ul className="cousin-products">
+              {_.sortBy(cousinProducts, "displayOrder").map((relProduct) => {
+                const {
+                  id,
+                  name,
+                  productLineData,
+                  images: [image = {}] = [],
+                } = relProduct;
                 return (
-                  <a className="listing listing-link" href={link}>
-                    <div className="listing-title listing-prop">
-                      <img
-                        className="company-icon"
-                        src={`https://storage.cloud.google.com/fluffy-butts/Favicons/${
-                          company.name || "default"
-                        }.png`}
-                      />
-                      {title}
-                    </div>
-                    <div className="listing-price listing-prop">
-                      {formatMoney(currency, parseFloat(price))}
-                    </div>
-                  </a>
+                  <Tooltip
+                    placement="top"
+                    content={productLineData.name.replace(/-/g, "\u2011")}
+                    key={id}
+                  >
+                    <li className="cousin-product">
+                      <a
+                        href={`${productLineData.name.replace(/ /g, "+")}--${
+                          productLineData.id
+                        }?variant=${name
+                          .toLowerCase()
+                          .replace(/ /g, "+")}--${id}`}
+                      >
+                        <img
+                          className="cousin-product-image"
+                          src={image.link}
+                          alt={image.name}
+                        />
+                      </a>
+                    </li>
+                  </Tooltip>
                 );
-              }
-            )}
+              })}
+            </ul>
           </div>
-        </div>
+        ) : (
+          ""
+        )}
       </div>
     );
   };

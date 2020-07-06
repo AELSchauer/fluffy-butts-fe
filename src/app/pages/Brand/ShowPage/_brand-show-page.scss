@@ -1,0 +1,120 @@
+@import "../../../../scss/styles.scss";
+
+.brand-show-page {
+  display: flex;
+
+  .loading {
+    text-align: center;
+    margin: 20px;
+
+    div {
+      background-color: $green;
+    }
+  }
+
+  .product-grid,
+  .product-line-grid {
+    &-heading {
+      font-size: 2rem;
+      text-align: center;
+    }
+  }
+
+  .product-grid {
+    .product-container {
+      width: 33.3%;
+
+      .product-heading {
+        font-size: 1.5rem;
+      }
+
+      @include media-breakpoint-down(md) {
+        width: 50%;
+      }
+
+      @include media-breakpoint-down(sm) {
+        width: 100%;
+      }
+    }
+  }
+
+  .product-line-grid {
+    .product-container {
+      width: 25%;
+
+      .product-heading {
+        font-size: 1.25rem;
+        margin-bottom: 0.3rem;
+        text-align: center;
+      }
+
+      @include media-breakpoint-down(md) {
+        width: 50%;
+      }
+
+      @include media-breakpoint-down(sm) {
+        width: 100%;
+      }
+    }
+  }
+
+  .products-list {
+    padding: 0px;
+  }
+
+  .product-row {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    justify-content: center;
+    padding: 20px;
+
+    .product-container {
+      list-style: none;
+
+      .product {
+        align-items: center;
+        color: black;
+        display: flex;
+        flex-direction: column;
+        padding: 10px;
+
+        &:hover {
+          text-decoration: none;
+        }
+
+        .product-image {
+          width: 66.7%;
+        }
+
+        .product-attribute {
+          margin: 0;
+        }
+
+        .product-tags {
+          text-align: center;
+
+          .product-tag {
+            font-size: 0.9rem;
+
+            + .product-tag::before {
+              content: ", ";
+            }
+
+            .product-tag-link {
+              color: black;
+              border-bottom-color: black;
+              border-bottom-style: dotted;
+              border-bottom-width: 1px;
+              text-decoration: none;
+
+              &:hover {
+                background-color: $light-green;
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}
