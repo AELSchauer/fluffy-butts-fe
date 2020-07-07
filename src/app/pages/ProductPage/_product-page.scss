@@ -23,11 +23,12 @@
     .product-image {
       max-height: 500px;
     }
-
+    
     .info-section {
       display: flex;
       flex-direction: column;
       text-align: center;
+      width: 50%;
 
       .product-attribute {
         font-size: 2.5rem;
@@ -134,6 +135,32 @@
           font-weight: bold;
         }
       }
+
+      .product-details {
+        margin: 20px 50px 0px;
+
+        .card {
+          margin: 0;
+        }
+
+        .card-header {
+          font-size: large;
+        }
+
+        .sizing-name {
+          font-size: larger;
+          font-weight: 500;
+        }
+
+        .sizing-options {
+          display: flex;
+          justify-content: center;
+
+          .sizing-option {
+            width: 33.3%;
+          }
+        }
+      }
     }
   }
 
@@ -178,7 +205,8 @@
     padding: 0;
     font-family: Roboto;
 
-    .listing-link {
+    .listing-link,
+    .listing-header {
       color: black;
       display: flex;
       border: solid transparent 1px;
@@ -213,6 +241,12 @@
       height: 20px;
       width: 20px;
       margin-right: 8px;
+    }
+
+    .shipping-policy {
+      p {
+        margin: 0;
+      }
     }
   }
 }

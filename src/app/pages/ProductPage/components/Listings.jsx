@@ -25,7 +25,7 @@ const Listings = ({
     const { data: { country_name: userCountry, currency: userCurrency } = {} } =
       (await axios.get("https://ipapi.co/json/")) || {};
     const availableListings = propListings.filter(
-      ({ retailer: { shipsTo = [] } }) =>
+      ({ retailer: { shipping: { shipsTo = [] } = {} } }) =>
         shipsTo.map(({ country }) => country).includes(userCountry)
     );
 
@@ -72,8 +72,8 @@ const Listings = ({
     retailer,
     sizes: [{ url: sizeUrl } = {}] = [],
   }) => {
-    const title = retailer.name || (url.match(/\w*\.com/g) || [])[0];
     const url = sizeUrl || productUrl;
+    const title = retailer.name || (url.match(/\w*\.com/g) || [])[0];
     return (
       <a className="listing listing-link" href={url} target="_blank" key={id}>
         <div className="listing-title listing-prop">
@@ -98,22 +98,83 @@ const Listings = ({
     );
   };
 
-  const buildMutliSizeRow = (listing) => JSON.stringify(listing);
+  const buildMutliSizeRow = ({
+    id,
+    currency,
+    url,
+    price,
+    calculated,
+    retailer,
+    sizes = [],
+  }) => {
+    const title = retailer.name || (url.match(/\w*\.com/g) || [])[0];
+    return (
+      <div className="listing">
+        <div className="listing-header">
+          <div
+            className="listing-title listing-prop"
+            data-toggle="collapse"
+            data-target={`#collapse-${id}`}
+            aria-expanded="true"
+            aria-controls={`collapse-${id}`}
+          >
+            <img
+              className="retailer-icon"
+              src={`https://fluffy-butts-product-images.s3.us-east-2.amazonaws.com/Favicons/${
+                retailer.name.replace(/ /g, "+") || "default"
+              }.png`}
+            />
+            {title}
+          </div>
+          <div className="listing-price listing-prop">
+            <span className="listing-currency">
+              {currencySymbols[currency]}
+            </span>
+            {price}
+            {calculated ? (
+              <span className="listing-price-is-calculated">*</span>
+            ) : (
+              ""
+            )}
+          </div>
+        </div>
+        <div
+          id={`collapse-${id}`}
+          className="collapse listing-more-info"
+          data-parent="#listings-accordion"
+        >
+          <div className="sizes-available">
+            <div>Sizes available:</div>
+            <ul>
+              {sizes.map(({ name, url }, index) => (
+                <li key={index}>
+                  <a href={url}>{name}</a>
+                </li>
+              ))}
+            </ul>
+          </div>
+          <div
+            className="shipping-policy"
+            dangerouslySetInnerHTML={{ __html: retailer.shipping.policy }}
+          />
+        </div>
+      </div>
+    );
+  };
 
   const renderContent = () => {
     return (
       <React.Fragment>
         <h3 className="section-header listings-header">Product Listings</h3>
         {name ? (
-          <div className="container listings">
-            {listings.map((listing) => {
-              const useSingleRow =
-                !listing.sizes ||
-                listing.sizes.length < 2 ||
-                listing.sizes.every(({ url }) => url === listing.url);
+          <div className="accordion container listings" id="listings-accordion">
+            {listings.map(({ sizes = [], ...listing } = {}) => {
+              const useSingleRow = sizes.every(
+                ({ name } = {}) => name === "one size"
+              );
               return useSingleRow
-                ? buildSingleSizeRow(listing)
-                : buildMutliSizeRow(listing);
+                ? buildSingleSizeRow({ ...listing, sizes })
+                : buildMutliSizeRow({ ...listing, sizes });
             })}
           </div>
         ) : (

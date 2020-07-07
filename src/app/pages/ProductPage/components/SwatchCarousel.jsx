@@ -12,10 +12,9 @@ const ProductPage = ({
   pageProductId,
   products = [],
 }) => {
-  const productIndex =
-    products.findIndex(({ id }) => id === pageProductId) || 0;
+  const productIndex = products.findIndex(({ id }) => id === pageProductId);
   const [displayPage, setDisplayPage] = useState(
-    Math.ceil((productIndex + 1) / pageSize)
+    Math.ceil((productIndex >= 0 ? productIndex + 1 : 1) / pageSize)
   );
   const maxDisplayPage = Math.ceil(products.length / pageSize);
   const start = (displayPage - 1) * pageSize;

@@ -22,8 +22,11 @@ const ProductPage = (props) => {
     const { products = [] } = productLine;
     const product = products.find(({ id }) => id === productId) || 0;
     const { pattern: { products: cousins = [] } = {} } = product;
+    console.log(cousins);
     setProduct(product);
-    setCousinProducts(cousins.filter(({ id }) => product.id !== id));
+    setCousinProducts(
+      cousins.filter(({ id, available }) => product.id !== id && available)
+    );
     setFamilyProducts(products);
   };
 
@@ -109,9 +112,29 @@ const ProductPage = (props) => {
     );
   };
 
+  const conversion = {
+    kg: {
+      lb: 2.20462,
+    },
+    lb: {
+      kb: 0.45359,
+    },
+  };
+
+  const buildSizing = (sizes, unit = "kg") => {
+    if (!sizes.length) {
+      return false;
+    }
+    const num =
+      (sizes.find((x) => x.unit === unit) || {}).num ||
+      sizes[0].num * conversion[sizes[0].unit][unit];
+    return `${num}${unit}`;
+  };
+
   const renderContent = () => {
     const {
       name: productLineName,
+      details: { materials = "", sizing = {} } = {},
       brand = {},
       images: [defaultImage = {}] = [],
     } = productLine;
@@ -120,19 +143,25 @@ const ProductPage = (props) => {
     return (
       <div className="product-page-content">
         <div className="product-info">
-          <img
-            className="product-image"
-            alt={image.name || productLineName}
-            src={image.url || defaultImage.url}
-          />
+          <div className="image-section">
+            <img
+              className="product-image"
+              alt={image.name || productLineName}
+              src={image.url || defaultImage.url}
+            />
+          </div>
           <div className="info-section">
-            <a
-              className="product-attribute product-brand"
-              href={`/brands/${brand.name}-${brand.id}`}
-            >
-              {brand.name}
-            </a>
-            <p className="product-attribute product-name">{productLine.name}</p>
+            <div className="product-attributes">
+              <a
+                className="product-attribute product-brand"
+                href={`/brands/${brand.name}-${brand.id}`}
+              >
+                {brand.name}
+              </a>
+              <p className="product-attribute product-name">
+                {productLine.name}
+              </p>
+            </div>
             <hr />
             <div className="related-products-section">
               {Object.keys(product).length ? (
@@ -143,6 +172,69 @@ const ProductPage = (props) => {
                 ""
               )}
               {renderFamilyProductsList(familyProducts, "name")}
+            </div>
+            <div className="product-details">
+              <div class="accordion" id="product-details-accordion">
+                <div
+                  class="card"
+                  data-toggle="collapse"
+                  data-target={`#collapse-sizing`}
+                  aria-expanded="true"
+                  aria-controls={`collapse-sizing`}
+                >
+                  <div class="card-header" id={`heading-sizing`}>
+                    <p class="mb-0">Sizing</p>
+                  </div>
+                  <div
+                    id={`collapse-sizing`}
+                    class="collapse"
+                    aria-labelledby={`heading-sizing`}
+                    data-parent="#product-details-accordion"
+                  >
+                    <div class="card-body sizing-options">
+                      {sizing.map(({ name, min, max }) => {
+                        const title = name[0].toUpperCase() + name.slice(1);
+                        return (
+                          <div className="sizing-option">
+                            <div className="sizing-name">{title}</div>
+                            {["kg", "lb"].map((unit, idx) => {
+                              const maxWt = buildSizing(max, unit);
+                              const minWt = buildSizing(min, unit);
+                              return (
+                                <div className={`sizing - ${idx + 1}`}>
+                                  {minWt}
+                                  {maxWt ? `-${maxWt}` : "+"}
+                                </div>
+                              );
+                            })}
+                          </div>
+                        );
+                      })}
+                    </div>
+                  </div>
+                </div>
+                <div
+                  class="card"
+                  data-toggle="collapse"
+                  data-target={`#collapse-materials`}
+                  aria-expanded="true"
+                  aria-controls={`collapse-materials`}
+                >
+                  <div class="card-header" id={`heading-materials`}>
+                    <p class="mb-0">Materials</p>
+                  </div>
+                  <div
+                    id={`collapse-materials`}
+                    class="collapse"
+                    aria-labelledby={`heading-materials`}
+                    data-parent="#product-details-accordion"
+                  >
+                    <div class="card-body materials-description">
+                      {materials}
+                    </div>
+                  </div>
+                </div>
+              </div>
             </div>
           </div>
         </div>
@@ -175,7 +267,7 @@ const ProductPage = (props) => {
                       >
                         <img
                           className="cousin-product-image"
-                          src={image.link}
+                          src={image.url}
                           alt={image.name}
                         />
                       </a>
