@@ -44,7 +44,7 @@ const ProductLinesGrid = ({ brand: { productLines = [], ...brand } }) => {
                           <span key={tag.id} className="product-tag">
                             <a
                               className="product-tag-link"
-                              href={`search?tags=${encodeURIComponent(
+                              href={`browse?tags=${encodeURIComponent(
                                 tag.name
                               )}&page=1`}
                             >

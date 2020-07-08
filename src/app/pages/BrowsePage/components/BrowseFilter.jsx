@@ -1,8 +1,8 @@
 import React, { Component } from "react";
 import { toPascalCase } from "../../../utils/case-helper";
-import "../_search-page.scss";
+import "../_browse-page.scss";
 
-class SearchFilter extends Component {
+class BrowseFilter extends Component {
   constructor(props) {
     super(props);
     this.state = {
@@ -39,7 +39,7 @@ class SearchFilter extends Component {
     filterTags.length
       ? newQuery.set("tags", filterTags)
       : newQuery.delete("tags");
-    return `/search?${newQuery.toString()}`;
+    return `/browse?${newQuery.toString()}`;
   }
 
   getSubmissionButtons() {
@@ -49,11 +49,11 @@ class SearchFilter extends Component {
           className="submission-button btn btn-secondary"
           href={this.getLinkWithQuery()}
         >
-          Search
+          Filter
         </a>
         <a
           className="submission-button btn btn-secondary"
-          href="/search?page=1"
+          href="/browse?page=1"
         >
           Reset
         </a>
@@ -63,7 +63,7 @@ class SearchFilter extends Component {
 
   render() {
     return (
-      <div className="search-bar">
+      <div className="browse-bar">
         {this.getSubmissionButtons()}
         <div className="category-group" key="brands">
           <h5
@@ -155,4 +155,4 @@ class SearchFilter extends Component {
   }
 }
 
-export default SearchFilter;
+export default BrowseFilter;

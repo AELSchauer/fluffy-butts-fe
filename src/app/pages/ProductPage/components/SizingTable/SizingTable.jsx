@@ -82,9 +82,9 @@ const ProductPage = ({ sizing }) => {
     name,
     weight: { min = [], max = [] } = {},
     dimensions,
-  }) => {
+  }, idx) => {
     return (
-      <tr>
+      <tr key={idx}>
         {tableHasName ? <td>{name}</td> : ""}
         {tableHasWeight
           ? ["kg", "lb"].map((unit) => {

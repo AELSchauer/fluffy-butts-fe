@@ -1,6 +1,6 @@
 @import "../../../scss/styles.scss";
 
-.search-page {
+.browse-page {
   display: flex;
 
   .loading {
@@ -12,7 +12,7 @@
     }
   }
 
-  .search-display {
+  .browse-display {
     width: 75%;
 
     @include media-breakpoint-down(md) {
@@ -159,7 +159,7 @@
     }
   }
 
-  .search-filter {
+  .browse-filter {
     padding: 10px;
     text-align: left;
     width: 25%;
@@ -170,7 +170,7 @@
   }
 }
 
-.search-bar {
+.browse-bar {
   .category-group {
     padding: 10px 0px;
   }

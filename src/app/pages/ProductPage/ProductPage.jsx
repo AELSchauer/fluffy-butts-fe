@@ -165,7 +165,7 @@ const ProductPage = (props) => {
             </div>
             {sizing.length || materials ? (
               <div className="product-details">
-                <div class="accordion" id="product-details-accordion">
+                <div className="accordion" id="product-details-accordion">
                   {sizing ? (
                     <div
                       data-toggle="collapse"
@@ -173,16 +173,16 @@ const ProductPage = (props) => {
                       aria-expanded="true"
                       aria-controls={`collapse-sizing`}
                     >
-                      <div class="product-details-header" id={`heading-sizing`}>
-                        <p class="product-details-title">Sizing</p>
+                      <div className="product-details-header" id={`heading-sizing`}>
+                        <p className="product-details-title">Sizing</p>
                       </div>
                       <div
                         id={`collapse-sizing`}
-                        class="collapse"
+                        className="collapse"
                         aria-labelledby={`heading-sizing`}
                         data-parent="#product-details-accordion"
                       >
-                        <div class="product-details-body sizing-body">
+                        <div className="product-details-body sizing-body">
                           <SizingTable sizing={sizing}/>
                         </div>
                       </div>
@@ -197,17 +197,17 @@ const ProductPage = (props) => {
                       aria-expanded="true"
                       aria-controls={`collapse-materials`}
                     >
-                      <div class="product-details-header" id={`heading-materials`}>
-                        <p class="product-details-title">Materials</p>
+                      <div className="product-details-header" id={`heading-materials`}>
+                        <p className="product-details-title">Materials</p>
                       </div>
                       <div
                         id={`collapse-materials`}
-                        class="collapse"
+                        className="collapse"
                         aria-labelledby={`heading-materials`}
                         data-parent="#product-details-accordion"
                       >
                         <div
-                          class="product-details-body materials-body"
+                          className="product-details-body materials-body"
                           dangerouslySetInnerHTML={{
                             __html: materials,
                           }}

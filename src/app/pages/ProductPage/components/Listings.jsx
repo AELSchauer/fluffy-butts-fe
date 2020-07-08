@@ -17,37 +17,64 @@ const Listings = ({
     images: [defaultImage = {}] = [],
   },
 }) => {
+  const [isCurrencyConverted, setIsCurrencyConverted] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const [listings, setListings] = useState(_.sortBy(propListings, "price"));
 
   const formatListings = async () => {
     // This call will get blocked by AdBlocker, so create a pop-up
-    const { data: { country_name: userCountry, currency: userCurrency } = {} } =
-      (await axios.get("https://ipapi.co/json/")) || {};
-    const availableListings = propListings.filter(
-      ({ retailer: { shipping: { shipsTo = [] } = {} } }) =>
-        shipsTo.map(({ country }) => country).includes(userCountry)
-    );
-
     let formattedListings = [];
-    if (!availableListings.some(({ currency }) => currency !== userCurrency)) {
-      formattedListings = availableListings;
-    } else {
-      const { data: { rates = {} } = {} } =
-        (await axios.get(
-          `https://api.exchangeratesapi.io/latest?base=${userCurrency}`
-        )) || {};
+    try {
+      const {
+        data: { country_name: userCountry, currency: userCurrency } = {},
+      } = (await axios.get("https://ipapi.co/json/")) || {};
 
-      formattedListings = availableListings.map((listing) => {
-        return {
+      const availableListings = _.chain(propListings)
+        .filter(({ retailer: { shipping: { shipsTo = [] } = {} } }) =>
+          shipsTo.map(({ country }) => country).includes(userCountry)
+        )
+        .groupBy("retailer.name")
+        .values()
+        .reduce(
+          (availableListings, listings) =>
+            availableListings.concat(
+              listings.find(({ currency }) => currency === userCurrency) ||
+                listings[0]
+            ),
+          []
+        )
+        .value();
+
+      if (
+        !availableListings.some(({ currency }) => currency !== userCurrency)
+      ) {
+        formattedListings = availableListings.map(({ price, ...listing }) => ({
           ...listing,
-          calculated: listing.currency !== userCurrency && listing.currency,
-          currency: userCurrency,
-          price: (parseFloat(listing.price) / rates[listing.currency]).toFixed(
-            2
-          ),
-        };
-      });
+          price: parseFloat(price).toFixed(2),
+        }));
+      } else {
+        const { data: { rates = {} } = {} } =
+          (await axios.get(
+            `https://api.exchangeratesapi.io/latest?base=${userCurrency}`
+          )) || {};
+
+        formattedListings = availableListings.map((listing) => {
+          return {
+            ...listing,
+            calculated: listing.currency !== userCurrency && listing.currency,
+            currency: userCurrency,
+            price: (
+              parseFloat(listing.price) / rates[listing.currency]
+            ).toFixed(2),
+          };
+        });
+      }
+      setIsCurrencyConverted(true);
+    } catch (err) {
+      formattedListings = propListings.map(({ price, ...listing }) => ({
+        ...listing,
+        price: parseFloat(price).toFixed(2),
+      }));
     }
 
     setListings(_.sortBy(formattedListings, "price"));
@@ -59,8 +86,14 @@ const Listings = ({
   }, [product]);
 
   const currencySymbols = {
-    CAD: "$",
-    USD: "$",
+    CAD: {
+      short: "$",
+      long: "CA$",
+    },
+    USD: {
+      short: "$",
+      long: "US$",
+    },
   };
 
   const buildSingleSizeRow = ({
@@ -80,13 +113,17 @@ const Listings = ({
           <img
             className="retailer-icon"
             src={`https://fluffy-butts-product-images.s3.us-east-2.amazonaws.com/Favicons/${
-              retailer.name.replace(/ /g, "+") || "default"
+              retailer.name.replace(/ /g, "+").replace(/'/g, "") || "default"
             }.png`}
           />
           {title}
         </div>
         <div className="listing-price listing-prop">
-          <span className="listing-currency">{currencySymbols[currency]}</span>
+          <span className="listing-currency">
+            {isCurrencyConverted
+              ? currencySymbols[currency].short
+              : currencySymbols[currency].long}
+          </span>
           {price}
           {calculated ? (
             <span className="listing-price-is-calculated">*</span>
@@ -109,7 +146,7 @@ const Listings = ({
   }) => {
     const title = retailer.name || (url.match(/\w*\.com/g) || [])[0];
     return (
-      <div className="listing">
+      <div className="listing" key={id}>
         <div
           className="listing-header"
           data-toggle="collapse"
@@ -121,14 +158,16 @@ const Listings = ({
             <img
               className="retailer-icon"
               src={`https://fluffy-butts-product-images.s3.us-east-2.amazonaws.com/Favicons/${
-                retailer.name.replace(/ /g, "+") || "default"
+                retailer.name.replace(/ /g, "+").replace(/'/g, "") || "default"
               }.png`}
             />
             {title}
           </div>
           <div className="listing-price listing-prop">
             <span className="listing-currency">
-              {currencySymbols[currency]}
+              {isCurrencyConverted
+                ? currencySymbols[currency].short
+                : currencySymbols[currency].long}
             </span>
             {price}
             {calculated ? (
@@ -148,7 +187,9 @@ const Listings = ({
             <ul>
               {sizes.map(({ name, url }, index) => (
                 <li key={index}>
-                  <a href={url}>{name}</a>
+                  <a href={url} target="_blank">
+                    {name}
+                  </a>
                 </li>
               ))}
             </ul>
@@ -166,7 +207,7 @@ const Listings = ({
     return (
       <React.Fragment>
         <h3 className="section-header listings-header">Product Listings</h3>
-        {name ? (
+        {name && listings.length ? (
           <div className="accordion container listings" id="listings-accordion">
             {listings.map(({ sizes = [], ...listing } = {}) => {
               const useSingleRow = sizes.every(
@@ -176,7 +217,21 @@ const Listings = ({
                 ? buildSingleSizeRow({ ...listing, sizes })
                 : buildMutliSizeRow({ ...listing, sizes });
             })}
+            {listings.some(({ calculated }) => calculated) ? (
+              <p className="exchange-rate-note">
+                Prices with an asterisk (*) have been converted according to
+                current exchange rates, and do not reflect any additional
+                duties, taxes, and/or fees.
+              </p>
+            ) : (
+              ""
+            )}
           </div>
+        ) : window.location.search.includes("variant=") ? (
+          <p className="notification">
+            Aw, shucks! It looks like this pattern isn't available in your
+            country.
+          </p>
         ) : (
           <p className="notification">
             Select a pattern option above to see listings.
@@ -188,7 +243,7 @@ const Listings = ({
 
   return (
     <div className="listings-section">
-      {isLoading ? "Heyyyyy" : renderContent()}
+      {isLoading ? "Loading..." : renderContent()}
     </div>
   );
 };

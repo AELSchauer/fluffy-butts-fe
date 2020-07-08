@@ -1,5 +1,5 @@
 import React from "react";
-import "../_search-page.scss";
+import "../_browse-page.scss";
 
 const ProductGrid = ({ headingText, products = [] }) => {
   const slugifyProductName = ({
@@ -55,7 +55,7 @@ const ProductGrid = ({ headingText, products = [] }) => {
                     <span key={tag.id} className="product-tag">
                       <a
                         className="product-tag-link"
-                        href={`search?tags=${encodeURIComponent(
+                        href={`browse?tags=${encodeURIComponent(
                           tag.name
                         )}&page=1`}
                       >

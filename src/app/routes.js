@@ -1,7 +1,7 @@
 import BrandIndexPage from "./pages/Brand/IndexPage";
 import BrandShowPage from "./pages/Brand/ShowPage";
 import HomePage from "./pages/HomePage";
-import SearchPage from "./pages/SearchPage";
+import BrowsePage from "./pages/BrowsePage";
 import ProductPage from "./pages/ProductPage";
 
 export default [
@@ -30,10 +30,10 @@ export default [
     component: BrandIndexPage,
   },
   {
-    path: "/search",
-    title: "Search",
+    path: "/browse",
+    title: "Browse",
     includeInNavBar: true,
-    component: SearchPage,
+    component: BrowsePage,
   },
   {
     path: "/",

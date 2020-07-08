@@ -4,11 +4,11 @@ import Ellipsis from "@bit/joshk.react-spinners-css.ellipsis";
 import _ from "lodash";
 import Pagination from "../../components/Pagination";
 import ProductGrid from "./components/ProductGrid";
-import SearchFilter from "./components/SearchFilter";
+import BrowseFilter from "./components/BrowseFilter";
 import { useQuery } from "../../utils/query-params";
-import "./_search-page.scss";
+import "./_browse-page.scss";
 
-const SearchPage = () => {
+const BrowsePage = () => {
   const query = useQuery();
   const [currentPage] = useState(parseInt(query.get("page") || 1));
   const [hasError, setHasError] = useState(false);
@@ -113,10 +113,10 @@ const SearchPage = () => {
     return products.length ? (
       <Pagination
         currentPage={currentPage}
-        description="Search page pagination"
+        description="Browse page pagination"
         maxPages={maxPages}
         query={query}
-        url="/search"
+        url="/browse"
       />
     ) : (
       ""
@@ -155,7 +155,7 @@ const SearchPage = () => {
                 <span>{tagName}</span>
                 <a
                   className="close-active-tag"
-                  href={`/search?${getUpdatedHref(categoryName, tagName)}`}
+                  href={`/browse?${getUpdatedHref(categoryName, tagName)}`}
                 >
                   <i className="fas fa-times" />
                 </a>
@@ -197,7 +197,7 @@ const SearchPage = () => {
                 >
                   <i className="fas fa-times" />
                 </button>
-                <SearchFilter
+                <BrowseFilter
                   brands={brands}
                   categories={categories}
                   query={query}
@@ -211,19 +211,19 @@ const SearchPage = () => {
   };
 
   return (
-    <section className="search-page page">
+    <section className="browse-page page">
       {isLoading ? (
         <Ellipsis className="loading" color="#42b983" />
       ) : (
         <React.Fragment>
-          <div className="search-filter">
-            <SearchFilter
+          <div className="browse-filter">
+            <BrowseFilter
               brands={brands}
               categories={categories}
               query={query}
             />
           </div>
-          <div className="search-display">
+          <div className="browse-display">
             {renderFilterModal()}
             {renderPagination()}
             {renderActiveTags()}
@@ -246,4 +246,4 @@ const SearchPage = () => {
   );
 };
 
-export default SearchPage;
+export default BrowsePage;
