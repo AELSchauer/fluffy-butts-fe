@@ -1,5 +1,5 @@
 import React, { Component } from "react";
-import { camelToPascalCase } from "../../../utils/case-helper";
+import { toPascalCase } from "../../../utils/case-helper";
 import "../_search-page.scss";
 
 class SearchFilter extends Component {
@@ -14,12 +14,12 @@ class SearchFilter extends Component {
   }
 
   isParamActive(categoryName, paramName) {
-    const filterName = `filter${camelToPascalCase(categoryName)}`;
+    const filterName = `filter${toPascalCase(categoryName)}`;
     return (this.state[filterName] || []).includes(paramName);
   }
 
   toggleParam(categoryName, paramName) {
-    const filterName = `filter${camelToPascalCase(categoryName)}`;
+    const filterName = `filter${toPascalCase(categoryName)}`;
     const filterTemp = this.state[filterName] || [];
     const idx = filterTemp.indexOf(paramName);
     idx < 0 ? filterTemp.push(paramName) : filterTemp.splice(idx, 1);

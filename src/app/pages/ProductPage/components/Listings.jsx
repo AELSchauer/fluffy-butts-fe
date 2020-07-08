@@ -110,14 +110,14 @@ const Listings = ({
     const title = retailer.name || (url.match(/\w*\.com/g) || [])[0];
     return (
       <div className="listing">
-        <div className="listing-header">
-          <div
-            className="listing-title listing-prop"
-            data-toggle="collapse"
-            data-target={`#collapse-${id}`}
-            aria-expanded="true"
-            aria-controls={`collapse-${id}`}
-          >
+        <div
+          className="listing-header"
+          data-toggle="collapse"
+          data-target={`#collapse-${id}`}
+          aria-expanded="true"
+          aria-controls={`collapse-${id}`}
+        >
+          <div className="listing-title listing-prop">
             <img
               className="retailer-icon"
               src={`https://fluffy-butts-product-images.s3.us-east-2.amazonaws.com/Favicons/${

@@ -5,6 +5,7 @@ import Tooltip from "../../components/Tooltip";
 import Ellipsis from "@bit/joshk.react-spinners-css.ellipsis";
 import { useQuery } from "../../utils/query-params";
 import Listings from "./components/Listings";
+import SizingTable from "./components/SizingTable/SizingTable";
 import SwatchCarousel from "./components/SwatchCarousel";
 import "./_product-page.scss";
 
@@ -22,7 +23,6 @@ const ProductPage = (props) => {
     const { products = [] } = productLine;
     const product = products.find(({ id }) => id === productId) || 0;
     const { pattern: { products: cousins = [] } = {} } = product;
-    console.log(cousins);
     setProduct(product);
     setCousinProducts(
       cousins.filter(({ id, available }) => product.id !== id && available)
@@ -44,6 +44,7 @@ const ProductPage = (props) => {
         method: "get",
         url: `/products`,
         params: {
+          "page[size]": 500,
           "filter[product-line]": productLineId,
           "filter[available]": true,
           include: [
@@ -63,7 +64,6 @@ const ProductPage = (props) => {
           { data: { data: productsData = {} } = {} } = {},
         ] = []) => {
           data.products = productsData;
-          console.log(data);
           setProductLine(data);
           if (/\d+$/.test(query.get("variant"))) {
             setActiveProduct(query.get("variant").match(/\d+$/)[0], data);
@@ -121,20 +121,10 @@ const ProductPage = (props) => {
     },
   };
 
-  const buildSizing = (sizes, unit = "kg") => {
-    if (!sizes.length) {
-      return false;
-    }
-    const num =
-      (sizes.find((x) => x.unit === unit) || {}).num ||
-      sizes[0].num * conversion[sizes[0].unit][unit];
-    return `${num}${unit}`;
-  };
-
   const renderContent = () => {
     const {
       name: productLineName,
-      details: { materials = "", sizing = {} } = {},
+      details: { materials = "", sizing = [] } = {},
       brand = {},
       images: [defaultImage = {}] = [],
     } = productLine;
@@ -173,110 +163,108 @@ const ProductPage = (props) => {
               )}
               {renderFamilyProductsList(familyProducts, "name")}
             </div>
-            <div className="product-details">
-              <div class="accordion" id="product-details-accordion">
-                <div
-                  class="card"
-                  data-toggle="collapse"
-                  data-target={`#collapse-sizing`}
-                  aria-expanded="true"
-                  aria-controls={`collapse-sizing`}
-                >
-                  <div class="card-header" id={`heading-sizing`}>
-                    <p class="mb-0">Sizing</p>
-                  </div>
-                  <div
-                    id={`collapse-sizing`}
-                    class="collapse"
-                    aria-labelledby={`heading-sizing`}
-                    data-parent="#product-details-accordion"
-                  >
-                    <div class="card-body sizing-options">
-                      {sizing.map(({ name, min, max }) => {
-                        const title = name[0].toUpperCase() + name.slice(1);
-                        return (
-                          <div className="sizing-option">
-                            <div className="sizing-name">{title}</div>
-                            {["kg", "lb"].map((unit, idx) => {
-                              const maxWt = buildSizing(max, unit);
-                              const minWt = buildSizing(min, unit);
-                              return (
-                                <div className={`sizing - ${idx + 1}`}>
-                                  {minWt}
-                                  {maxWt ? `-${maxWt}` : "+"}
-                                </div>
-                              );
-                            })}
-                          </div>
-                        );
-                      })}
+            {sizing.length || materials ? (
+              <div className="product-details">
+                <div class="accordion" id="product-details-accordion">
+                  {sizing ? (
+                    <div
+                      data-toggle="collapse"
+                      data-target={`#collapse-sizing`}
+                      aria-expanded="true"
+                      aria-controls={`collapse-sizing`}
+                    >
+                      <div class="product-details-header" id={`heading-sizing`}>
+                        <p class="product-details-title">Sizing</p>
+                      </div>
+                      <div
+                        id={`collapse-sizing`}
+                        class="collapse"
+                        aria-labelledby={`heading-sizing`}
+                        data-parent="#product-details-accordion"
+                      >
+                        <div class="product-details-body sizing-body">
+                          <SizingTable sizing={sizing}/>
+                        </div>
+                      </div>
                     </div>
-                  </div>
-                </div>
-                <div
-                  class="card"
-                  data-toggle="collapse"
-                  data-target={`#collapse-materials`}
-                  aria-expanded="true"
-                  aria-controls={`collapse-materials`}
-                >
-                  <div class="card-header" id={`heading-materials`}>
-                    <p class="mb-0">Materials</p>
-                  </div>
-                  <div
-                    id={`collapse-materials`}
-                    class="collapse"
-                    aria-labelledby={`heading-materials`}
-                    data-parent="#product-details-accordion"
-                  >
-                    <div class="card-body materials-description">
-                      {materials}
+                  ) : (
+                    ""
+                  )}
+                  {materials ? (
+                    <div
+                      data-toggle="collapse"
+                      data-target={`#collapse-materials`}
+                      aria-expanded="true"
+                      aria-controls={`collapse-materials`}
+                    >
+                      <div class="product-details-header" id={`heading-materials`}>
+                        <p class="product-details-title">Materials</p>
+                      </div>
+                      <div
+                        id={`collapse-materials`}
+                        class="collapse"
+                        aria-labelledby={`heading-materials`}
+                        data-parent="#product-details-accordion"
+                      >
+                        <div
+                          class="product-details-body materials-body"
+                          dangerouslySetInnerHTML={{
+                            __html: materials,
+                          }}
+                        />
+                      </div>
                     </div>
-                  </div>
+                  ) : (
+                    ""
+                  )}
                 </div>
               </div>
-            </div>
+            ) : (
+              ""
+            )}
           </div>
         </div>
         <Listings productLine={productLine} product={product} />
-        <hr />
         {cousinProducts.length ? (
-          <div className="cousin-products-section">
-            <h3>Other Products in this Pattern</h3>
-            <ul className="cousin-products">
-              {_.sortBy(cousinProducts, "displayOrder").map((relProduct) => {
-                const {
-                  id,
-                  name,
-                  productLineData,
-                  images: [image = {}] = [],
-                } = relProduct;
-                return (
-                  <Tooltip
-                    placement="top"
-                    content={productLineData.name.replace(/-/g, "\u2011")}
-                    key={id}
-                  >
-                    <li className="cousin-product">
-                      <a
-                        href={`${productLineData.name.replace(/ /g, "+")}--${
-                          productLineData.id
-                        }?variant=${name
-                          .toLowerCase()
-                          .replace(/ /g, "+")}--${id}`}
-                      >
-                        <img
-                          className="cousin-product-image"
-                          src={image.url}
-                          alt={image.name}
-                        />
-                      </a>
-                    </li>
-                  </Tooltip>
-                );
-              })}
-            </ul>
-          </div>
+          <React.Fragment>
+            <hr />
+            <div className="cousin-products-section">
+              <h3>Other Products in this Pattern</h3>
+              <ul className="cousin-products">
+                {_.sortBy(cousinProducts, "displayOrder").map((relProduct) => {
+                  const {
+                    id,
+                    name,
+                    productLineData,
+                    images: [image = {}] = [],
+                  } = relProduct;
+                  return (
+                    <Tooltip
+                      placement="top"
+                      content={productLineData.name.replace(/-/g, "\u2011")}
+                      key={id}
+                    >
+                      <li className="cousin-product">
+                        <a
+                          href={`${productLineData.name.replace(/ /g, "+")}--${
+                            productLineData.id
+                          }?variant=${name
+                            .toLowerCase()
+                            .replace(/ /g, "+")}--${id}`}
+                        >
+                          <img
+                            className="cousin-product-image"
+                            src={image.url}
+                            alt={image.name}
+                          />
+                        </a>
+                      </li>
+                    </Tooltip>
+                  );
+                })}
+              </ul>
+            </div>
+          </React.Fragment>
         ) : (
           ""
         )}

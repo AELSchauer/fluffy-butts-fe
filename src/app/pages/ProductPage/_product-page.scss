@@ -10,20 +10,27 @@
 
 .product-page {
   .product-page-content {
-    margin: 0px 60px;
+    margin: 0px 40px;
   }
 
   .product-info {
-    align-items: center;
+    align-items: flex-start;
     color: black;
     display: flex;
     justify-content: space-around;
     margin: 20px 0px;
 
-    .product-image {
-      max-height: 500px;
+    .image-section {
+      width: 50%;
+      display: flex;
+      justify-content: center;
+
+      .product-image {
+        max-height: 500px;
+        max-width: 100%;
+      }
     }
-    
+
     .info-section {
       display: flex;
       flex-direction: column;
@@ -137,27 +144,43 @@
       }
 
       .product-details {
-        margin: 20px 50px 0px;
+        margin-top: 20px;
+        text-align: center;
 
-        .card {
-          margin: 0;
-        }
-
-        .card-header {
+        &-header {
+          display: flex;
+          justify-content: center;
           font-size: large;
         }
 
-        .sizing-name {
-          font-size: larger;
-          font-weight: 500;
+        &-title {
+          width: 35%;
+          border-bottom: 2px $blue solid;
+          cursor: pointer;
+
+          &:hover {
+            border-bottom-color: $green;
+          }
         }
 
-        .sizing-options {
+        &-body {
+          padding: 5px;
+        }
+
+        .sizing-body {
           display: flex;
           justify-content: center;
+          padding: 5px;
+        }
 
-          .sizing-option {
-            width: 33.3%;
+        .materials-body {
+          display: flex;
+          justify-content: center;
+          text-align: left;
+
+          ul {
+            margin: 0px;
+            padding-left: 10px;
           }
         }
       }

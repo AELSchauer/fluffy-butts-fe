@@ -90,7 +90,7 @@ const SearchPage = () => {
         sort: ["brand.name", "product-line.name", "name"],
         ...convertPageQueryToJsonApiQuery(),
       },
-    }).then(({ data: { data = [], urls: { last: lastPageLink } = {} } }) => {
+    }).then(({ data: { data = [], links: { last: lastPageLink } = {} } }) => {
       setMaxPages(parseInt(lastPageLink.match(/&page%5Bnumber%5D=(\d+)/)[1]));
       setProducts(data);
     });

@@ -25,7 +25,7 @@ const ProductGrid = ({ headingText, products = [] }) => {
             name,
             brand = {},
             images: [logo = {}] = [],
-            pattern: { tags: patternTags = [], ...pattern } = {},
+            pattern: { tags: patternTags = [] } = {},
             productLine: { tags: productLineTags = [], ...productLine } = {},
           }) => (
             <li key={id} className="product-container">
@@ -41,7 +41,7 @@ const ProductGrid = ({ headingText, products = [] }) => {
                 <img
                   className="product-image"
                   alt={logo.name}
-                  src={logo.link}
+                  src={logo.url}
                 />
                 <p className="product-attribute product-brand product-heading">
                   {brand.name}
