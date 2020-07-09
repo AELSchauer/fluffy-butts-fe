@@ -2,7 +2,6 @@ import React, { useState, useEffect } from "react";
 import _ from "lodash";
 import dynamicClassNames from "classnames";
 import Tooltip from "../../../components/Tooltip";
-import Ellipsis from "@bit/joshk.react-spinners-css.ellipsis";
 import { useQuery } from "../../../utils/query-params";
 import "../_product-page.scss";
 

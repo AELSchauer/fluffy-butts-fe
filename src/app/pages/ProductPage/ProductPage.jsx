@@ -2,7 +2,6 @@ import React, { useState, useEffect } from "react";
 import axios from "../../utils/axios";
 import _ from "lodash";
 import Tooltip from "../../components/Tooltip";
-import Ellipsis from "@bit/joshk.react-spinners-css.ellipsis";
 import { useQuery } from "../../utils/query-params";
 import Listings from "./components/Listings";
 import SizingTable from "./components/SizingTable/SizingTable";
@@ -275,7 +274,7 @@ const ProductPage = (props) => {
   return (
     <section className="product-page page">
       {isLoading ? (
-        <Ellipsis className="loading" color="#42b983" />
+        "..."
       ) : (
         renderContent()
       )}

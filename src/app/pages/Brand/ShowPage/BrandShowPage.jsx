@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from "react";
 import axios from "../../../utils/axios";
-import Ellipsis from "@bit/joshk.react-spinners-css.ellipsis";
 import { useQuery } from "../../../utils/query-params";
 import ProductLineGrid from "./components/ProductLineGrid";
 import "./_brand-show-page.scss";

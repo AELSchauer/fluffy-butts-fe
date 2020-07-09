@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from "react";
 import axios from "../../utils/axios";
-import Ellipsis from "@bit/joshk.react-spinners-css.ellipsis";
 import _ from "lodash";
 import Pagination from "../../components/Pagination";
 import ProductGrid from "./components/ProductGrid";
@@ -213,7 +212,7 @@ const BrowsePage = () => {
   return (
     <section className="browse-page page">
       {isLoading ? (
-        <Ellipsis className="loading" color="#42b983" />
+        "..."
       ) : (
         <React.Fragment>
           <div className="browse-filter">
