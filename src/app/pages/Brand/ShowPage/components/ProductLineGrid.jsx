@@ -22,9 +22,9 @@ const ProductLinesGrid = ({ brand: { productLines = [], ...brand } }) => {
               ({ id, name, images: [logo = {}] = [], tags = [] }) => {
                 const heading = name.replace(/-- .*/g, "");
                 const subHeading = name.replace(/.* -- /g, "");
-                const href = `/brands/${brand.name}/products/${name
+                const href = `/brands/${brand.name.toLowerCase()}/products/${name
                   .replace(/ /g, "-")
-                  .replace("™", "")}-${id}`;
+                  .replace("™", "").toLowerCase()}-${id}`;
                 return (
                   <li key={id} className="product-container">
                     <a className="product" href={href}>
