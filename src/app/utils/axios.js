@@ -2,13 +2,14 @@ import axios from "axios";
 import { deserialize } from "deserialize-json-api";
 import traverse from "traverse";
 
-const baseURL =
-  process.env.NODE_ENV === "development"
-    ? "http://localhost:3000/api/v1"
-    : "https://api-fluffy-butts.herokuapp.com/api/v1";
+const baseURLs = {
+  production: "http://localhost:3000/api/v1",
+  test: "https://enigmatic-wildwood-23801.herokuapp.com/api/v1",
+  development: "https://api-fluffy-butts.herokuapp.com/api/v1",
+};
 
 export default axios.create({
-  baseURL,
+  baseURL: baseURLs[process.env.NODE_ENV],
   responseType: "json",
   transformResponse: [
     function (data) {
