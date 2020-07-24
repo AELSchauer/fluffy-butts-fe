@@ -1,7 +1,10 @@
-import React from "react";
+import React, { useContext } from "react";
+import CountryContext from "../../contexts/country-context";
+import { supportedCountries } from "../../utils/supported-countries";
 import "./_site-nav.scss";
 
 const SiteNav = ({ routes = [] }) => {
+  const { country, setCountry } = useContext(CountryContext);
   return (
     <nav className="navbar navbar-expand-sm navbar-light site-navbar">
       <button
@@ -24,6 +27,30 @@ const SiteNav = ({ routes = [] }) => {
           <h1 className="navbar-brand-title">Fluffy Butts</h1>
         </a>
         <ul className="navbar-nav ml-auto mt-2 mt-lg-0">
+          <li className="nav-item dropdown">
+            <a
+              className="nav-link dropdown-toggle"
+              href="#"
+              id="navbarDropdown"
+              role="button"
+              data-toggle="dropdown"
+              aria-expanded="false"
+            >
+              {country.emoji} {country.name}
+            </a>
+            <div className="dropdown-menu" aria-labelledby="navbarDropdown">
+              {supportedCountries.map((country) => {
+                return (
+                  <div
+                    className="dropdown-item"
+                    onClick={() => setCountry(country)}
+                  >
+                    {country.name}
+                  </div>
+                );
+              })}
+            </div>
+          </li>
           {routes
             .filter(({ includeInNavBar }) => includeInNavBar)
             .map(({ path, title }, i) => (

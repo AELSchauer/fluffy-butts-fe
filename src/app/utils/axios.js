@@ -3,9 +3,9 @@ import { deserialize } from "deserialize-json-api";
 import traverse from "traverse";
 
 const baseURLs = {
-  production: "http://localhost:3000/api/v1",
+  development: "http://localhost:3000/api/v1",
   test: "https://enigmatic-wildwood-23801.herokuapp.com/api/v1",
-  development: "https://api-fluffy-butts.herokuapp.com/api/v1",
+  production: "https://api-fluffy-butts.herokuapp.com/api/v1",
 };
 
 export default axios.create({

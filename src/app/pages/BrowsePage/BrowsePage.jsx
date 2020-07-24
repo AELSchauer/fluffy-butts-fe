@@ -1,13 +1,15 @@
-import React, { useState, useEffect } from "react";
-import axios from "../../utils/axios";
+import React, { useContext, useEffect, useState } from "react";
 import _ from "lodash";
+import axios from "../../utils/axios";
+import BrowseFilter from "./components/BrowseFilter";
+import countryContext from "../../contexts/country-context";
 import Pagination from "../../components/Pagination";
 import ProductGrid from "./components/ProductGrid";
-import BrowseFilter from "./components/BrowseFilter";
 import { useQuery } from "../../utils/query-params";
 import "./_browse-page.scss";
 
 const BrowsePage = () => {
+  const { country } = useContext(countryContext);
   const query = useQuery();
   const [currentPage] = useState(parseInt(query.get("page") || 1));
   const [hasError, setHasError] = useState(false);
@@ -56,39 +58,27 @@ const BrowsePage = () => {
     );
   };
 
-  const getDefaultProducts = () => {
-    const queryKeys = [];
-    query.forEach((value, key) => {
-      if (key !== "page" && key !== "size") {
-        queryKeys.push(key);
-      }
-    });
-    return queryKeys.length === 1 && queryKeys[0] === "brands"
-      ? axios({
-          method: "get",
-          url: "/product-lines-display",
-          params: {
-            ...convertPageQueryToJsonApiQuery(),
-          },
-        }).then(({ data: { data } = {} }) => setDefaultProducts(data))
-      : Promise.resolve({});
-  };
-
   const getProducts = () => {
     return axios({
       method: "get",
       url: "/products",
-      params: {
-        include: [
-          "brand",
-          "images",
-          "pattern.tags",
-          "product-line",
-          "product-line.tags",
-        ],
-        sort: ["brand.name", "product-line.name", "name"],
-        ...convertPageQueryToJsonApiQuery(),
-      },
+      params: Object.assign(
+        {
+          include: [
+            "brand",
+            "images",
+            "pattern.tags",
+            "product-line",
+            "product-line.tags",
+          ],
+          sort: ["brand.name", "product-line.name", "name"],
+          ...convertPageQueryToJsonApiQuery(),
+          "filter[available]": true,
+        },
+        country.name !== "World" && {
+          "filter[availability]": country.name,
+        }
+      ),
     }).then(({ data: { data = [], links: { last: lastPageLink } = {} } }) => {
       setMaxPages(parseInt(lastPageLink.match(/&page%5Bnumber%5D=(\d+)/)[1]));
       setProducts(data);
@@ -96,17 +86,33 @@ const BrowsePage = () => {
   };
 
   useEffect(() => {
-    Promise.all([getBrands(), getTags(), getDefaultProducts(), getProducts()])
+    Promise.all([getBrands(), getTags(), getProducts()])
       .then(() => {
         setIsLoading(false);
       })
       .catch((error) => {
-        console.log(error)
+        console.log(error);
         setHasError(true);
         setIsLoading(false);
         return {};
       });
   }, []);
+
+  useEffect(() => {
+    console.log("woohoo", country);
+    setIsLoading(true);
+    getProducts()
+      .then(() => {
+        setIsLoading(false);
+        console.log("woot", country);
+      })
+      .catch((error) => {
+        console.log(error);
+        setHasError(true);
+        setIsLoading(false);
+        return {};
+      });
+  }, [country]);
 
   const renderPagination = () => {
     return products.length ? (

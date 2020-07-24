@@ -1,16 +1,18 @@
-import React, { useState, useEffect } from "react";
-import axios from "../../utils/axios";
+import React, { useContext, useEffect, useState } from "react";
 import _ from "lodash";
-import Tooltip from "../../components/Tooltip";
-import { useQuery } from "../../utils/query-params";
+import axios from "../../utils/axios";
+import CountryContext from "../../contexts/country-context";
 import Listings from "./components/Listings";
 import SizingTable from "./components/SizingTable/SizingTable";
 import SwatchCarousel from "./components/SwatchCarousel";
+import Tooltip from "../../components/Tooltip";
+import { useQuery } from "../../utils/query-params";
 import "./_product-page.scss";
 
 const ProductPage = (props) => {
   const siblingPageSize = 24;
   const query = useQuery();
+  const { country } = useContext(CountryContext);
   const [hasError, setHasError] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const [productLine, setProductLine] = useState({});
@@ -103,6 +105,7 @@ const ProductPage = (props) => {
   const renderFamilyProductsList = () => {
     return (
       <SwatchCarousel
+        country={country}
         clickSwatch={clickSwatch}
         pageProductId={product.id}
         pageSize={siblingPageSize}
@@ -172,7 +175,10 @@ const ProductPage = (props) => {
                       aria-expanded="true"
                       aria-controls={`collapse-sizing`}
                     >
-                      <div className="product-details-header" id={`heading-sizing`}>
+                      <div
+                        className="product-details-header"
+                        id={`heading-sizing`}
+                      >
                         <p className="product-details-title">Sizing</p>
                       </div>
                       <div
@@ -182,7 +188,7 @@ const ProductPage = (props) => {
                         data-parent="#product-details-accordion"
                       >
                         <div className="product-details-body sizing-body">
-                          <SizingTable sizing={sizing}/>
+                          <SizingTable sizing={sizing} />
                         </div>
                       </div>
                     </div>
@@ -196,7 +202,10 @@ const ProductPage = (props) => {
                       aria-expanded="true"
                       aria-controls={`collapse-materials`}
                     >
-                      <div className="product-details-header" id={`heading-materials`}>
+                      <div
+                        className="product-details-header"
+                        id={`heading-materials`}
+                      >
                         <p className="product-details-title">Materials</p>
                       </div>
                       <div
@@ -223,7 +232,11 @@ const ProductPage = (props) => {
             )}
           </div>
         </div>
-        <Listings productLine={productLine} product={product} />
+        <Listings
+          country={country}
+          productLine={productLine}
+          product={product}
+        />
         {cousinProducts.length ? (
           <React.Fragment>
             <hr />
@@ -273,11 +286,7 @@ const ProductPage = (props) => {
 
   return (
     <section className="product-page page">
-      {isLoading ? (
-        "..."
-      ) : (
-        renderContent()
-      )}
+      {isLoading ? "..." : renderContent()}
     </section>
   );
 };

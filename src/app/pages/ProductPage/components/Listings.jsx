@@ -1,9 +1,11 @@
 import React, { useEffect, useState } from "react";
 import _ from "lodash";
 import axios from "axios";
+import { supportedCountries } from "../../../utils/supported-countries";
 import "../_product-page.scss";
 
 const Listings = ({
+  country,
   product,
   product: {
     name,
@@ -25,27 +27,29 @@ const Listings = ({
     // This call will get blocked by AdBlocker, so create a pop-up
     let formattedListings = [];
     try {
-      const {
-        data: { country_name: userCountry, currency: userCurrency } = {},
-      } = (await axios.get("https://ipapi.co/json/")) || {};
-
-      const availableListings = _.chain(propListings)
-        .filter(({ retailer: { shipping: { shipsTo = [] } = {} } }) =>
-          shipsTo.map(({ country }) => country).includes(userCountry)
-        )
-        .groupBy("retailer.name")
-        .values()
-        .reduce(
-          (availableListings, listings) =>
-            availableListings.concat(
-              listings.find(({ currency }) => currency === userCurrency) ||
-                listings[0]
-            ),
-          []
-        )
-        .value();
+      const { name: userCountry, currency: userCurrency } = country;
+      const availableListings =
+        userCountry === "World"
+          ? propListings
+          : _.chain(propListings)
+              .filter(({ retailer: { shipping: { shipsTo = [] } = {} } }) =>
+                shipsTo.map(({ country }) => country).includes(userCountry)
+              )
+              .groupBy("retailer.name")
+              .values()
+              .reduce(
+                (availableListings, listings) =>
+                  availableListings.concat(
+                    listings.find(
+                      ({ currency }) => currency === userCurrency
+                    ) || listings[0]
+                  ),
+                []
+              )
+              .value();
 
       if (
+        !userCurrency ||
         !availableListings.some(({ currency }) => currency !== userCurrency)
       ) {
         formattedListings = availableListings.map(({ price, ...listing }) => ({
@@ -83,18 +87,7 @@ const Listings = ({
 
   useEffect(() => {
     formatListings().catch((err) => console.log(err));
-  }, [product]);
-
-  const currencySymbols = {
-    CAD: {
-      short: "$",
-      long: "CA$",
-    },
-    USD: {
-      short: "$",
-      long: "US$",
-    },
-  };
+  }, [product, country]);
 
   const buildSingleSizeRow = ({
     id,
@@ -107,6 +100,12 @@ const Listings = ({
   }) => {
     const url = sizeUrl || productUrl;
     const title = retailer.name || (url.match(/\w*\.com/g) || [])[0];
+    const symbol =
+      country.name === "World"
+        ? supportedCountries.find(
+            (supportedCountry) => supportedCountry.currency === currency
+          ).symbol
+        : country.symbol[2];
     return (
       <a className="listing listing-link" href={url} target="_blank" key={id}>
         <div className="listing-title listing-prop">
@@ -119,11 +118,7 @@ const Listings = ({
           {title}
         </div>
         <div className="listing-price listing-prop">
-          <span className="listing-currency">
-            {isCurrencyConverted
-              ? currencySymbols[currency].short
-              : currencySymbols[currency].long}
-          </span>
+          <span className="listing-currency">{symbol}</span>
           {price}
           {calculated ? (
             <span className="listing-price-is-calculated">*</span>
@@ -145,6 +140,12 @@ const Listings = ({
     sizes = [],
   }) => {
     const title = retailer.name || (url.match(/\w*\.com/g) || [])[0];
+    const symbol =
+      country.name === "World"
+        ? supportedCountries.find(
+            (supportedCountry) => supportedCountry.currency === currency
+          ).symbol
+        : country.symbol[2];
     return (
       <div className="listing" key={id}>
         <div
@@ -164,11 +165,7 @@ const Listings = ({
             {title}
           </div>
           <div className="listing-price listing-prop">
-            <span className="listing-currency">
-              {isCurrencyConverted
-                ? currencySymbols[currency].short
-                : currencySymbols[currency].long}
-            </span>
+            <span className="listing-currency">{symbol}</span>
             {price}
             {calculated ? (
               <span className="listing-price-is-calculated">*</span>

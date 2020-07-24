@@ -15,8 +15,8 @@ class BrandIndexPage extends Component {
       method: "get",
       url: "/brands",
       params: {
-        include: ["images"],
-        sort: ["name_insensitive"],
+        include: "images",
+        sort: "name_insensitive",
       },
     }).then(({ data: { data = [], included = [] } }) => {
       this.setState({

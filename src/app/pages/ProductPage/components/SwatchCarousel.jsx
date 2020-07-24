@@ -1,12 +1,12 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import _ from "lodash";
 import dynamicClassNames from "classnames";
 import Tooltip from "../../../components/Tooltip";
-import { useQuery } from "../../../utils/query-params";
 import "../_product-page.scss";
 
-const ProductPage = ({
+const SwatchCarousel = ({
   clickSwatch,
+  country,
   pageSize = 24,
   pageProductId,
   products = [],
@@ -45,11 +45,20 @@ const ProductPage = ({
       )}
       <ul className={dynamicClassNames(swatchesClassNames)}>
         {_.sortBy(products, "name").map((relProduct) => {
-          const { id, images: [image = {}] = [] } = relProduct;
+          const { id, images: [image = {}] = [], listings = [] } = relProduct;
           const swatchClassNames = {
             swatch: true,
             selected: pageProductId === id,
             hide: !~displayProductIds.indexOf(id),
+          };
+          const swatchImageClassNames = {
+            "swatch-image": true,
+            unavailable:
+              country.name === "World"
+                ? false
+                : !relProduct.listings.filter(({ countries }) =>
+                    countries.includes(country.name)
+                  ).length,
           };
           return (
             <Tooltip placement="top" content={relProduct.name} key={id}>
@@ -58,7 +67,7 @@ const ProductPage = ({
                 onClick={() => clickSwatch(relProduct)}
               >
                 <div
-                  className="swatch-image"
+                  className={dynamicClassNames(swatchImageClassNames)}
                   style={{
                     backgroundImage: `url(${image.url})`,
                   }}
@@ -86,4 +95,4 @@ const ProductPage = ({
   );
 };
 
-export default ProductPage;
+export default SwatchCarousel;

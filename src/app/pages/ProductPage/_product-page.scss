@@ -130,10 +130,15 @@
           }
 
           .swatch-image {
+            background-position: 50% 50%;
+            background-size: 300%;
             height: 50px;
+            position: relative;
             width: 50px;
-            background-size: 250%;
-            background-position: 50% 60%;
+
+            &.unavailable {
+              filter: grayscale(100) opacity(20%);
+            }
           }
         }
 
@@ -225,7 +230,7 @@
   .listings {
     margin: 0;
     padding: 0;
-    font-family: 'Maven Pro';
+    font-family: "Maven Pro";
 
     .listing-link,
     .listing-header {
@@ -270,7 +275,6 @@
         margin: 0;
       }
     }
-
   }
   .exchange-rate-note {
     font-size: smaller;
