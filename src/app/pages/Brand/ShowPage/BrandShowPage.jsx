@@ -11,17 +11,35 @@ const BrandShowPage = (props) => {
   const [brand, setBrand] = useState([]);
 
   const getBrand = () => {
+    const brandId = props.match.params.brandSlug.match(/\d+$/)[0];
     return axios({
       method: "get",
-      url: `/brands/${props.match.params.brandSlug.match(/\d+$/)[0]}`,
+      url: "/graphql",
       params: {
-        include: [
-          "product-lines",
-          "product-lines.images",
-          "product-lines.tags",
-        ],
+        query: `
+          {
+            brands (filter__id: "${brandId}") {
+              id
+              name
+              product_lines {
+                id
+                name
+                display_order
+                images {
+                  id
+                  url
+                }
+                tags {
+                  name
+                }
+              }
+            }
+          }
+        `,
       },
-    }).then(({ data: { data = {} } }) => setBrand(data));
+    }).then(({ data: { data: { brands: [brand] = [] } = {} } = {} }) =>
+      setBrand(brand)
+    );
   };
 
   useEffect(() => {
