@@ -3,7 +3,7 @@ import { deserialize } from "deserialize-json-api";
 import traverse from "traverse";
 
 const baseURLs = {
-  development: "http://localhost:3000/graphql",
+  development: "http://localhost:3000",
   test: "https://enigmatic-wildwood-23801.herokuapp.com/api/v1",
   production: "https://api-fluffy-butts.herokuapp.com/api/v1",
 };

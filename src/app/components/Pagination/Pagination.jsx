@@ -7,6 +7,7 @@ const PaginationItem = ({
   disabled,
   pageNumber,
   query = new URLSearchParams(),
+  setCurrentPage,
   url,
   children,
 }) => {
@@ -15,27 +16,42 @@ const PaginationItem = ({
     active,
     disabled,
   };
-  query.set("page", pageNumber)
-  const href =
-    active || disabled
-      ? undefined
-      : `${url}?${query.toString()}`;
+  const updateWindowQuery = () => {
+    query.set("page", pageNumber)
+    var newUrl =
+      window.location.protocol +
+      "//" +
+      window.location.host +
+      window.location.pathname +
+      "?" +
+      query.toString();
+    window.history.replaceState({}, document.title, newUrl);
+  };
+
+  const clickPagination = () => {
+    if (!active && !disabled) {
+      setCurrentPage(pageNumber);
+      updateWindowQuery()
+    }
+  }
+
   return (
     <li className={dynamicClassNames(pageItemClasses)}>
-      <a className="page-link" href={href}>
+      <a className="page-link" onClick={clickPagination}>
         {children}
       </a>
     </li>
   );
 };
 
-const Pagination = ({ currentPage = 1, description, maxPages, query, url }) => {
+const Pagination = ({ currentPage = 1, description, maxPages, query, setCurrentPage, url }) => {
   const getPageItem = (pageNum) => (
     <PaginationItem
       active={pageNum === currentPage}
       key={`page-${pageNum}`}
       pageNumber={pageNum}
       query={query}
+      setCurrentPage={setCurrentPage}
       url={url}
     >
       {pageNum}
@@ -59,7 +75,7 @@ const Pagination = ({ currentPage = 1, description, maxPages, query, url }) => {
       for (let pageNum = 1; pageNum <= (currentPage === 4 ? 5 : 4); pageNum++) {
         displayItems.push(getPageItem(pageNum));
       }
-      return [...displayItems, getEllipsisItem(), getPageItem(maxPages)];
+      return [...displayItems, getEllipsisItem(1), getPageItem(maxPages)];
     } else if (currentPage >= maxPages - 4) {
       for (
         let pageNum = maxPages - (currentPage === maxPages - 4 ? 5 : 4);
@@ -68,7 +84,7 @@ const Pagination = ({ currentPage = 1, description, maxPages, query, url }) => {
         ) {
           displayItems.push(getPageItem(pageNum));
         }
-      return [getPageItem(1), getEllipsisItem(), ...displayItems];
+      return [getPageItem(1), getEllipsisItem(1), ...displayItems];
     } else {
       for (
         let pageNum = currentPage - 1;
@@ -79,9 +95,9 @@ const Pagination = ({ currentPage = 1, description, maxPages, query, url }) => {
       }
       return [
         getPageItem(1),
-        getEllipsisItem(),
+        getEllipsisItem(1),
         ...displayItems,
-        getEllipsisItem(),
+        getEllipsisItem(2),
         getPageItem(maxPages),
       ];
     }
@@ -93,13 +109,17 @@ const Pagination = ({ currentPage = 1, description, maxPages, query, url }) => {
   };
 
   return (
-    <nav aria-label={description} className={dynamicClassNames(paginationClasses)}>
+    <nav
+      aria-label={description}
+      className={dynamicClassNames(paginationClasses)}
+    >
       <ul className="pagination">
         <PaginationItem
           disabled={currentPage === 1}
           key="previous"
           pageNumber={currentPage - 1}
           query={query}
+          setCurrentPage={setCurrentPage}
           url={url}
         >
           <i className="fas fa-angle-left" />
@@ -110,6 +130,7 @@ const Pagination = ({ currentPage = 1, description, maxPages, query, url }) => {
           key="next"
           pageNumber={currentPage + 1}
           query={query}
+          setCurrentPage={setCurrentPage}
           url={url}
         >
           <i className="fas fa-angle-right" />

@@ -1,5 +1,5 @@
 import React, { Component } from "react";
-import { toPascalCase } from "../../../utils/case-helper";
+import { toPascalCase, toTitleCase } from "../../../utils/case-helper";
 import "../_browse-page.scss";
 
 class BrowseFilter extends Component {
@@ -84,14 +84,9 @@ class BrowseFilter extends Component {
                   <li className="category-item" key={index}>
                     <input
                       type="checkbox"
-                      checked={this.isParamActive(
-                        "brands",
-                        brand.name
-                      )}
+                      checked={this.isParamActive("brands", brand.name)}
                       id={`checkbox-${brandNameSlug}`}
-                      onChange={() =>
-                        this.toggleParam("brands", brand.name)
-                      }
+                      onChange={() => this.toggleParam("brands", brand.name)}
                     />
                     <label htmlFor={`checkbox-${brandNameSlug}`}>
                       {brand.name}
@@ -102,9 +97,13 @@ class BrowseFilter extends Component {
             </ul>
           </div>
         </div>
+
         {Object.entries(this.state.categories).map(
           ([categoryName, tags], index) => {
-            const categorySlug = categoryName.replace(/ /g, '-').replace('&','')
+            const categoryDisplayName = toTitleCase(
+              categoryName.replace(/_/g, " ")
+            ).replace(/ and /gi, " & ");
+            const categorySlug = categoryName.replace(/_+/g, "-");
             return (
               <div className="category-group" key={index}>
                 <h5
@@ -115,27 +114,19 @@ class BrowseFilter extends Component {
                   aria-controls={`collapse-${categorySlug}`}
                 >
                   <i className="fas fa-caret-right" />
-                  <span className="category-name">{categoryName}</span>
+                  <span className="category-name">{categoryDisplayName}</span>
                 </h5>
                 <div className="collapse" id={`collapse-${categorySlug}`}>
                   <ul className="category-items">
                     {tags.map((tag, index) => {
-                      const tagNameSlug = tag.name.replace(
-                        / /g,
-                        "-"
-                      );
+                      const tagNameSlug = tag.name.replace(/ /g, "-");
                       return (
                         <li className="category-item" key={index}>
                           <input
                             type="checkbox"
-                            checked={this.isParamActive(
-                              "tags",
-                              tag.name
-                            )}
+                            checked={this.isParamActive("tags", tag.name)}
                             id={`checkbox-${tagNameSlug}`}
-                            onChange={() =>
-                              this.toggleParam("tags", tag.name)
-                            }
+                            onChange={() => this.toggleParam("tags", tag.name)}
                           />
                           <label htmlFor={`checkbox-${tagNameSlug}`}>
                             {tag.name}

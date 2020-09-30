@@ -11,7 +11,9 @@ import "./_browse-page.scss";
 const BrowsePage = () => {
   const { country } = useContext(countryContext);
   const query = useQuery();
-  const [currentPage] = useState(parseInt(query.get("page") || 1));
+  const [currentPage, setCurrentPage] = useState(
+    parseInt(query.get("page") || 1)
+  );
   const [hasError, setHasError] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const [maxPages, setMaxPages] = useState(1);
@@ -20,68 +22,110 @@ const BrowsePage = () => {
   const [defaultProducts, setDefaultProducts] = useState([]);
   const [categories, setCategories] = useState([]);
 
-  const convertPageQueryToJsonApiQuery = () => {
-    return Object.assign(
-      !!query.get("tags") && {
-        "filter[tags.name]": query.get("tags"),
-      },
-      !!query.get("brands") && {
-        "filter[brand.name]": query.get("brands"),
-      },
-      !!query.get("product-lines") && {
-        "filter[product-line.name]": query.get("product-lines"),
-      },
-      !!query.get("page") && { "page[number]": query.get("page") },
-      !!query.get("size") && { "page[size]": query.get("size") }
-    );
-  };
-
   const getBrands = () => {
     return axios({
       method: "get",
-      url: "/brands",
+      url: "/graphql",
       params: {
-        sort: ["name_insensitive"],
+        query: `
+          {
+            brands (order_by: "name_insensitive:asc") {
+              id
+              name
+            }
+          }
+        `,
       },
-    }).then(({ data: { data = [] } }) => setBrands(data));
+    }).then(({ data: { data: { brands = [] } = {} } }) => setBrands(brands));
   };
 
   const getTags = () => {
     return axios({
       method: "get",
-      url: "/tags",
+      url: "/graphql",
       params: {
-        sort: ["category", "name"],
+        query: `
+          {
+            tags (order_by: "category:asc,display_order:asc,name:asc") {
+              name
+              category
+              display_order
+            }
+          }
+        `,
       },
-    }).then(({ data: { data = [] } }) =>
-      setCategories(_.groupBy(data, "category"))
+    }).then(({ data: { data: { tags = [] } = {} } }) =>
+      setCategories(_.groupBy(tags, "category"))
     );
   };
 
+  const getProductFilters = () => {
+    const filterAvailability =
+      country.name !== "World"
+        ? `, filter__availability: "${country.name}"`
+        : "";
+
+    const filterTags = query.get("tags")
+      ? `, filter__tag_names: "${query.get("tags")}"`
+      : "";
+
+    return `, filter__available: true` + filterAvailability + filterTags;
+  };
+
   const getProducts = () => {
+    const brandFilters = query.get("brands")
+      ? `, filter__name: "${query.get("brands")}"`
+      : "";
+
+    const productLineFilters = query.get("product-lines")
+      ? `, filter__name: "${query.get("product-lines")}"`
+      : "";
+
     return axios({
       method: "get",
-      url: "/products",
-      params: Object.assign(
-        {
-          include: [
-            "brand",
-            "images",
-            "pattern.tags",
-            "product-line",
-            "product-line.tags",
-          ],
-          sort: ["brand.name", "product-line.name", "name"],
-          ...convertPageQueryToJsonApiQuery(),
-          "filter[available]": true,
-        },
-        country.name !== "World" && {
-          "filter[availability]": country.name,
-        }
-      ),
-    }).then(({ data: { data = [], links: { last: lastPageLink } = {} } }) => {
-      setMaxPages(parseInt(lastPageLink.match(/&page%5Bnumber%5D=(\d+)/)[1]));
-      setProducts(data);
+      url: "/graphql",
+      params: {
+        query: `
+          {
+            brands (order_by: "name_insensitive:asc"${brandFilters}) {
+              product_lines (order_by: "name_insensitive:asc"${productLineFilters}) {
+                products (order_by: "name_insensitive:asc"${getProductFilters()}) {
+                  id
+                  name
+                  brand {
+                    id
+                    name
+                  }
+                  images {
+                    name
+                    url
+                  }
+                  pattern {
+                    tags {
+                      name
+                    }
+                  }
+                  product_line {
+                    id
+                    name
+                    tags {
+                      name
+                    }
+                  }
+                }
+              }
+            }
+          }
+        `,
+      },
+    }).then(({ data: { data: { brands = [] } = {} } = {} }) => {
+      const productArr = brands.reduce(
+        (productArr, { productLines }) =>
+          productArr.concat(...productLines.map(({ products }) => products)),
+        []
+      );
+      setMaxPages(Math.ceil(productArr.length / 30));
+      setProducts(productArr);
     });
   };
 
@@ -99,12 +143,10 @@ const BrowsePage = () => {
   }, []);
 
   useEffect(() => {
-    console.log("woohoo", country);
     setIsLoading(true);
     getProducts()
       .then(() => {
         setIsLoading(false);
-        console.log("woot", country);
       })
       .catch((error) => {
         console.log(error);
@@ -121,6 +163,7 @@ const BrowsePage = () => {
         description="Browse page pagination"
         maxPages={maxPages}
         query={query}
+        setCurrentPage={setCurrentPage}
         url="/browse"
       />
     ) : (
@@ -238,7 +281,10 @@ const BrowsePage = () => {
                   defaultProducts.length &&
                   `Browse All ${products[0].brand.name} Products`
                 }
-                products={products}
+                products={products.slice(
+                  (currentPage - 1) * 30,
+                  currentPage * 30
+                )}
               />
             ) : (
               <div className="no-results">Sorry, no results were found!</div>

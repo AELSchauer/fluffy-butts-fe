@@ -6,7 +6,7 @@ const ProductGrid = ({ headingText, products = [] }) => {
     id,
     name,
     brand = {},
-    productLine = {},
+    productLine = {}
   } = {}) => {
     return `/brands/${brand.name}/products/${productLine.name}-${productLine.id}?variant=${name}-${id}`
       .toLowerCase()
