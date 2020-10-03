@@ -1,9 +1,9 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import Cookies from "js-cookie";
-import { Route, Switch } from "react-router-dom";
 import CountryContext from "./contexts/country-context";
 import { getSupportedCountry } from "./utils/supported-countries";
+import { Route, Switch } from "react-router-dom";
 import routes from "./routes";
 import SiteNav from "./components/SiteNav";
 import "./index.scss";

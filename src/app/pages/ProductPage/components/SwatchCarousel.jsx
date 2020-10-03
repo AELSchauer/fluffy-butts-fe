@@ -45,19 +45,26 @@ const SwatchCarousel = ({
       )}
       <ul className={dynamicClassNames(swatchesClassNames)}>
         {_.sortBy(products, "name").map((relProduct) => {
-          const { id, images: [image = {}] = [], listings = [] } = relProduct;
+          const { id, images: [image = {}] = [] } = relProduct;
           const swatchClassNames = {
             swatch: true,
             selected: pageProductId === id,
             hide: !~displayProductIds.indexOf(id),
           };
+          console.log(relProduct);
           const swatchImageClassNames = {
             "swatch-image": true,
             unavailable:
               country.name === "World"
                 ? false
-                : !relProduct.listings.filter(({ countries }) =>
-                    countries.includes(country.name)
+                : !relProduct.listings.filter(
+                    ({
+                      countries = [],
+                      retailer: { shipping: { shipsTo = [] } = {} } = {},
+                    }) =>
+                      countries
+                        .concat(shipsTo.map(({ country }) => country))
+                        .includes(country.name)
                   ).length,
           };
           return (

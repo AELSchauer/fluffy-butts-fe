@@ -44,6 +44,7 @@ const supportedCountries = [
 
 module.exports = {
   getSupportedCountry: (countryName) => {
+    console.log(countryName)
     return supportedCountries.find(({name}) => name === countryName) || supportedCountries[0]
   },
   supportedCountries

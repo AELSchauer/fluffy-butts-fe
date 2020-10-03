@@ -7,24 +7,13 @@ import "../_product-page.scss";
 const Listings = ({
   country,
   product,
-  product: {
-    name,
-    images: [image = {}] = [],
-    listings: propListings = [],
-    tags = [],
-  },
-  productLine: {
-    name: productLineName,
-    brand = {},
-    images: [defaultImage = {}] = [],
-  },
+  product: { name, listings: propListings = [] },
 }) => {
   const [isCurrencyConverted, setIsCurrencyConverted] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const [listings, setListings] = useState(_.sortBy(propListings, "price"));
 
   const formatListings = async () => {
-    // This call will get blocked by AdBlocker, so create a pop-up
     let formattedListings = [];
     try {
       const { name: userCountry, currency: userCurrency } = country;

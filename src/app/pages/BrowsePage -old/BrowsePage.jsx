@@ -2,14 +2,14 @@ import React, { useContext, useEffect, useState } from "react";
 import _ from "lodash";
 import axios from "../../utils/axios";
 import BrowseFilter from "./components/BrowseFilter";
-import countryContext from "../../contexts/country-context";
+import CountryContext from "../../contexts/country-context";
 import Pagination from "../../components/Pagination";
 import ProductGrid from "./components/ProductGrid";
 import { useQuery } from "../../utils/query-params";
 import "./_browse-page.scss";
 
 const BrowsePage = () => {
-  const { country } = useContext(countryContext);
+  const { country } = useContext(CountryContext);
   const query = useQuery();
   const [currentPage, setCurrentPage] = useState(
     parseInt(query.get("page") || 1)
@@ -18,9 +18,10 @@ const BrowsePage = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [maxPages, setMaxPages] = useState(1);
   const [brands, setBrands] = useState([]);
-  const [products, setProducts] = useState([]);
+  const [allProducts, setAllProducts] = useState([]);
   const [defaultProducts, setDefaultProducts] = useState([]);
-  const [categories, setCategories] = useState([]);
+  const [tags, setTags] = useState([]);
+  const [products, setProducts] = useState([]);
 
   const getBrands = () => {
     return axios({
@@ -36,7 +37,10 @@ const BrowsePage = () => {
           }
         `,
       },
-    }).then(({ data: { data: { brands = [] } = {} } }) => setBrands(brands));
+    }).then(({ data: { data: { brands = [] } = {} } }) => {
+      setBrands(brands);
+      return brands;
+    });
   };
 
   const getTags = () => {
@@ -54,22 +58,10 @@ const BrowsePage = () => {
           }
         `,
       },
-    }).then(({ data: { data: { tags = [] } = {} } }) =>
-      setCategories(_.groupBy(tags, "category"))
-    );
-  };
-
-  const getProductFilters = () => {
-    const filterAvailability =
-      country.name !== "World"
-        ? `, filter__availability: "${country.name}"`
-        : "";
-
-    const filterTags = query.get("tags")
-      ? `, filter__tag_names: "${query.get("tags")}"`
-      : "";
-
-    return `, filter__available: true` + filterAvailability + filterTags;
+    }).then(({ data: { data: { tags = [] } = {} } }) => {
+      setTags(tags);
+      return tags;
+    });
   };
 
   const getProducts = () => {
@@ -81,6 +73,11 @@ const BrowsePage = () => {
       ? `, filter__name: "${query.get("product-lines")}"`
       : "";
 
+    const filterAvailability =
+      country.name !== "World"
+        ? `, filter__availability: "${country.name}"`
+        : "";
+
     return axios({
       method: "get",
       url: "/graphql",
@@ -89,7 +86,7 @@ const BrowsePage = () => {
           {
             brands (order_by: "name_insensitive:asc"${brandFilters}) {
               product_lines (order_by: "name_insensitive:asc"${productLineFilters}) {
-                products (order_by: "name_insensitive:asc"${getProductFilters()}) {
+                products (order_by: "name_insensitive:asc", filter__available: true${filterAvailability}) {
                   id
                   name
                   brand {
@@ -100,17 +97,13 @@ const BrowsePage = () => {
                     name
                     url
                   }
-                  pattern {
-                    tags {
-                      name
-                    }
-                  }
                   product_line {
                     id
                     name
-                    tags {
-                      name
-                    }
+                  }
+                  tags {
+                    name
+                    category
                   }
                 }
               }
@@ -124,14 +117,37 @@ const BrowsePage = () => {
           productArr.concat(...productLines.map(({ products }) => products)),
         []
       );
-      setMaxPages(Math.ceil(productArr.length / 30));
-      setProducts(productArr);
+      setAllProducts(productArr);
+      return productArr;
     });
   };
 
+  const getFilteredProducts = (args) => {
+    const queryTagGroups = _.chain(args.tags || tags)
+      .filter(
+        ({ name }) =>
+          args.queryTags || query.get("tags").split(",").includes(name)
+      )
+      .groupBy("category")
+      .values()
+      .map((tags) => tags.map(({ name }) => name))
+      .value();
+    const filteredProducts = (args.allProducts || allProducts).filter(
+      ({ tags }) => {
+        const tagNames = tags.map(({ name }) => name);
+        return queryTagGroups.every((queryTags) =>
+          queryTags.some((tagName) => tagNames.includes(tagName))
+        );
+      }
+    );
+    setProducts(filteredProducts);
+    setMaxPages(Math.ceil(filteredProducts.length / 30));
+  };
+
   useEffect(() => {
-    Promise.all([getBrands(), getTags(), getProducts()])
-      .then(() => {
+    Promise.all([getTags(), getProducts(), getBrands()])
+      .then(([tags, allProducts]) => {
+        getFilteredProducts({ allProducts, tags });
         setIsLoading(false);
       })
       .catch((error) => {
@@ -216,6 +232,29 @@ const BrowsePage = () => {
     return <div className="active-tags">{activeTags}</div>;
   };
 
+  const filterProducts = (newQuery) => {
+    const newUrl =
+      window.location.protocol +
+      "//" +
+      window.location.host +
+      window.location.pathname +
+      "?" +
+      newQuery.toString();
+    getFilteredProducts({ queryTags: newQuery.get("tags") });
+    window.history.replaceState({}, document.title, newUrl);
+  };
+
+  const updateWindowQuery = () => {
+    var newUrl =
+      window.location.protocol +
+      "//" +
+      window.location.host +
+      window.location.pathname +
+      "?" +
+      query.toString();
+    window.history.replaceState({}, document.title, newUrl);
+  };
+
   const renderFilterModal = () => {
     return (
       <div className="modal-toggle">
@@ -247,7 +286,8 @@ const BrowsePage = () => {
                 </button>
                 <BrowseFilter
                   brands={brands}
-                  categories={categories}
+                  categories={_.groupBy(tags, "category")}
+                  filterProducts={filterProducts}
                   query={query}
                 />
               </div>
@@ -267,7 +307,8 @@ const BrowsePage = () => {
           <div className="browse-filter">
             <BrowseFilter
               brands={brands}
-              categories={categories}
+              categories={_.groupBy(tags, "category")}
+              filterProducts={filterProducts}
               query={query}
             />
           </div>

@@ -25,51 +25,83 @@ const ProductPage = (props) => {
     const product = products.find(({ id }) => id === productId) || 0;
     const { pattern: { products: cousins = [] } = {} } = product;
     setProduct(product);
-    setCousinProducts(
-      cousins.filter(({ id, available }) => product.id !== id && available)
-    );
+    setCousinProducts(cousins.filter(({ id }) => product.id !== id));
     setFamilyProducts(products);
   };
 
   const getProduct = () => {
     const productLineId = props.match.params.productLineSlug.match(/\d+$/)[0];
-    return Promise.all([
-      axios({
-        method: "get",
-        url: `/product-lines/${productLineId}`,
-        params: {
-          include: ["brand", "images"],
-        },
-      }),
-      axios({
-        method: "get",
-        url: `/products`,
-        params: {
-          "page[size]": 500,
-          "filter[product-line]": productLineId,
-          "filter[available]": true,
-          include: [
-            "images",
-            "listings",
-            "listings.retailer",
-            "pattern",
-            "pattern.products",
-            "pattern.products.images",
-          ],
-        },
-      }),
-    ])
+    return axios({
+      method: "get",
+      url: `/graphql`,
+      params: {
+        query: `
+          {
+            product_lines (filter__id: "${productLineId}") {
+              id
+              name
+              details
+              brand {
+                id
+                name
+              }
+              images {
+                url
+              }
+              products (filter__available: true) {
+                id
+                name
+                images {
+                  url
+                }
+                listings {
+                  id
+                  countries
+                  currency
+                  url
+                  price
+                  sizes
+                  retailer {
+                    id
+                    name
+                    url
+                    shipping
+                  }
+                }
+                pattern {
+                  id
+                  name
+                  products (filter__available: true) {
+                    id
+                    name
+                    images {
+                      url
+                    }
+                    product_line {
+                      id
+                      name
+                      display_order
+                    }
+                  }
+                }
+              }
+            }
+          }
+        `,
+      },
+    })
       .then(
-        ([
-          { data: { data = {} } = {} } = {},
-          { data: { data: productsData = {} } = {} } = {},
-        ] = []) => {
-          data.products = productsData;
-          setProductLine(data);
+        ({
+          data: { data: { productLines: [productLine = {}] = [] } = {} } = {},
+        }) => {
+          setProductLine(productLine);
           if (/\d+$/.test(query.get("variant"))) {
-            setActiveProduct(query.get("variant").match(/\d+$/)[0], data);
+            setActiveProduct(
+              query.get("variant").match(/\d+$/)[0],
+              productLine
+            );
           } else {
-            setFamilyProducts(data.products);
+            setFamilyProducts(productLine.products);
           }
           setIsLoading(false);
         }
@@ -130,7 +162,7 @@ const ProductPage = (props) => {
       brand = {},
       images: [defaultImage = {}] = [],
     } = productLine;
-    const { name, images: [image = {}] = [], listings, tags = [] } = product;
+    const { name, images: [image = {}] = [] } = product;
 
     return (
       <div className="product-page-content">
@@ -247,19 +279,19 @@ const ProductPage = (props) => {
                   const {
                     id,
                     name,
-                    productLineData,
+                    productLine,
                     images: [image = {}] = [],
                   } = relProduct;
                   return (
                     <Tooltip
                       placement="top"
-                      content={productLineData.name.replace(/-/g, "\u2011")}
+                      content={productLine.name.replace(/-/g, "\u2011")}
                       key={id}
                     >
                       <li className="cousin-product">
                         <a
-                          href={`${productLineData.name.replace(/ /g, "+")}--${
-                            productLineData.id
+                          href={`${productLine.name.replace(/ /g, "+")}--${
+                            productLine.id
                           }?variant=${name
                             .toLowerCase()
                             .replace(/ /g, "+")}--${id}`}

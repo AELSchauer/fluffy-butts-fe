@@ -24,7 +24,8 @@ const ProductLinesGrid = ({ brand: { productLines = [], ...brand } }) => {
                 const subHeading = name.replace(/.* -- /g, "");
                 const href = `/brands/${brand.name.toLowerCase()}/products/${name
                   .replace(/ /g, "-")
-                  .replace("™", "").toLowerCase()}-${id}`;
+                  .replace("™", "")
+                  .toLowerCase()}-${id}`;
                 return (
                   <li key={id} className="product-container">
                     <a className="product" href={href}>
