@@ -1,10 +1,11 @@
 import React, { useContext, useState } from "react";
 import { toPascalCase, toTitleCase } from "../../../utils/case-helper";
 import QueryContext from "../../../contexts/query-context";
+import _ from "lodash";
 import "../_browse-page.scss";
 
-const BrowseFilter = ({ brands, tagCategoryGroups }) => {
-  const { query, updateQuery } = useContext(QueryContext);
+const BrowseFilter = ({ brands, query, tags, updateQuery }) => {
+  // const { query, updateQuery } = useContext(QueryContext);
 
   const [filterBrands, setFilterBrands] = useState(
     (query.get("brands") || "").split(",").filter(Boolean).sort()
@@ -12,6 +13,16 @@ const BrowseFilter = ({ brands, tagCategoryGroups }) => {
   const [filterTags, setFilterTags] = useState(
     (query.get("tags") || "").split(",").filter(Boolean).sort()
   );
+
+  const categoryGroups = _.chain(tags)
+    .groupBy(({ category }) => category.split("__")[0].toLowerCase())
+    .entries()
+    .reduce(
+      (obj, [key, group]) =>
+        Object.assign(obj, { [key]: _.groupBy(group, "category") }),
+      {}
+    )
+    .value();
 
   const isParamActive = (categoryName, paramName) => {
     const filterName = `filter${toPascalCase(categoryName)}`;
@@ -136,8 +147,8 @@ const BrowseFilter = ({ brands, tagCategoryGroups }) => {
         </div>
       </div>
 
-      {renderTagSection(tagCategoryGroups.product)}
-      {renderTagSection(tagCategoryGroups.pattern)}
+      {renderTagSection(categoryGroups.product)}
+      {renderTagSection(categoryGroups.pattern)}
       {renderResetButton()}
     </div>
   );
