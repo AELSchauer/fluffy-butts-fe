@@ -1,7 +1,7 @@
 import React, { useState } from "react";
-import _ from "lodash";
 import dynamicClassNames from "classnames";
 import Tooltip from "../../../components/Tooltip";
+import _ from "lodash";
 import "../_product-page.scss";
 
 const SwatchCarousel = ({
@@ -51,7 +51,6 @@ const SwatchCarousel = ({
             selected: pageProductId === id,
             hide: !~displayProductIds.indexOf(id),
           };
-          console.log(relProduct);
           const swatchImageClassNames = {
             "swatch-image": true,
             unavailable:

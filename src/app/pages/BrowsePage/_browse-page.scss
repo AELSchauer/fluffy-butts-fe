@@ -124,7 +124,7 @@
           }
 
           .product-image {
-            width: 66.7%;
+            width: 200px;
           }
 
           .product-attribute {
@@ -225,4 +225,29 @@
       margin-right: 20px;
     }
   }
+}
+.item-image-carousel {
+  display: flex;
+  flex-direction: row;
+  height: 200px;
+
+  .image-carousel-button {
+    display: flex;
+    align-items: center;
+    font-size: xx-large;
+  }
+
+  .item-images-wrapper {
+    list-style-type: none;
+    padding: 0px;
+
+    .item-image-wrapper.selected {
+      display: flex;
+      justify-content: center;
+    }
+  }
+}
+
+.hide {
+  display: none;
 }

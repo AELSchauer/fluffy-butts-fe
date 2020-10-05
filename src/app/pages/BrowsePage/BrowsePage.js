@@ -2,17 +2,18 @@ import React, { useContext, useEffect, useState } from "react";
 import axios from "../../utils/axios";
 import BrowseFilter from "./components/BrowseFilter";
 import CountryContext from "../../contexts/country-context";
-import ProductGrid from "./components/ProductGrid";
+import DisplayGrid from "./components/DisplayGrid";
 import QueryContext from "../../contexts/query-context";
 import { useQuery } from "../../utils/query-params";
 import _ from "lodash";
 import "./_browse-page.scss";
 
 const BrowsePage = () => {
-  const [allProductLines, setAllProductLines] = useState([]);
+  const [products, setProducts] = useState([]);
   const [brands, setBrands] = useState([]);
   const { country } = useContext(CountryContext);
   const [filteredProducts, setFilteredProducts] = useState([]);
+  const [filteredByPattern, setFilteredByPattern] = useState(false);
   const [hasError, setHasError] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const [query, setQuery] = useState(useQuery());
@@ -31,14 +32,15 @@ const BrowsePage = () => {
       )
       .value();
 
-  const filterProducts = (allProductLines) => {
+  const filterProducts = (productLineList, tagList) => {
     const queryTagGroups = categorizeTagGroups(
       (query.get("tags") || "")
         .split(",")
-        .map((tagName) => tags.find((tag) => tag.name === tagName))
+        .map((tagName) => tagList.find((tag) => tag.name === tagName))
     );
+    setFilteredByPattern(!!_.values(queryTagGroups.pattern).length);
     setFilteredProducts(
-      allProductLines
+      productLineList
         .filter(({ brand: { name } = {} }) =>
           query.get("brands")
             ? query.get("brands").split(",").includes(name)
@@ -46,11 +48,35 @@ const BrowsePage = () => {
         )
         .filter(({ tags }) => {
           const tagNames = tags.map(({ name }) => name);
-          return query.get("tags")
+          return _.values(queryTagGroups.product).length
             ? _.values(queryTagGroups.product).every((queryTags) =>
                 queryTags.some(({ name }) => tagNames.includes(name))
               )
             : true;
+        })
+        .filter(({ id, products }) => {
+          const tagNames = products.reduce(
+            (arr, { tags = [] }) => arr.concat(tags.map(({ name }) => name)),
+            []
+          );
+          return _.values(queryTagGroups.pattern).length
+            ? _.values(queryTagGroups.pattern).every((queryTags) =>
+                queryTags.some(({ name }) => tagNames.includes(name))
+              )
+            : true;
+        })
+        .map(({ products, ...productLine }) => {
+          return {
+            ...productLine,
+            products: products.filter(({ tags = [] }) => {
+              const tagNames = tags.map(({ name }) => name);
+              return _.values(queryTagGroups.pattern).length
+                ? _.values(queryTagGroups.pattern).every((queryTags) =>
+                    queryTags.some(({ name }) => tagNames.includes(name))
+                  )
+                : true;
+            }),
+          };
         })
     );
   };
@@ -67,7 +93,7 @@ const BrowsePage = () => {
         query.toString()
     );
 
-    filterProducts(allProductLines);
+    filterProducts(products, tags);
     setQuery(query);
   };
 
@@ -126,23 +152,37 @@ const BrowsePage = () => {
           {
             brands (order_by: "name_insensitive:asc") {
               product_lines (order_by: "name_insensitive:asc") {
+                id
+                name
                 brand {
                   id
                   name
                 }
                 images {
-                  name
                   url
                 }
                 products (order_by: "name_insensitive:asc", filter__available: true${filterAvailability}) {
                   id
                   name
+                  brand {
+                    id
+                    name
+                  }
+                  product_line {
+                    id
+                    name
+                  }
+                  images {
+                    url
+                  }
                   tags {
+                    id
                     name
                     category
                   }
                 }
                 tags {
+                  id
                   name
                   category
                 }
@@ -157,16 +197,15 @@ const BrowsePage = () => {
           productLineArr.concat(productLines),
         []
       );
-      setAllProductLines(productLineArr);
-      // filterProducts(productLineArr);
+      setProducts(productLineArr);
       return productLineArr;
     });
   };
 
   useEffect(() => {
-    // console.log(query.toString())
-    Promise.all([getTags(), getProductLines(), getBrands()])
-      .then(() => {
+    Promise.all([getProductLines(), getTags(), getBrands()])
+      .then(([productLineList, tagList]) => {
+        filterProducts(productLineList, tagList);
         setIsLoading(false);
       })
       .catch((error) => {
@@ -191,7 +230,10 @@ const BrowsePage = () => {
               />
             </div>
             <div className="browse-display">
-              <ProductGrid products={filteredProducts} />
+              <DisplayGrid
+                filteredByPattern={filteredByPattern}
+                productLines={filteredProducts}
+              />
             </div>
           </React.Fragment>
         )}
