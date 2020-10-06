@@ -72,6 +72,10 @@
           font-size: 1.5rem;
         }
 
+        .product-line {
+          font-size: 1.15rem;
+        }
+
         @include media-breakpoint-down(md) {
           width: 50%;
         }
@@ -129,13 +133,14 @@
 
           .product-attribute {
             margin: 0;
+            text-align: center;
           }
 
           .product-tags {
             text-align: center;
 
             .product-tag {
-              font-size: 0.9rem;
+              font-size: 0.75rem;
 
               + .product-tag::before {
                 content: ", ";
@@ -147,10 +152,6 @@
                 border-bottom-style: dotted;
                 border-bottom-width: 1px;
                 text-decoration: none;
-
-                &:hover {
-                  background-color: $light-green;
-                }
               }
             }
           }

@@ -19,6 +19,7 @@
     "react": "^16.13.1",
     "react-dom": "^16.13.1",
     "react-image-gallery": "^1.0.8",
+    "react-json-editor-ajrm": "^2.5.10",
     "react-router-dom": "^5.2.0",
     "react-scripts": "3.4.1",
     "react-spinners-css": "^1.1.9",
@@ -28,7 +29,7 @@
   },
   "scripts": {
     "start": "react-scripts start",
-    "development": "NODE_ENV=development PORT=8000 react-scripts start",
+    "development": "NODE_ENV=development react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject"

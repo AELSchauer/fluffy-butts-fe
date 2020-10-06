@@ -59,16 +59,11 @@ const DisplayGrid = ({ filteredByPattern = false, productLines = [] }) => {
                 <div className="product-tags">
                   {tags.map((tag) => (
                     <span key={tag.id} className="product-tag">
-                      <a
-                        className="product-tag-link"
-                        href={`browse?tags=${encodeURIComponent(
-                          tag.name
-                        )}&page=1`}
-                      >
+                      <span className="product-tag-link">
                         {tag.name
                           .replace(/ /g, "\u00a0")
                           .replace(/-/g, "\u2011")}
-                      </a>
+                      </span>
                     </span>
                   ))}
                 </div>
