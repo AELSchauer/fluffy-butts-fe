@@ -1,16 +1,16 @@
-import BrandCreatePage from "./pages/Brand/CreatePage";
 import BrandIndexPage from "./pages/Brand/IndexPage";
 import BrandShowPage from "./pages/Brand/ShowPage";
+import CreatePage from "./pages/Admin/CreatePage";
 import HomePage from "./pages/HomePage";
 import BrowsePage from "./pages/BrowsePage";
 import ProductPage from "./pages/ProductPage";
 
 export default [
   {
-    path: "/admin/brands/create",
-    title: "Create Brand",
+    path: "/admin/create",
+    title: "Create Page",
     includeInNavBar: false,
-    component: BrandCreatePage,
+    component: CreatePage,
   },
   {
     path: "/brands/:brandName/products/:productLineSlug",
