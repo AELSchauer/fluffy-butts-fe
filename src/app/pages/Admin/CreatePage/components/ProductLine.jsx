@@ -39,6 +39,7 @@ const CreateProductLine = ({
   onRemove,
   onChange,
   productLine = {},
+  allPatterns = []
 }) => {
   const [products, setProducts] = useState([{}]);
 

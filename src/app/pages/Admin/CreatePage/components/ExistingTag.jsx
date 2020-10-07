@@ -7,7 +7,7 @@ const CreatePattern = ({
   onChange,
   onRemove,
   tag = {},
-  allTags = [],
+  referenceTags = [],
 }) => {
   return (
     <div className="row">
@@ -19,7 +19,7 @@ const CreatePattern = ({
         <option value={JSON.stringify({})} selected>
           Select your option
         </option>{" "}
-        {allTags.map(({ id = "NEW", name, category }, idx) => {
+        {referenceTags.map(({ id = "NEW", name, category }, idx) => {
           const categoryName = toTitleCase(
             category.replace("PATTERN__", "").replace(/_/g, " ")
           ).replace(/AND/i, "&");
