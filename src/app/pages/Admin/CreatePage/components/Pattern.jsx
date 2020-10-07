@@ -51,11 +51,11 @@ const CreatePattern = ({ deleteButton, idx, pattern = {} }) => {
         <div>
           <label>Tags</label>
           <TagContext.Consumer>
-            {({ tags: referenceTags }) =>
+            {({ existingTags, newTags }) =>
               tags.map((tag, idx) => (
                 <CreateExistingTag
-                  referenceTags={referenceTags.filter(
-                    ({ category }) => !!~category.indexOf("PATTERN__")
+                  referenceTags={[...existingTags, ...newTags].filter(
+                    ({ category = "" }) => !!~category.indexOf("PATTERN__")
                   )}
                   idx={idx}
                   onChange={changeTag}

@@ -7,7 +7,8 @@ import TagSection from "./components/TagSection";
 
 const CreatePage = () => {
   const [brand, setBrand] = useState({});
-  const [tags, setTags] = useState([]);
+  const [existingTags, setExistingTags] = useState([]);
+  const [newTags, setNewTags] = useState([{}]);
 
   useEffect(() => {
     axios({
@@ -25,20 +26,28 @@ const CreatePage = () => {
         `,
       },
     }).then(({ data: { data: { tags = [] } = {} } = {} }) => {
-      setTags(tags);
+      setExistingTags(tags);
     });
   }, []);
 
-  const changeTag = (tag, tagIdx) => {
-    setTags([...tags.slice(0, tagIdx), tag, ...tags.slice(tagIdx + 1)]);
+  const addNewTag = () => {
+    setNewTags(newTags.concat([{}]))
+  }
+
+  const changeNewTag = (tagJson, tagIdx) => {
+    setNewTags([
+      ...newTags.slice(0, tagIdx),
+      JSON.parse(tagJson),
+      ...newTags.slice(tagIdx + 1),
+    ]);
   };
 
-  const removeTag = (tagIdx) => {
-    setTags([...tags.slice(0, tagIdx), ...tags.slice(tagIdx + 1)]);
+  const removeNewTag = (tagIdx) => {
+    setNewTags([...newTags.slice(0, tagIdx), ...newTags.slice(tagIdx + 1)]);
   };
 
   return (
-    <TagContext.Provider value={{ tags, changeTag, removeTag }}>
+    <TagContext.Provider value={{ existingTags, newTags, changeNewTag, removeNewTag }}>
       <section className="create-page page">
         <form>
           <div>

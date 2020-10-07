@@ -1,14 +1,17 @@
 import React from "react";
 import { toTitleCase } from "../../../../utils/case-helper";
+import _ from "lodash";
 
 const CreatePattern = ({
+  category: filterCategory,
   deleteButton,
   idx,
   onChange,
   onRemove,
+  referenceTags,
   tag = {},
-  referenceTags = [],
 }) => {
+  const sortedReferenceTags = _.sortBy(referenceTags, ["category", "name"]);
   return (
     <div className="row">
       <select
@@ -18,17 +21,19 @@ const CreatePattern = ({
       >
         <option value={JSON.stringify({})} selected>
           Select your option
-        </option>{" "}
-        {referenceTags.map(({ id = "NEW", name, category }, idx) => {
-          const categoryName = toTitleCase(
-            category.replace("PATTERN__", "").replace(/_/g, " ")
-          ).replace(/AND/i, "&");
-          return (
-            <option
-              value={JSON.stringify({ id, name })}
-            >{`${categoryName} -- ${name}`}</option>
-          );
-        })}
+        </option>
+        {sortedReferenceTags.map(
+          ({ id = "NEW", name = "", category = "" }, idx) => {
+            const categoryName = toTitleCase(
+              category.replace(/[A-Z]*__/, "").replace(/_/g, " ")
+            ).replace(/AND/i, "&");
+            return (
+              <option
+                value={JSON.stringify({ id, name })}
+              >{`${categoryName} -- ${name}`}</option>
+            );
+          }
+        )}
       </select>
       {deleteButton ? (
         <i className="fas fa-minus" onClick={() => onRemove(idx)} />
