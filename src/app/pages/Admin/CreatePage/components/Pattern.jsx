@@ -41,6 +41,11 @@ const CreatePattern = ({ deleteButton, idx, pattern = {} }) => {
           value={pattern.name}
           onChange={(e) => onChange({ ...pattern, name: e.target.value }, idx)}
         />
+        {deleteButton ? (
+          <i className="fas fa-minus" onClick={() => onRemove(idx)} />
+        ) : (
+          ""
+        )}
       </div>
       <div className="collapse" id={`collapse-pattern-${idx}`}>
         <div>

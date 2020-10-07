@@ -5,7 +5,6 @@ import PatternContext from "../../../../contexts/pattern-context";
 const PatternSection = ({ patternTags = [] }) => {
   const { patterns, addPattern } = useContext(PatternContext);
 
-
   return (
     <div>
       <h5 className="category-name">Patterns</h5>

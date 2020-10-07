@@ -50,6 +50,7 @@ const CreatePage = () => {
           </div>
         </form>
       </section>
+      {JSON.stringify(brand)}
     </TagContext.Provider>
   );
 };

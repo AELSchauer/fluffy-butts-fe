@@ -47,8 +47,24 @@ const CreateBrand = ({ brand = {}, onChange }) => {
       ...patterns.slice(0, patternIdx),
       ...patterns.slice(patternIdx + 1),
     ];
+    const newProductLines = productLines.map(
+      ({ products, ...productLine }) => ({
+        ...productLine,
+        products: products.map(({ pattern, ...product }) => ({
+          ...product,
+          pattern: newPatterns.map(({ name }) => name).includes(pattern)
+            ? pattern
+            : "",
+        })),
+      })
+    );
     setPatterns(newPatterns);
-    onChange({ ...brand, patterns: newPatterns });
+    setProductLines(newProductLines);
+    onChange({
+      ...brand,
+      patterns: newPatterns,
+      productLines: newProductLines,
+    });
   };
 
   return (
