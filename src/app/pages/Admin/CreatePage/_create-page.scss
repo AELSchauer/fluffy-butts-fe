@@ -1,0 +1,31 @@
+.info-toggle {
+  font-size: large;
+}
+
+.info-display label {
+  margin: 0 10px 0 20px;
+}
+
+.fa-plus {
+  margin-right: 10px;
+}
+
+.fa-minus {
+  margin-left: 10px;
+}
+
+.category-section {
+  margin-top: 20px;
+}
+
+ul.tag-list {
+  padding-left: 32px;
+
+  li.tag {
+    padding: 0px;
+  
+    label:first-child {
+      margin-left: 9px;
+    }
+  }
+}
