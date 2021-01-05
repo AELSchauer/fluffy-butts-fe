@@ -1,8 +1,9 @@
 import BrandIndexPage from "./pages/Brand/IndexPage";
 import BrandShowPage from "./pages/Brand/ShowPage";
-import CreatePage from "./pages/Admin/CreatePage";
-import HomePage from "./pages/HomePage";
 import BrowsePage from "./pages/BrowsePage";
+import CreatePage from "./pages/Admin/CreatePage";
+import DiaperTypesPage from "./pages/DiaperTypesPage";
+import HomePage from "./pages/HomePage";
 import ProductPage from "./pages/ProductPage";
 
 export default [
@@ -11,6 +12,12 @@ export default [
     title: "Create Page",
     includeInNavBar: false,
     component: CreatePage,
+  },
+  {
+    path: "/diaper-types",
+    title: "Diaper Types",
+    includeInNavBar: true,
+    component: DiaperTypesPage,
   },
   {
     path: "/brands/:brandName/products/:productLineSlug",
