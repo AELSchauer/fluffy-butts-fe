@@ -3,7 +3,7 @@ import axios from "../../../utils/axios";
 import CreateBrand from "./components/BrandSection";
 import TagContext from "../../../contexts/tag-context";
 import TagSection from "./components/TagSection";
-import { createBrandsQuery, createTagsQuery } from "./query-helpers";
+import { createBrandsQuery, createTagsQuery } from "./form-queries";
 import _ from "lodash";
 import "./_create-page.scss";
 

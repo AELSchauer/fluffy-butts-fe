@@ -1,51 +1,24 @@
 import _ from "lodash";
 import axios from "../../../../utils/axios";
-import { checkForErrors, cleanupErrors, hasError } from "./handle-errors";
+import { buildQuery, handleFormErrors } from "./helpers";
+
+const className = "Tag";
+const requiredFields = ["name", "category"];
 
 export default (tags) => {
   if (tags.every(({ id }) => id.indexOf("tmp") === -1)) {
     return tags;
   }
 
-  tags = cleanupErrors(tags);
-
-  let hasErrors = false;
-
-  if (hasError(tags, "name")) {
-    hasErrors = true;
-    tags = checkForErrors(tags, "name", {
-      error: "required",
-      message: "Tag must have a name.",
-    });
-  }
-
-  if (hasError(tags, "category")) {
-    hasErrors = true;
-    tags = checkForErrors(tags, "category", {
-      error: "required",
-      message: "Tag must have a category.",
-    });
-  }
+  var { hasErrors, arr: tags } = handleFormErrors(
+    tags,
+    className,
+    requiredFields
+  );
 
   if (hasErrors) {
     return Promise.resolve(tags);
   }
-
-  const query = [];
-
-  query.push("mutation CreateTags{");
-  tags.forEach(({ id, name, category, displayOrder }) => {
-    if (id.indexOf("tmp") === 0) {
-      const displayOrderQuery = displayOrder
-        ? `,display_order:${displayOrder}`
-        : "";
-      const includeDisplayOrder = displayOrder ? " display_order" : "";
-      query.push(
-        `${name}:CreateTag(name:"${name}",category:"${category}"${displayOrderQuery}){id name category${includeDisplayOrder}}`
-      );
-    }
-  });
-  query.push("}");
 
   const token =
     "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjEiLCJlbWFpbCI6ImJhbmFuYV9zcGxpdEBnbWFpbC5jb20iLCJ1c2VybmFtZSI6ImJhbmFuYS1zcGxpdCIsImlhdCI6MTYxMDA5MDg0MCwiZXhwIjoxNjEwMTc3MjQwfQ.fCJurBRFBPtsSv8x8G1pK8XMnICCZ3r6funGWJl8WFo";
@@ -56,7 +29,7 @@ export default (tags) => {
       Authorization: `Bearer ${token}`,
     },
     data: {
-      query: query.join(""),
+      query: buildQuery(tags, className),
     },
   }).then(({ data: { data: createTags, errors: requestErrors } = {} }) => {
     return tags.map((tag) => {
@@ -75,6 +48,10 @@ export default (tags) => {
                     });
                     break;
                   default:
+                    console.error(
+                      "handler for error message not found",
+                      message
+                    );
                     break;
                 }
                 return errors;
