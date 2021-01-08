@@ -8,18 +8,37 @@ const baseURLs = {
   production: "https://api-fluffy-butts.herokuapp.com/api/v1",
 };
 
-export default axios.create({
+const axiosWrapper = axios.create({
   baseURL: baseURLs[process.env.NODE_ENV],
   responseType: "json",
   transformResponse: [
     function (data) {
       const travData = traverse(data);
-      travData
-        .paths()
-        .forEach(
-          (path) => travData.get(path) === null && travData.set(path, undefined)
-        );
-      return deserialize(travData.value, { transformKeys: "camelCase" });
+      if (data !== null) {
+        travData
+          .paths()
+          .forEach(
+            (path) =>
+              travData.get(path) === null && travData.set(path, undefined)
+          );
+        return deserialize(travData.value, { transformKeys: "camelCase" });
+      }
+      return;
     },
   ],
 });
+
+export default (args) =>
+  axiosWrapper(args).then((response) => {
+    console.log("axios", response);
+    if (
+      response.data.errors &&
+      response.data.errors.length &&
+      response.data.errors.some(({ code }) => code >= 400)
+    ) {
+      return Promise.reject(
+        response.data.errors.find(({ code }) => code >= 400).message
+      );
+    }
+    return response;
+  });

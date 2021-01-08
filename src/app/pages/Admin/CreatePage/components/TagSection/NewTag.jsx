@@ -13,12 +13,14 @@ const CreateNewTag = ({ tag = {}, categories = [] }) => {
       <label>Name</label>
       <input
         type="text"
+        required
         value={(tag.name || "").toLowerCase()}
         onChange={(e) => onChange({ ...tag, name: e.target.value })}
       />
       <label>Category</label>
       <select
         value={tag.category}
+        required
         onChange={(e) => onChange({ ...tag, category: e.target.value })}
         defaultValue=""
       >
@@ -34,6 +36,14 @@ const CreateNewTag = ({ tag = {}, categories = [] }) => {
         <option value="PRODUCT__TBD">PRODUCT__TBD</option>
         <option value="TBD">TBD</option>
       </select>
+      <label>Display Order</label>
+      <input
+        type="number"
+        min="0"
+        step="1"
+        value={tag.displayOrder}
+        onChange={(e) => onChange({ ...tag, name: e.target.value })}
+      />
       <i className="fas fa-minus" onClick={() => onRemove(tag)} />
     </li>
   );

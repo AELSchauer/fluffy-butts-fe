@@ -78,12 +78,16 @@ const CreateBrand = ({ brand = {}, onChange }) => {
       value={{ patterns, addPattern, changePattern, removePattern }}
     >
       <div className="info-display">
+        <label>ID</label>
+        <input type="text" value={brand.id} disabled />
         <label>Name</label>
         <input
           type="text"
+          required
           value={brand.name}
           onChange={(e) => onChange({ ...brand, name: e.target.value })}
         />
+        {JSON.stringify(brand, null, 2)}
       </div>
       <PatternSection />
       <div className="category-section">

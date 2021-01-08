@@ -1,40 +1,38 @@
 import React, { useState } from "react";
 import CreateProduct from "./Product";
 import CreateTagging from "../Tagging";
+import { DefaultEditor } from "react-simple-wysiwyg";
 import JSONInput from "react-json-editor-ajrm";
 import locale from "react-json-editor-ajrm/locale/en";
 import TagContext from "../../../../../../contexts/tag-context";
+
 import _ from "lodash";
 
-const sampleProductDetails = {
-  sizing: [
-    {
-      name: "",
-      weight: {
-        max: [
-          { num: 0, unit: "kg" },
-          { num: 0, unit: "lb" },
-        ],
-        min: [
-          { num: 0, unit: "kg" },
-          { num: 0, unit: "lb" },
-        ],
-      },
-      dimensions: {
-        width: [
-          { num: 0, unit: "in" },
-          { num: 0, unit: "cm" },
-        ],
-        length: [
-          { num: 0, unit: "in" },
-          { num: 0, unit: "cm" },
-        ],
-      },
+const sampleProductDetails = [
+  {
+    name: "",
+    weight: {
+      max: [
+        { num: 0, unit: "kg" },
+        { num: 0, unit: "lb" },
+      ],
+      min: [
+        { num: 0, unit: "kg" },
+        { num: 0, unit: "lb" },
+      ],
     },
-  ],
-  materials:
-    "<ul><li>Outer: polyester TPU</li><li>Inner: suede cloth (100% polyester)</li><li>Insert(s): 1 x 3-layer microfiber (80% polyester, 20% polyamide) insert</li></ul>",
-};
+    dimensions: {
+      width: [
+        { num: 0, unit: "in" },
+        { num: 0, unit: "cm" },
+      ],
+      length: [
+        { num: 0, unit: "in" },
+        { num: 0, unit: "cm" },
+      ],
+    },
+  },
+];
 
 const CreateProductLine = ({ onRemove, onChange, productLine = {} }) => {
   const [products, setProducts] = useState(productLine.products || []);
@@ -116,15 +114,31 @@ const CreateProductLine = ({ onRemove, onChange, productLine = {} }) => {
       </div>
       <ul className="collapse" id={`collapse-product-line-${productLine.id}`}>
         <li>
-          <label>Details</label>
+          <label>Sizing</label>
           <JSONInput
             id="product-line-details"
             placeholder={sampleProductDetails}
             locale={locale}
-            height="250px"
-            value={productLine.details}
+            height="500px"
+            width="1000px"
+            value={(productLine.details || {}).sizing || {}}
             onChange={(e) =>
-              onChange({ ...productLine, details: e.target.value })
+              onChange({
+                ...productLine,
+                details: { ...productLine.details, sizing: JSON.parse(e.json) },
+              })
+            }
+          />
+        </li>
+        <li>
+          <label>Materials</label>
+          <DefaultEditor
+            value={(productLine.details || {}).materials || ""}
+            onChange={(e) =>
+              onChange({
+                ...productLine,
+                details: { ...productLine.details, materials: e.target.value },
+              })
             }
           />
         </li>

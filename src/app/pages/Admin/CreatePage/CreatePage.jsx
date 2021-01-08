@@ -1,21 +1,24 @@
-import React, { createContext, useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
+import { Redirect } from "react-router-dom";
 import axios from "../../../utils/axios";
 import CreateBrand from "./components/BrandSection";
 import TagContext from "../../../contexts/tag-context";
 import TagSection from "./components/TagSection";
+import { createBrandQuery, createTagsQuery } from "./query-helpers";
 import _ from "lodash";
 import "./_create-page.scss";
 
 const CreatePage = () => {
-  const [brand, setBrand] = useState({});
+  const [brand, setBrand] = useState({ id: Date.now() });
   const [existingTags, setExistingTags] = useState([]);
   const [newTags, setNewTags] = useState([]);
+  const [isAuthorized, setIsAuthorized] = useState(true);
 
   useEffect(() => {
     axios({
-      method: "get",
-      url: "/graphql",
-      params: {
+      method: "POST",
+      url: "/",
+      data: {
         query: `
           {
             tags (order_by: "category:asc,name:asc") {
@@ -45,17 +48,34 @@ const CreatePage = () => {
     setNewTags([...newTags.slice(0, idx), ...newTags.slice(idx + 1)]);
   };
 
+  const handleSubmit = () => {
+    createBrandQuery(brand)
+      .then((brandResult) => {
+        console.log(brandResult);
+        setBrand(brandResult);
+      })
+      .catch((error) => {
+        console.log("error", error);
+        setIsAuthorized(false)
+      });
+  };
+
   return (
     <TagContext.Provider
       value={{ existingTags, newTags, addNewTag, changeNewTag, removeNewTag }}
     >
       <section className="create-page page">
-        <form>
+        {!isAuthorized ? <div>Not authorized. Please login again.</div> : null}
+        {/* <form onSubmit={handleSubmit}> */}
+        <form onSubmit={handleSubmit}>
           <div>
             <h3>Brand</h3>
             <CreateBrand brand={brand} onChange={setBrand} />
           </div>
           <TagSection />
+          {JSON.stringify({ brand, tags: newTags }, null, 2)}
+          {/* <button type="submit">Submit</button> */}
+          <div onClick={handleSubmit}>Submit</div>
         </form>
       </section>
     </TagContext.Provider>
