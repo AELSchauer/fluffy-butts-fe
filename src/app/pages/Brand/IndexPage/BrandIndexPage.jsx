@@ -9,7 +9,7 @@ const BrandIndexPage = () => {
     axios({
       method: "POST",
       url: "/",
-      params: {
+      data: {
         query: `
           {
             brands (order_by: "name_insensitive:asc") {

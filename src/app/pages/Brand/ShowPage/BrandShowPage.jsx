@@ -15,7 +15,7 @@ const BrandShowPage = (props) => {
     return axios({
       method: "POST",
       url: "/",
-      params: {
+      data: {
         query: `
           {
             brands (filter__id: "${brandId}") {

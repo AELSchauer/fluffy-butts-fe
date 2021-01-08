@@ -101,7 +101,7 @@ const BrowsePage = () => {
     return axios({
       method: "POST",
       url: "/",
-      params: {
+      data: {
         query: `
           {
             brands (order_by: "name_insensitive:asc") {
@@ -121,7 +121,7 @@ const BrowsePage = () => {
     return axios({
       method: "POST",
       url: "/",
-      params: {
+      data: {
         query: `
           {
             tags (order_by: "category:asc,display_order:asc,name:asc") {
@@ -147,7 +147,7 @@ const BrowsePage = () => {
     return axios({
       method: "POST",
       url: "/",
-      params: {
+      data: {
         query: `
           {
             brands (order_by: "name_insensitive:asc") {
