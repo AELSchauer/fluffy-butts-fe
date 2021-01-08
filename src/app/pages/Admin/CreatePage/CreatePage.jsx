@@ -3,7 +3,7 @@ import axios from "../../../utils/axios";
 import CreateBrand from "./components/BrandSection";
 import TagContext from "../../../contexts/tag-context";
 import TagSection from "./components/TagSection";
-import { createBrandQuery, createTagsQuery } from "./query-helpers";
+import { createBrandsQuery, createTagsQuery } from "./query-helpers";
 import _ from "lodash";
 import "./_create-page.scss";
 
@@ -48,10 +48,10 @@ const CreatePage = () => {
   };
 
   const handleSubmit = () => {
-    Promise.all([createBrandQuery(brand), createTagsQuery(newTags)])
-      .then(([brandResult, tagsResult]) => {
-        setBrand(brandResult);
-        setNewTags(tagsResult);
+    Promise.all([createBrandsQuery([brand]), createTagsQuery(newTags)])
+      .then(([brandsResult, tagsResult]) => {
+        brandsResult && setBrand(brandsResult[0]);
+        tagsResult && setNewTags(tagsResult);
       })
       .catch((error) => {
         console.log("error", error);

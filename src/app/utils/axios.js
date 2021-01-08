@@ -30,7 +30,6 @@ const axiosWrapper = axios.create({
 
 export default (args) =>
   axiosWrapper(args).then((response) => {
-    console.log("axios", response);
     if (
       response.data.errors &&
       response.data.errors.length &&

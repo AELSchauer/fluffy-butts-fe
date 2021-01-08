@@ -1,2 +1,2 @@
-export { default as createBrandQuery } from './create-brand'
+export { default as createBrandsQuery } from './create-brands'
 export { default as createTagsQuery } from './create-tags'

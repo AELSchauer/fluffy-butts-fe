@@ -3,6 +3,10 @@ import axios from "../../../../utils/axios";
 import { checkForErrors, cleanupErrors, hasError } from "./handle-errors";
 
 export default (tags) => {
+  if (tags.every(({ id }) => id.indexOf("tmp") === -1)) {
+    return tags;
+  }
+
   tags = cleanupErrors(tags);
 
   let hasErrors = false;
@@ -43,10 +47,8 @@ export default (tags) => {
   });
   query.push("}");
 
-  console.log(query.join(""));
-
   const token =
-    "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjEiLCJlbWFpbCI6ImJhbmFuYV9zcGxpdEBnbWFpbC5jb20iLCJ1c2VybmFtZSI6ImJhbmFuYS1zcGxpdCIsImlhdCI6MTYxMDA4MDA4OSwiZXhwIjoxNjEwMTY2NDg5fQ.LUMrCMy8FgbqDWYJ5yG2pIVnBgJffWRmMOhWLe_Xvlc";
+    "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjEiLCJlbWFpbCI6ImJhbmFuYV9zcGxpdEBnbWFpbC5jb20iLCJ1c2VybmFtZSI6ImJhbmFuYS1zcGxpdCIsImlhdCI6MTYxMDA5MDg0MCwiZXhwIjoxNjEwMTc3MjQwfQ.fCJurBRFBPtsSv8x8G1pK8XMnICCZ3r6funGWJl8WFo";
   return axios({
     method: "POST",
     url: "/",
@@ -82,6 +84,5 @@ export default (tags) => {
         }
       );
     });
-    return tags;
   });
 };
