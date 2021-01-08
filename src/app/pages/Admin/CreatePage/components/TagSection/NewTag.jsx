@@ -41,7 +41,14 @@ const CreateNewTag = ({ tag = {}, categories = [] }) => {
         value={tag.displayOrder}
         onChange={(e) => onChange({ ...tag, displayOrder: e.target.value })}
       />
-      <i className="fas fa-minus" onClick={() => onRemove(tag)} />
+      <i
+        className="fas fa-minus"
+        onClick={() => onRemove(tag)}
+        onKeyPress={(e) => {
+          e.key === "Enter" && onRemove(tag);
+        }}
+        tabIndex="0"
+      />
     </li>
   );
 };

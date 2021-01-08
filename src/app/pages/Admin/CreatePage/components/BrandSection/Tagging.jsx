@@ -29,7 +29,14 @@ const CreatePattern = ({
           );
         })}
       </select>
-      <i className="fas fa-minus" onClick={() => onRemove(tagging)} />
+      <i
+        className="fas fa-minus"
+        onClick={() => onRemove(tagging)}
+        onKeyPress={(e) => {
+          e.key === "Enter" && onRemove(tagging);
+        }}
+        tabIndex="0"
+      />
     </div>
   );
 };

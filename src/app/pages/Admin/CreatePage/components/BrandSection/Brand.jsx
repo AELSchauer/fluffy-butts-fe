@@ -92,7 +92,14 @@ const CreateBrand = ({ brand = {}, onChange }) => {
       <div className="category-section">
         <div className="category-heading">
           <h5 className="category-name">Product Lines</h5>
-          <span className="add-product-line" onClick={addProductLine}>
+          <span
+            className="add-product-line"
+            onClick={addProductLine}
+            onKeyPress={(e) => {
+              e.key === "Enter" && addProductLine();
+            }}
+            tabIndex="0"
+          >
             <i className="fas fa-plus" />
             <span>Add Product Line</span>
           </span>

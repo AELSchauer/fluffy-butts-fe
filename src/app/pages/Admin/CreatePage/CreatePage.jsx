@@ -66,7 +66,7 @@ const CreatePage = () => {
       <section className="create-page page">
         {!isAuthorized ? <div>Not authorized. Please login again.</div> : null}
         {/* <form onSubmit={handleSubmit}> */}
-        <form onSubmit={handleSubmit}>
+        <form>
           <div>
             <h3>Brand</h3>
             <CreateBrand brand={brand} onChange={setBrand} />

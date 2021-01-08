@@ -9,7 +9,14 @@ const PatternSection = () => {
     <div className="category-section">
       <div className="category-heading">
         <h5 className="category-name">Patterns</h5>
-        <span className="add-pattern" onClick={addPattern}>
+        <span
+          className="add-pattern"
+          onClick={addPattern}
+          onKeyPress={(e) => {
+            e.key === "Enter" && addPattern();
+          }}
+          tabIndex="0"
+        >
           <i className="fas fa-plus" />
           <span>Add Pattern</span>
         </span>

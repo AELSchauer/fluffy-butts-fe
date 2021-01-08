@@ -11,7 +11,14 @@ const TagSection = () => {
     <div className="category-section">
       <div className="category-heading">
         <h3 className="category-name">Tags</h3>
-        <span className="add-new-tag" onClick={addNewTag}>
+        <span
+          className="add-new-tag"
+          onClick={addNewTag}
+          onKeyPress={(e) => {
+            e.key === "Enter" && addNewTag();
+          }}
+          tabIndex="0"
+        >
           <i className="fas fa-plus" />
           <span>Add Tag</span>
         </span>

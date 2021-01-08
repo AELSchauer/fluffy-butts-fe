@@ -16,7 +16,11 @@ const CreatePattern = ({ pattern = {} }) => {
 
   const changeTagging = (tagging) => {
     const idx = _.findIndex(taggings, { id: tagging.id });
-    const newTaggings = [...taggings.slice(0, idx), tagging, ...taggings.slice(idx + 1)];
+    const newTaggings = [
+      ...taggings.slice(0, idx),
+      tagging,
+      ...taggings.slice(idx + 1),
+    ];
     setTaggings(newTaggings);
     onChange({ ...pattern, taggings: newTaggings });
   };
@@ -48,7 +52,14 @@ const CreatePattern = ({ pattern = {} }) => {
           value={pattern.name}
           onChange={(e) => onChange({ ...pattern, name: e.target.value })}
         />
-        <i className="fas fa-minus" onClick={() => onRemove(pattern)} />
+        <i
+          className="fas fa-minus"
+          onClick={() => onRemove(pattern)}
+          onKeyPress={(e) => {
+            e.key === "Enter" && onRemove(pattern);
+          }}
+          tabIndex="0"
+        />
       </div>
       <div className="collapse" id={`collapse-pattern-${pattern.id}`}>
         <div>
@@ -69,7 +80,14 @@ const CreatePattern = ({ pattern = {} }) => {
             }
           </TagContext.Consumer>
         </div>
-        <div className="row add-tagging" onClick={addTagging}>
+        <div
+          className="row add-tagging"
+          onClick={addTagging}
+          onKeyPress={(e) => {
+            e.key === "Enter" && addTagging();
+          }}
+          tabIndex="0"
+        >
           <i className="fas fa-plus" />
           <span>Add Tagging</span>
         </div>

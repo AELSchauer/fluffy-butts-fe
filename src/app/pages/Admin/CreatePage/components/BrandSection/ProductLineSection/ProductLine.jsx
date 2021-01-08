@@ -110,7 +110,14 @@ const CreateProductLine = ({ onRemove, onChange, productLine = {} }) => {
             onChange({ ...productLine, displayOrder: e.target.value })
           }
         />
-        <i className="fas fa-minus" onClick={() => onRemove(productLine)} />
+        <i
+          className="fas fa-minus"
+          onClick={() => onRemove(productLine)}
+          onKeyPress={(e) => {
+            e.key === "Enter" && onRemove(productLine);
+          }}
+          tabIndex="0"
+        />
       </div>
       <ul className="collapse" id={`collapse-product-line-${productLine.id}`}>
         <li>
@@ -145,7 +152,14 @@ const CreateProductLine = ({ onRemove, onChange, productLine = {} }) => {
         <li className="category-section">
           <div className="category-heading">
             <h6 className="category-name">Products</h6>
-            <span className="add-product" onClick={addProduct}>
+            <span
+              className="add-product"
+              onClick={addProduct}
+              onKeyPress={(e) => {
+                e.key === "Enter" && addProduct();
+              }}
+              tabIndex="0"
+            >
               <i className="fas fa-plus" />
               <span>Add Product</span>
             </span>
@@ -164,7 +178,14 @@ const CreateProductLine = ({ onRemove, onChange, productLine = {} }) => {
         <li className="category-section">
           <div className="category-header">
             <h6 className="category-name">Taggings</h6>
-            <span className="add-tagging" onClick={addTagging}>
+            <span
+              className="add-tagging"
+              onClick={addTagging}
+              onKeyPress={(e) => {
+                e.key === "Enter" && addTagging();
+              }}
+              tabIndex="0"
+            >
               <i className="fas fa-plus" />
               <span>Add Tagging</span>
             </span>

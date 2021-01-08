@@ -41,7 +41,14 @@ const CreateProduct = ({ idx, onRemove, onChange, product }) => {
               </option>
             ))}
         </select>
-        <i className="fas fa-minus" onClick={() => onRemove(product)} />
+        <i
+          className="fas fa-minus"
+          onClick={() => onRemove(product)}
+          onKeyPress={(e) => {
+            e.key === "Enter" && onRemove(product);
+          }}
+          tabIndex="0"
+        />
       </span>
       <div className="collapse" id={`collapse-product-${product.id}`}>
         Stuff Goes Here?
