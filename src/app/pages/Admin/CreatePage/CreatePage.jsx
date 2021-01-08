@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from "react";
-import { Redirect } from "react-router-dom";
 import axios from "../../../utils/axios";
 import CreateBrand from "./components/BrandSection";
 import TagContext from "../../../contexts/tag-context";
@@ -9,7 +8,7 @@ import _ from "lodash";
 import "./_create-page.scss";
 
 const CreatePage = () => {
-  const [brand, setBrand] = useState({ id: Date.now() });
+  const [brand, setBrand] = useState({ id: `tmp-${Date.now()}` });
   const [existingTags, setExistingTags] = useState([]);
   const [newTags, setNewTags] = useState([]);
   const [isAuthorized, setIsAuthorized] = useState(true);
@@ -35,7 +34,7 @@ const CreatePage = () => {
   }, []);
 
   const addNewTag = () => {
-    setNewTags(newTags.concat([{ id: Date.now() }]));
+    setNewTags(newTags.concat([{ id: `tmp-${Date.now()}` }]));
   };
 
   const changeNewTag = (newTag) => {
@@ -49,14 +48,14 @@ const CreatePage = () => {
   };
 
   const handleSubmit = () => {
-    createBrandQuery(brand)
-      .then((brandResult) => {
-        console.log(brandResult);
+    Promise.all([createBrandQuery(brand), createTagsQuery(newTags)])
+      .then(([brandResult, tagsResult]) => {
         setBrand(brandResult);
+        setNewTags(tagsResult);
       })
       .catch((error) => {
         console.log("error", error);
-        setIsAuthorized(false)
+        setIsAuthorized(false);
       });
   };
 

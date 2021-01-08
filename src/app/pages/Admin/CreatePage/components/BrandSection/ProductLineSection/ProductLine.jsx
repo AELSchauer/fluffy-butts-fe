@@ -39,7 +39,7 @@ const CreateProductLine = ({ onRemove, onChange, productLine = {} }) => {
   const [taggings, setTaggings] = useState(productLine.taggings || []);
 
   const addProduct = () => {
-    setProducts(products.concat({ id: Date.now() }));
+    setProducts(products.concat({ id: `tmp-${Date.now()}` }));
   };
 
   const changeProduct = (product) => {
@@ -61,7 +61,7 @@ const CreateProductLine = ({ onRemove, onChange, productLine = {} }) => {
   };
 
   const addTagging = () => {
-    setTaggings(taggings.concat({ id: Date.now() }));
+    setTaggings(taggings.concat({ id: `tmp-${Date.now()}` }));
   };
 
   const changeTagging = (tagging) => {

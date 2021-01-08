@@ -38,11 +38,8 @@ const CreateNewTag = ({ tag = {}, categories = [] }) => {
       </select>
       <label>Display Order</label>
       <input
-        type="number"
-        min="0"
-        step="1"
         value={tag.displayOrder}
-        onChange={(e) => onChange({ ...tag, name: e.target.value })}
+        onChange={(e) => onChange({ ...tag, displayOrder: e.target.value })}
       />
       <i className="fas fa-minus" onClick={() => onRemove(tag)} />
     </li>

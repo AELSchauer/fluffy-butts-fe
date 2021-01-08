@@ -1,18 +1,21 @@
 import axios from "../../../../utils/axios";
+import { checkForErrors, cleanupErrors, hasError } from "./handle-errors";
 
-const createBrand = (brand) => {
-  if (!brand.name) {
-    return Promise.resolve({
-      ...brand,
-      errors: {
-        name: [
-          {
-            error: "required",
-            message: "Brand must have a name",
-          },
-        ],
-      },
-    });
+export default (brand) => {
+  brand = cleanupErrors([brand]);
+
+  let hasErrors = false;
+
+  if (hasError(brand, "name")) {
+    hasErrors = true;
+    brand = checkForErrors(brand, "name", {
+      error: "required",
+      message: "Brand must have a name.",
+    })[0];
+  }
+
+  if (hasErrors) {
+    return Promise.resolve(brand);
   }
 
   const token =
@@ -51,5 +54,3 @@ const createBrand = (brand) => {
     }
   );
 };
-
-export default createBrand;

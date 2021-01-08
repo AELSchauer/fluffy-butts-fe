@@ -11,7 +11,7 @@ const CreatePattern = ({ pattern = {} }) => {
   );
 
   const addTagging = () => {
-    setTaggings(taggings.concat({ id: Date.now() }));
+    setTaggings(taggings.concat({ id: `tmp-${Date.now()}` }));
   };
 
   const changeTagging = (tagging) => {

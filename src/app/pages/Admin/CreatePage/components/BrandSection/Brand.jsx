@@ -9,7 +9,7 @@ const CreateBrand = ({ brand = {}, onChange }) => {
   const [productLines, setProductLines] = useState(brand.productLines || []);
 
   const addProductLine = () => {
-    setProductLines(productLines.concat({ id: Date.now() }));
+    setProductLines(productLines.concat({ id: `tmp-${Date.now()}` }));
   };
 
   const changeProductLine = (productLine) => {
@@ -34,7 +34,7 @@ const CreateBrand = ({ brand = {}, onChange }) => {
   };
 
   const addPattern = () => {
-    const newPatterns = patterns.concat([{ id: Date.now() }]);
+    const newPatterns = patterns.concat([{ id: `tmp-${Date.now()}` }]);
     setPatterns(newPatterns);
     onChange({ ...brand, patterns: newPatterns });
   };
@@ -87,7 +87,6 @@ const CreateBrand = ({ brand = {}, onChange }) => {
           value={brand.name}
           onChange={(e) => onChange({ ...brand, name: e.target.value })}
         />
-        {JSON.stringify(brand, null, 2)}
       </div>
       <PatternSection />
       <div className="category-section">
