@@ -1,17 +1,17 @@
 import BrandIndexPage from "./pages/Brand/IndexPage";
 import BrandShowPage from "./pages/Brand/ShowPage";
 import BrowsePage from "./pages/BrowsePage";
-import CreatePage from "./pages/Admin/CreatePage";
+import EditPage from "./pages/Admin/EditPage";
 import DiaperTypesPage from "./pages/DiaperTypesPage";
 import HomePage from "./pages/HomePage";
 import ProductPage from "./pages/ProductPage";
 
 export default [
   {
-    path: "/admin/create",
-    title: "Create Page",
+    path: "/admin/edit",
+    title: "Edit Page",
     includeInNavBar: false,
-    component: CreatePage,
+    component: EditPage,
   },
   {
     path: "/diaper-types",

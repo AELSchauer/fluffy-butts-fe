@@ -1,13 +1,13 @@
 import React, { useEffect, useState } from "react";
 import axios from "../../../utils/axios";
-import CreateBrand from "./components/BrandSection";
+import BrandSection from "./components/BrandSection";
 import TagContext from "../../../contexts/tag-context";
 import TagSection from "./components/TagSection";
 import { createBrandsQuery, createTagsQuery } from "./form-queries";
 import _ from "lodash";
 import "./_create-page.scss";
 
-const CreatePage = () => {
+const EditPage = () => {
   const [brand, setBrand] = useState({ id: `tmp-${Date.now()}` });
   const [existingTags, setExistingTags] = useState([]);
   const [newTags, setNewTags] = useState([]);
@@ -69,7 +69,7 @@ const CreatePage = () => {
         <form>
           <div>
             <h3>Brand</h3>
-            <CreateBrand brand={brand} onChange={setBrand} />
+            <BrandSection brand={brand} onChange={setBrand} />
           </div>
           <TagSection />
           {JSON.stringify({ brand, tags: newTags }, null, 2)}
@@ -81,4 +81,4 @@ const CreatePage = () => {
   );
 };
 
-export default CreatePage;
+export default EditPage;

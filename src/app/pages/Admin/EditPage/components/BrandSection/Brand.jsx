@@ -1,5 +1,5 @@
 import React, { useContext, useState } from "react";
-import CreateProductLine from "./ProductLineSection";
+import ProductLineSection from "./ProductLineSection";
 import PatternContext from "../../../../../contexts/pattern-context";
 import PatternSection from "./PatternSection";
 import _ from "lodash";
@@ -106,7 +106,7 @@ const CreateBrand = ({ brand = {}, onChange }) => {
         </div>
         <div className="product-line-list">
           {productLines.map((productLine, idx) => (
-            <CreateProductLine
+            <ProductLineSection
               key={idx}
               onRemove={removeProductLine}
               onChange={changeProductLine}
