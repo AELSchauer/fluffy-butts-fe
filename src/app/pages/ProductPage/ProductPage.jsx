@@ -34,7 +34,7 @@ const ProductPage = (props) => {
     return axios({
       method: "get",
       url: `/graphql`,
-      params: {
+      data: {
         query: `
           {
             product_lines (filter__id: "${productLineId}") {

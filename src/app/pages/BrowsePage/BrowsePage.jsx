@@ -99,9 +99,9 @@ const BrowsePage = () => {
 
   const getBrands = () => {
     return axios({
-      method: "get",
-      url: "/graphql",
-      params: {
+      method: "POST",
+      url: "/",
+      data: {
         query: `
           {
             brands (order_by: "name_insensitive:asc") {
@@ -119,9 +119,9 @@ const BrowsePage = () => {
 
   const getTags = () => {
     return axios({
-      method: "get",
-      url: "/graphql",
-      params: {
+      method: "POST",
+      url: "/",
+      data: {
         query: `
           {
             tags (order_by: "category:asc,display_order:asc,name:asc") {
@@ -145,9 +145,9 @@ const BrowsePage = () => {
         : "";
 
     return axios({
-      method: "get",
-      url: "/graphql",
-      params: {
+      method: "POST",
+      url: "/",
+      data: {
         query: `
           {
             brands (order_by: "name_insensitive:asc") {
