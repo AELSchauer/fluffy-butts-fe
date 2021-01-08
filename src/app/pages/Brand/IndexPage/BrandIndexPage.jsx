@@ -7,8 +7,8 @@ const BrandIndexPage = () => {
 
   useEffect(() => {
     axios({
-      method: "get",
-      url: "/graphql",
+      method: "POST",
+      url: "/",
       params: {
         query: `
           {

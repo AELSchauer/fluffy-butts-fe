@@ -13,8 +13,8 @@ const BrandShowPage = (props) => {
   const getBrand = () => {
     const brandId = props.match.params.brandSlug.match(/\d+$/)[0];
     return axios({
-      method: "get",
-      url: "/graphql",
+      method: "POST",
+      url: "/",
       params: {
         query: `
           {

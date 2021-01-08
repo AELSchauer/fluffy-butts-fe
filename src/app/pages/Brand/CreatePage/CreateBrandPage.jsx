@@ -28,27 +28,6 @@ const BrandIndexPage = () => {
     materials:
       "<ul><li>Outer: polyester TPU</li><li>Inner: suede cloth (100% polyester)</li><li>Insert(s): 1 x 3-layer microfiber (80% polyester, 20% polyamide) insert</li></ul>",
   };
-  // useEffect(() => {
-  //   axios({
-  //     method: "get",
-  //     url: "/graphql",
-  //     params: {
-  //       query: `
-  //         {
-  //           brands (order_by: "name_insensitive:asc") {
-  //             id
-  //             name
-  //             images {
-  //               url
-  //             }
-  //           }
-  //         }
-  //       `,
-  //     },
-  //   }).then(({ data: { data: { brands = [] } = {} } = {} }) =>
-  //     setBrands(brands)
-  //   );
-  // }, []);
 
   return (
     <section className="brand-create-page page">
