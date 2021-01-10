@@ -2,6 +2,7 @@ import BrandIndexPage from "./pages/Brand/IndexPage";
 import BrandShowPage from "./pages/Brand/ShowPage";
 import BrowsePage from "./pages/BrowsePage";
 import EditPage from "./pages/Admin/EditPage";
+import MutationPage from "./pages/Admin/EditPage/MutationPage";
 import DiaperTypesPage from "./pages/DiaperTypesPage";
 import HomePage from "./pages/HomePage";
 import ProductPage from "./pages/ProductPage";
@@ -18,6 +19,12 @@ export default [
     title: "Brand Update Page",
     includeInNavBar: false,
     component: EditPage,
+  },
+  {
+    path: "/admin/diaper-data/update/:brandName",
+    title: "Brand Update Page",
+    includeInNavBar: false,
+    component: MutationPage,
   },
   {
     path: "/diaper-types",

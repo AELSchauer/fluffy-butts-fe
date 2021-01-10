@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import ChangePageContext from "../../../contexts/change-page-context";
+import DiaperMutationContext from "../../../contexts/diaper-mutation-context";
 import axios from "../../../utils/axios";
 import BrandSection from "./components/BrandSection";
 import TagContext from "../../../contexts/tag-context";
@@ -90,6 +90,10 @@ const EditPage = (props) => {
     console.log("WOOHOO!");
   };
 
+  const changeBrand = (brand) => {
+    setBrand(brand)
+  }
+
   // const handleSubmit = () => {
   //   Promise.all([createBrandsQuery([brand]), createTagsQuery(newTags)])
   //     .then(([brandsResult, tagsResult]) => {
@@ -103,7 +107,7 @@ const EditPage = (props) => {
   // };
 
   return (
-    <ChangePageContext.Provider
+    <DiaperMutationContext.Provider
       value={{ changePageType }}
     >
       <TagContext.Provider
@@ -116,14 +120,15 @@ const EditPage = (props) => {
           <form onSubmit={handleSubmit}>
             <div>
               <h3>Brand</h3>
-              <BrandSection brand={brand} onChange={setBrand} />
+              <BrandSection brand={brand} onChange={changeBrand} />
             </div>
             <TagSection />
             <button type="submit">Submit</button>
           </form>
+          {JSON.stringify(brand)}
         </section>
       </TagContext.Provider>
-    </ChangePageContext.Provider>
+    </DiaperMutationContext.Provider>
   );
 };
 
