@@ -4,9 +4,9 @@ import ConfirmationModal from "../ConfirmationModal";
 import CreateTagging from "../BrandSection/Tagging";
 import PatternContext from "../../../../../contexts/pattern-context";
 import TagContext from "../../../../../contexts/tag-context";
+import RemoveButton from "../RemoveButton/RemoveButton";
 
 const CreatePattern = ({ pattern = {} }) => {
-  const [showModal, setShowModal] = useState(false);
   const [taggings, setTaggings] = useState([]);
   const { changePattern: onChange, removePattern: onRemove } = useContext(
     PatternContext
@@ -34,27 +34,9 @@ const CreatePattern = ({ pattern = {} }) => {
     onChange({ ...pattern, taggings: newTaggings });
   };
 
-  const toggleRemoveModal = () => setShowModal(!showModal);
-
   return (
     <div>
       <div className="pattern col-12 info-display">
-        <ConfirmationModal
-          onCancel={toggleRemoveModal}
-          onConfirm={() => {
-            onRemove(pattern);
-            toggleRemoveModal();
-          }}
-          show={showModal}
-        >
-          <span>
-            <h5>
-              Are you sure you want to remove this pattern?
-            </h5>
-            <p>ID: {pattern.id}</p>
-            <p>Name: {pattern.name}</p>
-          </span>
-        </ConfirmationModal>
         <span
           className="info-toggle"
           data-toggle="collapse"
@@ -72,14 +54,13 @@ const CreatePattern = ({ pattern = {} }) => {
           value={pattern.name}
           onChange={(e) => onChange({ ...pattern, name: e.target.value })}
         />
-        <i
-          className="fas fa-minus"
-          onClick={toggleRemoveModal}
-          onKeyPress={(e) => {
-            e.key === "Enter" && toggleRemoveModal();
-          }}
-          tabIndex="0"
-        />
+        <RemoveButton onRemove={() => onRemove(pattern)}>
+          <span>
+            <h5>Are you sure you want to remove this pattern?</h5>
+            <p>ID: {pattern.id}</p>
+            <p>Name: {pattern.name}</p>
+          </span>
+        </RemoveButton>
       </div>
       <div className="collapse" id={`collapse-pattern-${pattern.id}`}>
         <div>

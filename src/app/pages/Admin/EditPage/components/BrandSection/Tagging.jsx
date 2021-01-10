@@ -1,13 +1,9 @@
 import React from "react";
+import RemoveButton from "../RemoveButton";
 import { toTitleCase } from "../../../../../utils/case-helper";
 import _ from "lodash";
 
-const CreatePattern = ({
-  onChange,
-  onRemove,
-  referenceTags,
-  tagging = {},
-}) => {
+const CreatePattern = ({ onChange, onRemove, referenceTags, tagging = {} }) => {
   const sortedReferenceTags = _.sortBy(referenceTags, ["category", "name"]);
   return (
     <div className="tagging col-12 info-display">
@@ -29,14 +25,12 @@ const CreatePattern = ({
           );
         })}
       </select>
-      <i
-        className="fas fa-minus"
-        onClick={() => onRemove(tagging)}
-        onKeyPress={(e) => {
-          e.key === "Enter" && onRemove(tagging);
-        }}
-        tabIndex="0"
-      />
+      <RemoveButton onRemove={() => onRemove(tagging)}>
+        <span>
+          <h5>Are you sure you want to remove this tagging?</h5>
+          <p>{JSON.stringify(tagging)}</p>
+        </span>
+      </RemoveButton>
     </div>
   );
 };

@@ -1,4 +1,5 @@
 import React, { useContext, useState } from "react";
+import CollapsibleSection from "../CollapsibleSection";
 import CreatePattern from "./Pattern";
 import PatternContext from "../../../../../contexts/pattern-context";
 
@@ -7,25 +8,27 @@ const PatternSection = () => {
 
   return (
     <div className="category-section">
-      <div className="category-heading">
-        <h5 className="category-name">Patterns</h5>
-        <span
-          className="add-pattern"
-          onClick={addPattern}
-          onKeyPress={(e) => {
-            e.key === "Enter" && addPattern();
-          }}
-          tabIndex="0"
-        >
-          <i className="fas fa-plus" />
-          <span>Add Pattern</span>
-        </span>
-      </div>
-      <div className="pattern-list">
-        {patterns.map((pattern, idx) => (
-          <CreatePattern key={idx} pattern={pattern} />
-        ))}
-      </div>
+      <CollapsibleSection
+        id={"pattern-section"}
+        label={<h5 className="category-name">Patterns</h5>}
+      >
+        <div className="pattern-list">
+          {patterns.map((pattern, idx) => (
+            <CreatePattern key={idx} pattern={pattern} />
+          ))}
+          <span
+            className="add-pattern"
+            onClick={addPattern}
+            onKeyPress={(e) => {
+              e.key === "Enter" && addPattern();
+            }}
+            tabIndex="0"
+          >
+            <i className="fas fa-plus" />
+            <span>Add Pattern</span>
+          </span>
+        </div>
+      </CollapsibleSection>
     </div>
   );
 };

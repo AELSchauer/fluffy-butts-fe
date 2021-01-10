@@ -6,6 +6,8 @@ import ChangePageContext from "../../../../../contexts/change-page-context";
 import PatternContext from "../../../../../contexts/pattern-context";
 import PatternSection from "../PatternSection";
 
+import "./_brand-section.scss"
+
 const BrandSection = ({ brand = {}, onChange }) => {
   const { changePageType } = useContext(ChangePageContext);
   const [patterns, setPatterns] = useState(brand.patterns || []);

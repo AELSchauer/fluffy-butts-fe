@@ -1,7 +1,9 @@
+import _ from "lodash";
 import React, { useContext } from "react";
 import PatternContext from "../../../../../contexts/pattern-context";
+import RemoveButton from "../RemoveButton";
 
-const CreateProduct = ({ idx, onRemove, onChange, product }) => {
+const Product = ({ onRemove, onChange, product }) => {
   const { patterns } = useContext(PatternContext);
 
   return (
@@ -26,29 +28,33 @@ const CreateProduct = ({ idx, onRemove, onChange, product }) => {
         <label>Pattern</label>
         <select
           value={
-            patterns.map(({ name }) => name).includes(product.pattern)
-              ? product.pattern
+            patterns.map(({ id }) => id).includes(product.patternId)
+              ? product.patternId
               : ""
           }
           onChange={(e) => onChange({ ...product, pattern: e.target.value })}
         >
           <option value="">Select an option</option>
-          {patterns
+          {_.chain(patterns)
             .filter(({ name }) => !!name)
-            .map(({ name }, idx) => (
-              <option key={idx} value={name}>
+            .sortBy(["name"])
+            .map(({ id, name }) => (
+              <option key={id} value={id}>
                 {name}
               </option>
-            ))}
+            ))
+            .value()}
         </select>
-        <i
-          className="fas fa-minus"
-          onClick={() => onRemove(product)}
-          onKeyPress={(e) => {
-            e.key === "Enter" && onRemove(product);
-          }}
-          tabIndex="0"
-        />
+        <RemoveButton onRemove={() => onRemove(product)}>
+          <span>
+            <h5>
+              Are you sure you want to remove this product and all its children?
+            </h5>
+            <p>ID: {product.id}</p>
+            <p>Name: {product.name}</p>
+          </span>
+        </RemoveButton>
+        {JSON.stringify(product)}
       </span>
       <div className="collapse" id={`collapse-product-${product.id}`}>
         Stuff Goes Here?
@@ -57,4 +63,4 @@ const CreateProduct = ({ idx, onRemove, onChange, product }) => {
   );
 };
 
-export default CreateProduct;
+export default Product;

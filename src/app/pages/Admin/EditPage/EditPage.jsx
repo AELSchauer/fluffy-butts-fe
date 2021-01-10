@@ -49,13 +49,18 @@ const EditPage = (props) => {
                   name
                   details
                   display_order
+                  products (order_by: "name:asc")  {
+                    id
+                    name
+                    pattern_id
+                  }
                 }
-                patterns {
+                patterns (order_by: "name:asc") {
                   id
                   name
                 }
               }
-            } 
+            }
           `,
         },
       }).then(({ data: { data: { brands: [brand] = [] } = {} } = {} }) => {

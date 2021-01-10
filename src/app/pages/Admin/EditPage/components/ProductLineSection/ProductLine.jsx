@@ -1,12 +1,13 @@
 import _ from "lodash";
 import React, { useState } from "react";
-import CreateProduct from "./Product";
+import CollapsibleSection from "../CollapsibleSection/CollapsibleSection";
 import CreateTagging from "../BrandSection/Tagging";
 import { DefaultEditor } from "react-simple-wysiwyg";
 import JSONInput from "react-json-editor-ajrm";
 import locale from "react-json-editor-ajrm/locale/en";
-import ConfirmationModal from "../ConfirmationModal";
-import TagContext from "../../../../../contexts/tag-context"
+import ProductSection from "../ProductSection";
+import RemoveButton from "../RemoveButton";
+import TagContext from "../../../../../contexts/tag-context";
 import "./_product-line.scss";
 
 const sampleProductDetails = [
@@ -38,7 +39,6 @@ const sampleProductDetails = [
 const ProductLine = ({ onRemove, onChange, productLine = {} }) => {
   const [products, setProducts] = useState(productLine.products || []);
   const [taggings, setTaggings] = useState(productLine.taggings || []);
-  const [showModal, setShowModal] = useState(false);
 
   const addProduct = () => {
     setProducts(products.concat({ id: `tmp-${Date.now()}` }));
@@ -84,27 +84,8 @@ const ProductLine = ({ onRemove, onChange, productLine = {} }) => {
     onChange({ ...productLine, taggings: newTaggings });
   };
 
-  const toggleRemoveModal = () => setShowModal(!showModal);
-
   return (
     <div className="product-line">
-      <ConfirmationModal
-        onCancel={toggleRemoveModal}
-        onConfirm={() => {
-          onRemove(productLine);
-          toggleRemoveModal();
-        }}
-        show={showModal}
-      >
-        <span>
-          <h5>
-            Are you sure you want to remove this product line and all of its
-            dependencies?
-          </h5>
-          <p>ID: {productLine.id}</p>
-          <p>Name: {productLine.name}</p>
-        </span>
-      </ConfirmationModal>
       <div className="col-12 info-display">
         <span
           className="info-toggle"
@@ -132,71 +113,69 @@ const ProductLine = ({ onRemove, onChange, productLine = {} }) => {
             onChange({ ...productLine, displayOrder: e.target.value })
           }
         />
-        <i
-          className="fas fa-minus"
-          onClick={toggleRemoveModal}
-          onKeyPress={(e) => {
-            e.key === "Enter" && toggleRemoveModal();
-          }}
-          tabIndex="0"
-        />
+        <RemoveButton onRemove={() => onRemove(productLine)}>
+          <span>
+            <h5>
+              Are you sure you want to remove this product line and all its
+              children?
+            </h5>
+            <p>ID: {productLine.id}</p>
+            <p>Name: {productLine.name}</p>
+          </span>
+        </RemoveButton>
       </div>
       <ul className="collapse" id={`collapse-product-line-${productLine.id}`}>
         <li>
-          <label>Sizing</label>
-          <JSONInput
-            height="500px"
-            id="product-line-details"
-            locale={locale}
-            onChange={(e) =>
-              onChange({
-                ...productLine,
-                details: { ...productLine.details, sizing: JSON.parse(e.json) },
-              })
-            }
-            placeholder={
-              (productLine.details || {}).sizing || sampleProductDetails
-            }
-            width="1000px"
-          />
+          <CollapsibleSection
+            id={`collapse-product-line-${productLine.id}-sizing`}
+            label={<label>Sizing</label>}
+          >
+            <JSONInput
+              height="500px"
+              id="product-line-details"
+              locale={locale}
+              onChange={(e) =>
+                onChange({
+                  ...productLine,
+                  details: {
+                    ...productLine.details,
+                    sizing: JSON.parse(e.json),
+                  },
+                })
+              }
+              placeholder={
+                (productLine.details || {}).sizing || sampleProductDetails
+              }
+              width="1000px"
+            />
+          </CollapsibleSection>
         </li>
         <li>
-          <label>Materials</label>
-          <DefaultEditor
-            value={(productLine.details || {}).materials || ""}
-            onChange={(e) =>
-              onChange({
-                ...productLine,
-                details: { ...productLine.details, materials: e.target.value },
-              })
-            }
-          />
+          <CollapsibleSection
+            id={`collapse-product-line-${productLine.id}-materials`}
+            label={<label>Materials</label>}
+          >
+            <DefaultEditor
+              value={(productLine.details || {}).materials || ""}
+              onChange={(e) =>
+                onChange({
+                  ...productLine,
+                  details: {
+                    ...productLine.details,
+                    materials: e.target.value,
+                  },
+                })
+              }
+            />
+          </CollapsibleSection>
         </li>
         <li className="category-section">
-          <div className="category-heading">
-            <h6 className="category-name">Products</h6>
-            <span
-              className="add-product"
-              onClick={addProduct}
-              onKeyPress={(e) => {
-                e.key === "Enter" && addProduct();
-              }}
-              tabIndex="0"
-            >
-              <i className="fas fa-plus" />
-              <span>Add Product</span>
-            </span>
-          </div>
-          <div className="product-list">
-            {products.map((product, idx) => (
-              <CreateProduct
-                key={idx}
-                onRemove={removeProduct}
-                onChange={changeProduct}
-                product={product}
-              />
-            ))}
-          </div>
+          <ProductSection
+            onAdd={addProduct}
+            onChange={changeProduct}
+            onRemove={removeProduct}
+            products={products}
+          />
         </li>
         <li className="category-section">
           <div className="category-header">
