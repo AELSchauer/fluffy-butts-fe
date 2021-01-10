@@ -4,16 +4,19 @@ import axios from "../../../utils/axios";
 import BrandSection from "./components/BrandSection";
 import TagContext from "../../../contexts/tag-context";
 import TagSection from "./components/TagSection";
-import { createBrandsQuery, createTagsQuery } from "./form-queries";
+// import { createBrandsQuery, createTagsQuery } from "./form-queries";
 import _ from "lodash";
 import "./_create-page.scss";
 
 const EditPage = (props) => {
+  const [brand, setBrand] = useState({
+    id: `tmp-${Date.now()}`,
+    mutation: true,
+  });
   const [changePageType, setChangePageType] = useState("create");
-  const [brand, setBrand] = useState({ id: `tmp-${Date.now()}` });
   const [existingTags, setExistingTags] = useState([]);
-  const [newTags, setNewTags] = useState([]);
   const [isAuthorized, setIsAuthorized] = useState(true);
+  const [newTags, setNewTags] = useState([]);
 
   useEffect(() => {
     axios({
@@ -82,20 +85,27 @@ const EditPage = (props) => {
     setNewTags([...newTags.slice(0, idx), ...newTags.slice(idx + 1)]);
   };
 
-  const handleSubmit = () => {
-    Promise.all([createBrandsQuery([brand]), createTagsQuery(newTags)])
-      .then(([brandsResult, tagsResult]) => {
-        brandsResult && setBrand(brandsResult[0]);
-        tagsResult && setNewTags(tagsResult);
-      })
-      .catch((error) => {
-        console.log("error", error);
-        setIsAuthorized(false);
-      });
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    console.log("WOOHOO!");
   };
 
+  // const handleSubmit = () => {
+  //   Promise.all([createBrandsQuery([brand]), createTagsQuery(newTags)])
+  //     .then(([brandsResult, tagsResult]) => {
+  //       brandsResult && setBrand(brandsResult[0]);
+  //       tagsResult && setNewTags(tagsResult);
+  //     })
+  //     .catch((error) => {
+  //       console.log("error", error);
+  //       setIsAuthorized(false);
+  //     });
+  // };
+
   return (
-    <ChangePageContext.Provider value={{ changePageType }}>
+    <ChangePageContext.Provider
+      value={{ changePageType }}
+    >
       <TagContext.Provider
         value={{ existingTags, newTags, addNewTag, changeNewTag, removeNewTag }}
       >
@@ -103,16 +113,13 @@ const EditPage = (props) => {
           {!isAuthorized ? (
             <div>Not authorized. Please login again.</div>
           ) : null}
-          {/* <form onSubmit={handleSubmit}> */}
-          <form>
+          <form onSubmit={handleSubmit}>
             <div>
               <h3>Brand</h3>
               <BrandSection brand={brand} onChange={setBrand} />
             </div>
             <TagSection />
-            {/* {JSON.stringify({ brand, tags: newTags }, null, 2)} */}
-            {/* <button type="submit">Submit</button> */}
-            <div onClick={handleSubmit}>Submit</div>
+            <button type="submit">Submit</button>
           </form>
         </section>
       </TagContext.Provider>

@@ -1,15 +1,13 @@
 import _ from "lodash";
-import React, { useContext, useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import axios from "../../../../../utils/axios";
 import ProductLineSection from "../ProductLineSection";
-import ChangePageContext from "../../../../../contexts/change-page-context";
 import PatternContext from "../../../../../contexts/pattern-context";
 import PatternSection from "../PatternSection";
 
-import "./_brand-section.scss"
+import "./_brand-section.scss";
 
 const BrandSection = ({ brand = {}, onChange }) => {
-  const { changePageType } = useContext(ChangePageContext);
   const [patterns, setPatterns] = useState(brand.patterns || []);
   const [productLines, setProductLines] = useState(brand.productLines || []);
 
@@ -146,7 +144,7 @@ const BrandSection = ({ brand = {}, onChange }) => {
         onChange={changeProductLine}
         productLines={productLines}
       />
-      </PatternContext.Provider>
+    </PatternContext.Provider>
   );
 };
 
