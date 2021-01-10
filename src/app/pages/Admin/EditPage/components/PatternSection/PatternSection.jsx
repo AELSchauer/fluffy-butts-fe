@@ -1,6 +1,6 @@
-import React, { useContext } from "react";
+import React, { useContext, useState } from "react";
 import CreatePattern from "./Pattern";
-import PatternContext from "../../../../../../contexts/pattern-context";
+import PatternContext from "../../../../../contexts/pattern-context";
 
 const PatternSection = () => {
   const { patterns, addPattern } = useContext(PatternContext);

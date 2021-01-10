@@ -8,8 +8,14 @@ import ProductPage from "./pages/ProductPage";
 
 export default [
   {
-    path: "/admin/edit",
-    title: "Edit Page",
+    path: "/admin/product-data/create",
+    title: "Brand Create Page",
+    includeInNavBar: false,
+    component: EditPage,
+  },
+  {
+    path: "/admin/product-data/update/:brandName",
+    title: "Brand Update Page",
     includeInNavBar: false,
     component: EditPage,
   },

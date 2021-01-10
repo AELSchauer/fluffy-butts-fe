@@ -6,6 +6,9 @@ import { getSupportedCountry } from "./utils/supported-countries";
 import { Route, Switch } from "react-router-dom";
 import routes from "./routes";
 import SiteNav from "./components/SiteNav";
+
+
+import "bootstrap/dist/css/bootstrap.min.css";
 import "./index.scss";
 
 const App = () => {

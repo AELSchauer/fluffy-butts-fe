@@ -1,5 +1,5 @@
 import React, { useContext } from "react";
-import PatternContext from "../../../../../../contexts/pattern-context";
+import PatternContext from "../../../../../contexts/pattern-context";
 
 const CreateProduct = ({ idx, onRemove, onChange, product }) => {
   const { patterns } = useContext(PatternContext);

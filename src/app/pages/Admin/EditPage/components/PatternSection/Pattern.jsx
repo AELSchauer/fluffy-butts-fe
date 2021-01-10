@@ -1,10 +1,12 @@
-import React, { useContext, useState } from "react";
-import CreateTagging from "../Tagging";
-import PatternContext from "../../../../../../contexts/pattern-context";
-import TagContext from "../../../../../../contexts/tag-context";
 import _ from "lodash";
+import React, { useContext, useState } from "react";
+import ConfirmationModal from "../ConfirmationModal";
+import CreateTagging from "../BrandSection/Tagging";
+import PatternContext from "../../../../../contexts/pattern-context";
+import TagContext from "../../../../../contexts/tag-context";
 
 const CreatePattern = ({ pattern = {} }) => {
+  const [showModal, setShowModal] = useState(false);
   const [taggings, setTaggings] = useState([]);
   const { changePattern: onChange, removePattern: onRemove } = useContext(
     PatternContext
@@ -32,9 +34,27 @@ const CreatePattern = ({ pattern = {} }) => {
     onChange({ ...pattern, taggings: newTaggings });
   };
 
+  const toggleRemoveModal = () => setShowModal(!showModal);
+
   return (
     <div>
       <div className="pattern col-12 info-display">
+        <ConfirmationModal
+          onCancel={toggleRemoveModal}
+          onConfirm={() => {
+            onRemove(pattern);
+            toggleRemoveModal();
+          }}
+          show={showModal}
+        >
+          <span>
+            <h5>
+              Are you sure you want to remove this pattern?
+            </h5>
+            <p>ID: {pattern.id}</p>
+            <p>Name: {pattern.name}</p>
+          </span>
+        </ConfirmationModal>
         <span
           className="info-toggle"
           data-toggle="collapse"
@@ -54,9 +74,9 @@ const CreatePattern = ({ pattern = {} }) => {
         />
         <i
           className="fas fa-minus"
-          onClick={() => onRemove(pattern)}
+          onClick={toggleRemoveModal}
           onKeyPress={(e) => {
-            e.key === "Enter" && onRemove(pattern);
+            e.key === "Enter" && toggleRemoveModal();
           }}
           tabIndex="0"
         />

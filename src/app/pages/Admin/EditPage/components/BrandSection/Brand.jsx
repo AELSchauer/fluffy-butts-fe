@@ -1,12 +1,20 @@
-import React, { useContext, useState } from "react";
-import ProductLineSection from "./ProductLineSection";
-import PatternContext from "../../../../../contexts/pattern-context";
-import PatternSection from "./PatternSection";
 import _ from "lodash";
+import React, { useContext, useEffect, useState } from "react";
+import axios from "../../../../../utils/axios";
+import ProductLineSection from "../ProductLineSection";
+import ChangePageContext from "../../../../../contexts/change-page-context";
+import PatternContext from "../../../../../contexts/pattern-context";
+import PatternSection from "../PatternSection";
 
-const CreateBrand = ({ brand = {}, onChange }) => {
+const BrandSection = ({ brand = {}, onChange }) => {
+  const { changePageType } = useContext(ChangePageContext);
   const [patterns, setPatterns] = useState(brand.patterns || []);
   const [productLines, setProductLines] = useState(brand.productLines || []);
+
+  useEffect(() => {
+    setPatterns(brand.patterns || []);
+    setProductLines(brand.productLines || []);
+  }, [brand]);
 
   const addProductLine = () => {
     setProductLines(productLines.concat({ id: `tmp-${Date.now()}` }));
@@ -24,13 +32,34 @@ const CreateBrand = ({ brand = {}, onChange }) => {
   };
 
   const removeProductLine = (productLine) => {
-    const idx = _.findIndex(productLines, { id: productLine.id });
-    const newProductLines = [
-      ...productLines.slice(0, idx),
-      ...productLines.slice(idx + 1),
-    ];
-    setProductLines(newProductLines);
-    onChange({ ...brand, productLines: newProductLines });
+    (productLine.id.indexOf("tmp-") > -1
+      ? Promise.resolve()
+      : axios({
+          method: "POST",
+          url: "/",
+          data: {
+            query: `
+              mutation {
+                DeleteProductLine(id: "${productLine.id}") {
+                  id
+                }
+              }
+            `,
+          },
+        })
+    )
+      .then(() => {
+        const idx = _.findIndex(productLines, { id: productLine.id });
+        const newProductLines = [
+          ...productLines.slice(0, idx),
+          ...productLines.slice(idx + 1),
+        ];
+        setProductLines(newProductLines);
+        onChange({ ...brand, productLines: newProductLines });
+      })
+      .catch((error) => {
+        console.error("BrandSection", error);
+      });
   };
 
   const addPattern = () => {
@@ -51,25 +80,45 @@ const CreateBrand = ({ brand = {}, onChange }) => {
   };
 
   const removePattern = (pattern) => {
-    const idx = _.findIndex(patterns, { id: pattern.id });
-    const newPatterns = [...patterns.slice(0, idx), ...patterns.slice(idx + 1)];
-    const newProductLines = productLines.map(
-      ({ products = [], ...productLine }) => ({
-        ...productLine,
-        products: products.map(({ pattern, ...product }) => ({
-          ...product,
-          pattern: newPatterns.map(({ name }) => name).includes(pattern)
-            ? pattern
-            : "",
-        })),
-      })
-    );
-    setPatterns(newPatterns);
-    setProductLines(newProductLines);
-    onChange({
-      ...brand,
-      patterns: newPatterns,
-      productLines: newProductLines,
+    (pattern.id.indexOf("tmp-") > -1
+      ? Promise.resolve()
+      : axios({
+          method: "POST",
+          url: "/",
+          data: {
+            query: `
+              mutation {
+                DeletePattern(id: "${pattern.id}") {
+                  id
+                }
+              }
+            `,
+          },
+        })
+    ).then(() => {
+      const idx = _.findIndex(patterns, { id: pattern.id });
+      const newPatterns = [
+        ...patterns.slice(0, idx),
+        ...patterns.slice(idx + 1),
+      ];
+      const newProductLines = productLines.map(
+        ({ products = [], ...productLine }) => ({
+          ...productLine,
+          products: products.map(({ pattern, ...product }) => ({
+            ...product,
+            pattern: newPatterns.map(({ name }) => name).includes(pattern)
+              ? pattern
+              : "",
+          })),
+        })
+      );
+      setPatterns(newPatterns);
+      setProductLines(newProductLines);
+      onChange({
+        ...brand,
+        patterns: newPatterns,
+        productLines: newProductLines,
+      });
     });
   };
 
@@ -89,34 +138,14 @@ const CreateBrand = ({ brand = {}, onChange }) => {
         />
       </div>
       <PatternSection />
-      <div className="category-section">
-        <div className="category-heading">
-          <h5 className="category-name">Product Lines</h5>
-          <span
-            className="add-product-line"
-            onClick={addProductLine}
-            onKeyPress={(e) => {
-              e.key === "Enter" && addProductLine();
-            }}
-            tabIndex="0"
-          >
-            <i className="fas fa-plus" />
-            <span>Add Product Line</span>
-          </span>
-        </div>
-        <div className="product-line-list">
-          {productLines.map((productLine, idx) => (
-            <ProductLineSection
-              key={idx}
-              onRemove={removeProductLine}
-              onChange={changeProductLine}
-              productLine={productLine}
-            />
-          ))}
-        </div>
-      </div>
-    </PatternContext.Provider>
+      <ProductLineSection
+        onAdd={addProductLine}
+        onRemove={removeProductLine}
+        onChange={changeProductLine}
+        productLines={productLines}
+      />
+      </PatternContext.Provider>
   );
 };
 
-export default CreateBrand;
+export default BrandSection;

@@ -1,12 +1,13 @@
+import _ from "lodash";
 import React, { useState } from "react";
 import CreateProduct from "./Product";
-import CreateTagging from "../Tagging";
+import CreateTagging from "../BrandSection/Tagging";
 import { DefaultEditor } from "react-simple-wysiwyg";
 import JSONInput from "react-json-editor-ajrm";
 import locale from "react-json-editor-ajrm/locale/en";
-import TagContext from "../../../../../../contexts/tag-context";
-
-import _ from "lodash";
+import ConfirmationModal from "../ConfirmationModal";
+import TagContext from "../../../../../contexts/tag-context"
+import "./_product-line.scss";
 
 const sampleProductDetails = [
   {
@@ -34,9 +35,10 @@ const sampleProductDetails = [
   },
 ];
 
-const CreateProductLine = ({ onRemove, onChange, productLine = {} }) => {
+const ProductLine = ({ onRemove, onChange, productLine = {} }) => {
   const [products, setProducts] = useState(productLine.products || []);
   const [taggings, setTaggings] = useState(productLine.taggings || []);
+  const [showModal, setShowModal] = useState(false);
 
   const addProduct = () => {
     setProducts(products.concat({ id: `tmp-${Date.now()}` }));
@@ -82,8 +84,27 @@ const CreateProductLine = ({ onRemove, onChange, productLine = {} }) => {
     onChange({ ...productLine, taggings: newTaggings });
   };
 
+  const toggleRemoveModal = () => setShowModal(!showModal);
+
   return (
     <div className="product-line">
+      <ConfirmationModal
+        onCancel={toggleRemoveModal}
+        onConfirm={() => {
+          onRemove(productLine);
+          toggleRemoveModal();
+        }}
+        show={showModal}
+      >
+        <span>
+          <h5>
+            Are you sure you want to remove this product line and all of its
+            dependencies?
+          </h5>
+          <p>ID: {productLine.id}</p>
+          <p>Name: {productLine.name}</p>
+        </span>
+      </ConfirmationModal>
       <div className="col-12 info-display">
         <span
           className="info-toggle"
@@ -98,6 +119,7 @@ const CreateProductLine = ({ onRemove, onChange, productLine = {} }) => {
         <input type="text" value={productLine.id} disabled />
         <label>Name</label>
         <input
+          className="product-line-name"
           type="text"
           value={productLine.name}
           onChange={(e) => onChange({ ...productLine, name: e.target.value })}
@@ -112,9 +134,9 @@ const CreateProductLine = ({ onRemove, onChange, productLine = {} }) => {
         />
         <i
           className="fas fa-minus"
-          onClick={() => onRemove(productLine)}
+          onClick={toggleRemoveModal}
           onKeyPress={(e) => {
-            e.key === "Enter" && onRemove(productLine);
+            e.key === "Enter" && toggleRemoveModal();
           }}
           tabIndex="0"
         />
@@ -123,18 +145,19 @@ const CreateProductLine = ({ onRemove, onChange, productLine = {} }) => {
         <li>
           <label>Sizing</label>
           <JSONInput
-            id="product-line-details"
-            placeholder={sampleProductDetails}
-            locale={locale}
             height="500px"
-            width="1000px"
-            value={(productLine.details || {}).sizing || {}}
+            id="product-line-details"
+            locale={locale}
             onChange={(e) =>
               onChange({
                 ...productLine,
                 details: { ...productLine.details, sizing: JSON.parse(e.json) },
               })
             }
+            placeholder={
+              (productLine.details || {}).sizing || sampleProductDetails
+            }
+            width="1000px"
           />
         </li>
         <li>
@@ -211,4 +234,4 @@ const CreateProductLine = ({ onRemove, onChange, productLine = {} }) => {
   );
 };
 
-export default CreateProductLine;
+export default ProductLine;
