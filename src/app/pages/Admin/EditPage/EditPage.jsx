@@ -110,7 +110,7 @@ const EditPage = (props) => {
               <BrandSection brand={brand} onChange={setBrand} />
             </div>
             <TagSection />
-            {JSON.stringify({ brand, tags: newTags }, null, 2)}
+            {/* {JSON.stringify({ brand, tags: newTags }, null, 2)} */}
             {/* <button type="submit">Submit</button> */}
             <div onClick={handleSubmit}>Submit</div>
           </form>

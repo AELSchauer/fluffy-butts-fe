@@ -23,7 +23,9 @@ const Product = ({ onRemove, onChange, product }) => {
         <input
           type="text"
           value={product.name}
-          onChange={(e) => onChange({ ...product, name: e.target.value })}
+          onChange={(e) =>
+            onChange({ ...product, name: e.target.value, updated: true })
+          }
         />
         <label>Pattern</label>
         <select
@@ -32,7 +34,9 @@ const Product = ({ onRemove, onChange, product }) => {
               ? product.patternId
               : ""
           }
-          onChange={(e) => onChange({ ...product, pattern: e.target.value })}
+          onChange={(e) =>
+            onChange({ ...product, patternId: e.target.value, updated: true })
+          }
         >
           <option value="">Select an option</option>
           {_.chain(patterns)
