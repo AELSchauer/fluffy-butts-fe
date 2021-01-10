@@ -1,9 +1,11 @@
 import _ from "lodash";
-import React, { useEffect, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
+import DiaperMutationContext from "../../../../../contexts/diaper-mutation-context"
 
 import "./_brand-section.scss";
 
-const BrandTest = ({ path, rootData, onChange }) => {
+const BrandTest = ({ path, rootData }) => {
+  const { changeRootData } = useContext(DiaperMutationContext)
   const [brand, setBrand] = useState({
     id: `tmp-${Date.now()}`,
     mutation: true,
@@ -15,7 +17,7 @@ const BrandTest = ({ path, rootData, onChange }) => {
   });
 
   const changeBrand = (path, data) => {
-    onChange(path, data);
+    changeRootData(path, data);
     setBrand(data);
   };
 

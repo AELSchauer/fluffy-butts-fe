@@ -43,9 +43,7 @@ const MutationPage = (props) => {
       });
   }, []);
 
-  const changeBrand = (path, data) => {
-    console.log("changeBrand", path, data);
-    // setRootData(_.set(rootData, path, data));
+  const changeRootData = (path, data) => {
     setRootData({
       brand: _.set(rootData, path, data).brand,
     });
@@ -57,7 +55,7 @@ const MutationPage = (props) => {
   };
 
   return (
-    <DiaperMutationContext.Provider value={{ rootData }}>
+    <DiaperMutationContext.Provider value={{ rootData, changeRootData }}>
       <section className="create-page page">
         {!isAuthorized ? <div>Not authorized. Please login again.</div> : null}
         <form onSubmit={handleSubmit}>
@@ -66,7 +64,6 @@ const MutationPage = (props) => {
             <BrandSection
               path={["brand"]}
               rootData={rootData}
-              onChange={changeBrand}
             />
           </div>
           <button type="submit">Submit</button>
