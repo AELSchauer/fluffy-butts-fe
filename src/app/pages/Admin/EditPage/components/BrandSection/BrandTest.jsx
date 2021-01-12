@@ -1,34 +1,19 @@
 import _ from "lodash";
-import React, { useContext } from "react";
-import DiaperMutationContext from "../../../../../contexts/diaper-mutation-context";
+import React from "react";
+import Input from "../Input";
 import PatternSection from "../PatternSection/PatternSectionTest";
+import ProductLineSection from "../ProductLineSection/ProductLineSectionTest";
 import "./_brand-section.scss";
 
 const BrandTest = ({ path }) => {
-  const { rootData, onChange } = useContext(DiaperMutationContext);
-
   return (
     <div>
       <div className="info-display">
-        <label>ID</label>
-        <input type="text" value={_.get(rootData, [...path, "id"])} disabled />
-        <label>Name</label>
-        <input
-          type="text"
-          required
-          value={_.get(rootData, [...path, "name"])}
-          onChange={(e) =>
-            onChange(
-              path,
-              Object.assign(_.get(rootData, path), {
-                name: e.target.value,
-                mutation: true,
-              })
-            )
-          }
-        />
+        <Input disabled fieldName="id" path={path} title="ID" />
+        <Input fieldName="name" path={path} />
       </div>
       <PatternSection path={[...path, "patterns"]} />
+      <ProductLineSection path={[...path, "product_lines"]} />
     </div>
   );
 };

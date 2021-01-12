@@ -1,13 +1,12 @@
 import _ from "lodash";
-import React, { useState } from "react";
+import React, { useContext } from "react";
 import CollapsibleSection from "../CollapsibleSection/CollapsibleSection";
-import CreateTagging from "../BrandSection/Tagging";
+import DiaperMutationContext from "../../../../../contexts/diaper-mutation-context";
 import { DefaultEditor } from "react-simple-wysiwyg";
 import JSONInput from "react-json-editor-ajrm";
 import locale from "react-json-editor-ajrm/locale/en";
-import ProductSection from "../ProductSection";
-import RemoveButton from "../RemoveButton";
-import TagContext from "../../../../../contexts/tag-context";
+import Input from "../Input";
+import RemoveButton from "../RemoveButton/RemoveButton";
 import "./_product-line.scss";
 
 const sampleProductDetails = [
@@ -36,24 +35,8 @@ const sampleProductDetails = [
   },
 ];
 
-const ProductLine = ({ onRemove, onChange, productLine = {} }) => {
-  const [products, setProducts] = useState(productLine.products || []);
-  const [taggings, setTaggings] = useState(productLine.taggings || []);
-
-  const addProduct = () => {
-    setProducts(products.concat({ id: `tmp-${Date.now()}` }));
-  };
-
-  const changeProduct = (product) => {
-    const idx = _.findIndex(products, { id: product.id });
-    const newProducts = [
-      ...products.slice(0, idx),
-      product,
-      ...products.slice(idx + 1),
-    ];
-    setProducts(newProducts);
-    onChange({ ...productLine, products: newProducts });
-  };
+const ProductLine = ({ path, onRemove }) => {
+  const { rootData, onChange } = useContext(DiaperMutationContext);
 
   return (
     <div className="product-line">
@@ -61,61 +44,53 @@ const ProductLine = ({ onRemove, onChange, productLine = {} }) => {
         <span
           className="info-toggle"
           data-toggle="collapse"
-          data-target={`#collapse-product-line-${productLine.id}`}
+          data-target={`#collapse-product-line-${_.get(rootData, [
+            ...path,
+            "id",
+          ])}`}
           aria-expanded="false"
-          aria-controls={`collapse-product-line-${productLine.id}`}
+          aria-controls={`collapse-product-line-${_.get(rootData, [
+            ...path,
+            "id",
+          ])}`}
         >
           <i className="fas fa-caret-right" />
         </span>
-        <label>ID</label>
-        <input type="text" value={productLine.id} disabled />
-        <label>Name</label>
-        <input
-          className="product-line-name"
-          type="text"
-          value={productLine.name}
-          onChange={(e) => onChange({ ...productLine, name: e.target.value })}
-        />
-        <label>Display Order</label>
-        <input
-          type="text"
-          value={productLine.displayOrder}
-          onChange={(e) =>
-            onChange({ ...productLine, displayOrder: e.target.value })
-          }
-        />
-        <RemoveButton onRemove={() => onRemove(productLine)}>
+        <Input disabled fieldName="id" path={path} title="ID" />
+        <Input fieldName="name" required path={path} />
+        <Input fieldName="displayOrder" path={path} />
+        <RemoveButton onRemove={onRemove}>
           <span>
             <h5>
               Are you sure you want to remove this product line and all its
               children?
             </h5>
-            <p>ID: {productLine.id}</p>
-            <p>Name: {productLine.name}</p>
+            <p>ID: {_.get(rootData, [...path, "id"])}</p>
           </span>
         </RemoveButton>
       </div>
-      <ul className="collapse" id={`collapse-product-line-${productLine.id}`}>
+      <ul
+        className="collapse"
+        id={`collapse-product-line-${_.get(rootData, [...path, "id"])}`}
+      >
         <li>
           <CollapsibleSection
-            id={`collapse-product-line-${productLine.id}-sizing`}
+            id={`collapse-product-line-${_.get(rootData, [
+              ...path,
+              "id",
+            ])}-sizing`}
             label={<label>Sizing</label>}
           >
             <JSONInput
               height="500px"
               id="product-line-details"
               locale={locale}
-              onChange={(e) =>
-                onChange({
-                  ...productLine,
-                  details: {
-                    ...productLine.details,
-                    sizing: JSON.parse(e.json),
-                  },
-                })
-              }
+              onChange={(e) => {
+
+              }}
               placeholder={
-                (productLine.details || {}).sizing || sampleProductDetails
+                _.get(rootData, [...path, "details", "sizing"]) ||
+                sampleProductDetails
               }
               width="1000px"
             />
@@ -123,31 +98,30 @@ const ProductLine = ({ onRemove, onChange, productLine = {} }) => {
         </li>
         <li>
           <CollapsibleSection
-            id={`collapse-product-line-${productLine.id}-materials`}
+            id={`collapse-product-line-${_.get(rootData, [
+              ...path,
+              "id",
+            ])}-materials`}
             label={<label>Materials</label>}
           >
             <DefaultEditor
-              value={(productLine.details || {}).materials || ""}
-              onChange={(e) =>
-                onChange({
-                  ...productLine,
-                  details: {
-                    ...productLine.details,
-                    materials: e.target.value,
-                  },
-                })
-              }
+              value={_.get(rootData, [...path, "details", "materials"]) || ""}
+              onChange={(e) => {
+                const productLine = _.get(rootData, path);
+                onChange(
+                  Object.assign(_.get(rootData, path), {
+                    ...productLine,
+                    details: {
+                      ...productLine.details,
+                      materials: e.target.value,
+                    },
+                    mutation: true,
+                  })
+                );
+              }}
             />
           </CollapsibleSection>
         </li>
-        {/* <li className="category-section">
-          <ProductSection
-            onAdd={addProduct}
-            onChange={changeProduct}
-            onRemove={removeProduct}
-            products={products}
-          />
-        </li> */}
       </ul>
     </div>
   );

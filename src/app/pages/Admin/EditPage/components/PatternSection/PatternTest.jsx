@@ -1,14 +1,11 @@
 import _ from "lodash";
-import React, { useContext, useState } from "react";
-import ConfirmationModal from "../ConfirmationModal";
+import React, { useContext } from "react";
 import DiaperMutationContext from "../../../../../contexts/diaper-mutation-context";
-import CreateTagging from "../BrandSection/Tagging";
-import PatternContext from "../../../../../contexts/pattern-context";
-import TagContext from "../../../../../contexts/tag-context";
+import Input from "../Input";
 import RemoveButton from "../RemoveButton/RemoveButton";
 
-const Pattern = ({ path, pattern = {}, onRemove }) => {
-  const { rootData, onChange } = useContext(DiaperMutationContext);
+const Pattern = ({ path, onRemove }) => {
+  const { rootData } = useContext(DiaperMutationContext);
 
   return (
     <div>
@@ -22,26 +19,12 @@ const Pattern = ({ path, pattern = {}, onRemove }) => {
         >
           <i className="fas fa-caret-right" />
         </span>
-        <label>ID</label>
-        <input type="text" value={_.get(rootData, [...path, "id"])} disabled />
-        <label>Name</label>
-        <input
-          type="text"
-          value={_.get(rootData, [...path, "name"])}
-          onChange={(e) =>
-            onChange(
-              Object.assign(_.get(rootData, path), {
-                name: e.target.value,
-                mutation: true,
-              })
-            )
-          }
-        />
+        <Input disabled fieldName="id" path={path} title="ID" />
+        <Input fieldName="name" path={path} />
         <RemoveButton onRemove={onRemove}>
           <span>
             <h5>Are you sure you want to remove this pattern?</h5>
             <p>ID: {_.get(rootData, [...path, "id"])}</p>
-            <p>Name: {_.get(rootData, [path, "name"])}</p>
           </span>
         </RemoveButton>
       </div>

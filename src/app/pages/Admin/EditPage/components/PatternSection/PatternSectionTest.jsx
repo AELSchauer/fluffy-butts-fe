@@ -1,22 +1,14 @@
 import _ from "lodash";
 import React, { useContext } from "react";
+import AddButton from "../AddButton";
 import axios from "../../../../../utils/axios";
 import CollapsibleSection from "../CollapsibleSection";
 import DiaperMutationContext from "../../../../../contexts/diaper-mutation-context";
-import Pattern from "./Pattern";
+import Pattern from "./PatternTest";
 import traverse from "traverse";
 
 const PatternSection = ({ path }) => {
   const { rootData, onChange } = useContext(DiaperMutationContext);
-
-  const onAdd = () => {
-    onChange(
-      path,
-      (_.get(rootData, path) || []).concat([
-        { id: `tmp-${Date.now()}`, mutation: true },
-      ])
-    );
-  };
 
   const onRemove = ({ id }, idx) => {
     (id.indexOf("tmp-") > -1
@@ -58,18 +50,8 @@ const PatternSection = ({ path }) => {
                 />
               ))
             : ""}
-          <span
-            className="add-pattern"
-            onClick={onAdd}
-            onKeyPress={(e) => {
-              e.key === "Enter" && onAdd();
-            }}
-            tabIndex="0"
-          >
-            <i className="fas fa-plus" />
-            <span>Add Pattern</span>
-          </span>
         </div>
+        <AddButton className="pattern" path={path} />
       </CollapsibleSection>
     </div>
   );
