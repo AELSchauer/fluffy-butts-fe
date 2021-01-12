@@ -15,6 +15,12 @@ export default [
     component: EditPage,
   },
   {
+    path: "/admin/diaper-data/create",
+    title: "Brand Create Page",
+    includeInNavBar: false,
+    component: MutationPage,
+  },
+  {
     path: "/admin/product-data/update/:brandName",
     title: "Brand Update Page",
     includeInNavBar: false,
