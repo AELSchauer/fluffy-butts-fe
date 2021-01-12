@@ -1,43 +1,34 @@
 import _ from "lodash";
-import React, { useContext, useEffect, useState } from "react";
-import DiaperMutationContext from "../../../../../contexts/diaper-mutation-context"
-
+import React, { useContext } from "react";
+import DiaperMutationContext from "../../../../../contexts/diaper-mutation-context";
+import PatternSection from "../PatternSection/PatternSectionTest";
 import "./_brand-section.scss";
 
-const BrandTest = ({ path, rootData }) => {
-  const { changeRootData } = useContext(DiaperMutationContext)
-  const [brand, setBrand] = useState({
-    id: `tmp-${Date.now()}`,
-    mutation: true,
-  });
-
-  useEffect(() => {
-    !!rootData && setBrand(_.get(rootData, path));
-    console.log(brand);
-  });
-
-  const changeBrand = (path, data) => {
-    changeRootData(path, data);
-    setBrand(data);
-  };
+const BrandTest = ({ path }) => {
+  const { rootData, onChange } = useContext(DiaperMutationContext);
 
   return (
-    <div className="info-display">
-      <label>ID</label>
-      <input type="text" value={brand.id} disabled />
-      <label>Name</label>
-      <input
-        type="text"
-        required
-        value={brand.name}
-        onChange={(e) =>
-          changeBrand(path, {
-            ...brand,
-            name: e.target.value,
-            mutation: true,
-          })
-        }
-      />
+    <div>
+      <div className="info-display">
+        <label>ID</label>
+        <input type="text" value={_.get(rootData, [...path, "id"])} disabled />
+        <label>Name</label>
+        <input
+          type="text"
+          required
+          value={_.get(rootData, [...path, "name"])}
+          onChange={(e) =>
+            onChange(
+              path,
+              Object.assign(_.get(rootData, path), {
+                name: e.target.value,
+                mutation: true,
+              })
+            )
+          }
+        />
+      </div>
+      <PatternSection path={[...path, "patterns"]} />
     </div>
   );
 };

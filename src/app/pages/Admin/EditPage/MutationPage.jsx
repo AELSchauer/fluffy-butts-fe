@@ -5,7 +5,12 @@ import BrandSection from "./components/BrandSection/BrandTest";
 import _ from "lodash";
 
 const MutationPage = (props) => {
-  const [rootData, setRootData] = useState(undefined);
+  const [rootData, setRootData] = useState({
+    brand: {
+      id: `tmp-${Date.now()}`,
+      mutation: true,
+    },
+  });
   const [isAuthorized, setIsAuthorized] = useState(true);
 
   useEffect(() => {
@@ -43,7 +48,7 @@ const MutationPage = (props) => {
       });
   }, []);
 
-  const changeRootData = (path, data) => {
+  const onChange = (path, data) => {
     setRootData({
       brand: _.set(rootData, path, data).brand,
     });
@@ -55,16 +60,13 @@ const MutationPage = (props) => {
   };
 
   return (
-    <DiaperMutationContext.Provider value={{ rootData, changeRootData }}>
+    <DiaperMutationContext.Provider value={{ rootData, onChange }}>
       <section className="create-page page">
         {!isAuthorized ? <div>Not authorized. Please login again.</div> : null}
         <form onSubmit={handleSubmit}>
           <div>
             <h3>Brand</h3>
-            <BrandSection
-              path={["brand"]}
-              rootData={rootData}
-            />
+            <BrandSection path={["brand"]} />
           </div>
           <button type="submit">Submit</button>
         </form>
