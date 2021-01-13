@@ -1,7 +1,7 @@
 import _ from "lodash";
 import React, { useState } from "react";
 import CollapsibleSection from "../CollapsibleSection/CollapsibleSection";
-import CreateTagging from "../BrandSection/Tagging";
+import CreateTagging from "../TaggingSection/Tagging";
 import { DefaultEditor } from "react-simple-wysiwyg";
 import JSONInput from "react-json-editor-ajrm";
 import locale from "react-json-editor-ajrm/locale/en";

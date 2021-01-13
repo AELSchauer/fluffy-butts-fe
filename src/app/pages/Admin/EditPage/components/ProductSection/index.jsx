@@ -1,2 +1,1 @@
-import Component from "./ProductSection";
-export default Component;
+export { default } from './ProductSection';

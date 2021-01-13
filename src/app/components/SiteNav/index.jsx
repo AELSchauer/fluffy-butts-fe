@@ -1,2 +1,1 @@
-import Component from "./SiteNav";
-export default Component;
+export { default } from './SiteNav';

@@ -13,7 +13,7 @@ const BrandTest = ({ path }) => {
         <Input fieldName="name" path={path} />
       </div>
       <PatternSection path={[...path, "patterns"]} />
-      <ProductLineSection path={[...path, "product_lines"]} />
+      <ProductLineSection path={[...path, "productLines"]} />
     </div>
   );
 };

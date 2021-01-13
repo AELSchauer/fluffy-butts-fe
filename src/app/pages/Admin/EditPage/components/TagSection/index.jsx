@@ -1,2 +1,1 @@
-import Component from "./TagSection";
-export default Component;
+export { default } from './TagSection';

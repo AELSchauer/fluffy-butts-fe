@@ -1,2 +1,1 @@
-import Component from "./BrandShowPage";
-export default Component;
+export { default } from './BrandShowPage';

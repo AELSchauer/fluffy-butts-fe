@@ -1,2 +1,1 @@
-import Component from "./PatternSection";
-export default Component;
+export { default } from './PatternSection';

@@ -9,6 +9,7 @@ import traverse from "traverse";
 
 const PatternSection = ({ path }) => {
   const { rootData, onChange } = useContext(DiaperMutationContext);
+  const patterns = _.get(rootData, path) || [];
 
   const onRemove = ({ id }, idx) => {
     (id.indexOf("tmp-") > -1
@@ -27,7 +28,6 @@ const PatternSection = ({ path }) => {
           },
         })
     ).then(() => {
-      const patterns = _.get(rootData, path);
       onChange(path, [...patterns.slice(0, idx), ...patterns.slice(idx + 1)]);
       // TO DO
       // Update any objects that have pattern_id w/ traverse
@@ -41,8 +41,8 @@ const PatternSection = ({ path }) => {
         label={<h5 className="category-name">Patterns</h5>}
       >
         <div className="pattern-list">
-          {!!_.get(rootData, path)
-            ? (_.get(rootData, path) || []).map((pattern, idx) => (
+          {!!patterns
+            ? patterns.map((pattern, idx) => (
                 <Pattern
                   key={idx}
                   path={[...path, `${idx}`]}

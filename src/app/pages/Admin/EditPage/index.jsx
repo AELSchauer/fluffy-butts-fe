@@ -1,2 +1,1 @@
-import Component from "./EditPage";
-export default Component;
+export { default } from './EditPage';

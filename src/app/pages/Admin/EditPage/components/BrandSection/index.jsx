@@ -1,2 +1,1 @@
-import Component from "./Brand";
-export default Component;
+export { default } from './Brand';

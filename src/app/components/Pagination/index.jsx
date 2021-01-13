@@ -1,2 +1,1 @@
-import Component from "./Pagination";
-export default Component;
+export { default } from './Pagination';

@@ -1,2 +1,1 @@
-import Component from "./SizingTable";
-export default Component;
+export { default } from './SizingTable';

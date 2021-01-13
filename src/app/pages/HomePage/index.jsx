@@ -1,2 +1,1 @@
-import Component from "./HomePage";
-export default Component;
+export { default } from './HomePage';

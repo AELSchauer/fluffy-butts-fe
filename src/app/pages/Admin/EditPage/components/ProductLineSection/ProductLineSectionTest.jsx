@@ -42,13 +42,15 @@ const ProductLineSection = ({ path }) => {
         label={<h5 className="category-name">Product Lines</h5>}
       >
         <div className="product-line-list">
-          {(_.get(rootData, path) || []).map((productLine, idx) => (
-            <ProductLine
-              key={idx}
-              path={[...path, `${idx}`]}
-              onRemove={() => onRemove(productLine, idx)}
-            />
-          ))}
+          {!!_.get(rootData, path)
+            ? (_.get(rootData, path) || []).map((productLine, idx) => (
+                <ProductLine
+                  key={idx}
+                  path={[...path, `${idx}`]}
+                  onRemove={() => onRemove(productLine, idx)}
+                />
+              ))
+            : ""}
         </div>
         <AddButton className="product-line" path={path} />
       </CollapsibleSection>

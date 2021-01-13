@@ -35,8 +35,9 @@ const sampleProductDetails = [
   },
 ];
 
-const ProductLine = ({ path, onRemove }) => {
+const ProductLine = ({ onRemove, path }) => {
   const { rootData, onChange } = useContext(DiaperMutationContext);
+  const productLine = _.get(rootData, path);
 
   return (
     <div className="product-line">
@@ -44,15 +45,9 @@ const ProductLine = ({ path, onRemove }) => {
         <span
           className="info-toggle"
           data-toggle="collapse"
-          data-target={`#collapse-product-line-${_.get(rootData, [
-            ...path,
-            "id",
-          ])}`}
+          data-target={`#collapse-product-line-${productLine.id}`}
           aria-expanded="false"
-          aria-controls={`collapse-product-line-${_.get(rootData, [
-            ...path,
-            "id",
-          ])}`}
+          aria-controls={`collapse-product-line-${productLine.id}`}
         >
           <i className="fas fa-caret-right" />
         </span>
@@ -65,20 +60,15 @@ const ProductLine = ({ path, onRemove }) => {
               Are you sure you want to remove this product line and all its
               children?
             </h5>
-            <p>ID: {_.get(rootData, [...path, "id"])}</p>
+            <p>ID: {productLine.id}</p>
+            <p>Name: {productLine.id}</p>
           </span>
         </RemoveButton>
       </div>
-      <ul
-        className="collapse"
-        id={`collapse-product-line-${_.get(rootData, [...path, "id"])}`}
-      >
+      <ul className="collapse" id={`collapse-product-line-${productLine.id}`}>
         <li>
           <CollapsibleSection
-            id={`collapse-product-line-${_.get(rootData, [
-              ...path,
-              "id",
-            ])}-sizing`}
+            id={`collapse-product-line-${productLine.id}-sizing`}
             label={<label>Sizing</label>}
           >
             <JSONInput
@@ -86,30 +76,32 @@ const ProductLine = ({ path, onRemove }) => {
               id="product-line-details"
               locale={locale}
               onChange={(e) => {
-
+                onChange(
+                  Object.assign(productLine, {
+                    ...productLine,
+                    details: {
+                      ...productLine.details,
+                      sizing: e.target.value,
+                    },
+                    mutation: true,
+                  })
+                );
               }}
-              placeholder={
-                _.get(rootData, [...path, "details", "sizing"]) ||
-                sampleProductDetails
-              }
+              placeholder={productLine.details.sizing || sampleProductDetails}
               width="1000px"
             />
           </CollapsibleSection>
         </li>
         <li>
           <CollapsibleSection
-            id={`collapse-product-line-${_.get(rootData, [
-              ...path,
-              "id",
-            ])}-materials`}
+            id={`collapse-product-line-${productLine.id}-materials`}
             label={<label>Materials</label>}
           >
             <DefaultEditor
-              value={_.get(rootData, [...path, "details", "materials"]) || ""}
+              value={productLine.details.materials || ""}
               onChange={(e) => {
-                const productLine = _.get(rootData, path);
                 onChange(
-                  Object.assign(_.get(rootData, path), {
+                  Object.assign(productLine, {
                     ...productLine,
                     details: {
                       ...productLine.details,

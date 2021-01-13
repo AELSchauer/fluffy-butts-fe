@@ -1,2 +1,1 @@
-import Component from "./DiaperTypesPage";
-export default Component;
+export { default } from './DiaperTypesPage';

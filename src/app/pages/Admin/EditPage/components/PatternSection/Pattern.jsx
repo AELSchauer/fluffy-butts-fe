@@ -1,7 +1,7 @@
 import _ from "lodash";
 import React, { useContext, useState } from "react";
 import ConfirmationModal from "../ConfirmationModal";
-import CreateTagging from "../BrandSection/Tagging";
+import CreateTagging from "../TaggingSection/Tagging";
 import PatternContext from "../../../../../contexts/pattern-context";
 import TagContext from "../../../../../contexts/tag-context";
 import RemoveButton from "../RemoveButton/RemoveButton";

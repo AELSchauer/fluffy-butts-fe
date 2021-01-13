@@ -1,2 +1,1 @@
-import Component from "./AddButton";
-export default Component;
+export { default } from './AddButton';

@@ -1,2 +1,1 @@
-import Component from "./BrowsePage";
-export default Component;
+export { default } from './BrowsePage';

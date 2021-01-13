@@ -1,2 +1,1 @@
-import Component from './BrandIndexPage'
-export default Component;
+export { default } from "./BrandIndexPage";

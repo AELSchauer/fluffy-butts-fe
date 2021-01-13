@@ -1,2 +1,1 @@
-import Component from "./CollapsibleSection";
-export default Component;
+export { default } from './CollapsibleSection';

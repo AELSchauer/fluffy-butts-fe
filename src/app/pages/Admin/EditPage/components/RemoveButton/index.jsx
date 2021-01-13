@@ -1,2 +1,1 @@
-import Component from "./RemoveButton";
-export default Component;
+export { default } from './RemoveButton';

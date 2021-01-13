@@ -1,2 +1,1 @@
-import Component from "./Tooltip";
-export default Component;
+export { default } from './Tooltip';
