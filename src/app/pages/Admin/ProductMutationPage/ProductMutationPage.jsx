@@ -2,8 +2,8 @@ import _ from "lodash";
 import React, { useEffect, useState } from "react";
 import DiaperMutationContext from "../../../contexts/diaper-mutation-context";
 import axios from "../../../utils/axios";
-import BrandSection from "./components/BrandSection/BrandTest";
-import TagSection from "./components/TagSection/TagSectionTest";
+import BrandSection from "./components/BrandSection";
+import TagSection from "./components/TagSection";
 
 const MutationPage = (props) => {
   const [rootData, setRootData] = useState({

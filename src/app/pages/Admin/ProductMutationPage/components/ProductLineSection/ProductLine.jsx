@@ -6,7 +6,7 @@ import { DefaultEditor } from "react-simple-wysiwyg";
 import Input from "../Input";
 import JSONInput from "react-json-editor-ajrm";
 import locale from "react-json-editor-ajrm/locale/en";
-import ProductSection from "../ProductSection/ProductSectionTest";
+import ProductSection from "../ProductSection/ProductSection";
 import RemoveButton from "../RemoveButton/RemoveButton";
 import TaggingSection from "../TaggingSection";
 import "./_product-line.scss";

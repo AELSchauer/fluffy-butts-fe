@@ -4,7 +4,7 @@ import AddButton from "../AddButton";
 import axios from "../../../../../utils/axios";
 import CollapsibleSection from "../CollapsibleSection";
 import DiaperMutationContext from "../../../../../contexts/diaper-mutation-context";
-import Tag from "./TagTest";
+import Tag from "./Tag";
 import traverse from "traverse";
 
 const TagSection = ({ path }) => {

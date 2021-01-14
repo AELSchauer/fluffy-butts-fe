@@ -1,8 +1,8 @@
 import _ from "lodash";
 import React from "react";
 import Input from "../Input";
-import PatternSection from "../PatternSection/PatternSectionTest";
-import ProductLineSection from "../ProductLineSection/ProductLineSectionTest";
+import PatternSection from "../PatternSection";
+import ProductLineSection from "../ProductLineSection";
 import "./_brand-section.scss";
 
 const BrandTest = ({ path }) => {

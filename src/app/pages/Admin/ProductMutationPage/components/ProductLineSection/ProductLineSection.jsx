@@ -4,12 +4,12 @@ import AddButton from "../AddButton";
 import axios from "../../../../../utils/axios";
 import CollapsibleSection from "../CollapsibleSection";
 import DiaperMutationContext from "../../../../../contexts/diaper-mutation-context";
-import Pattern from "./PatternTest";
-import traverse from "traverse";
+import ProductLine from "./ProductLine";
+import "./_product-line.scss";
 
-const PatternSection = ({ path }) => {
+const ProductLineSection = ({ path }) => {
   const { rootData, onChange } = useContext(DiaperMutationContext);
-  const patterns = _.get(rootData, path) || [];
+  const productLines = _.get(rootData, path) || [];
 
   const onRemove = ({ id }, idx) => {
     (id.indexOf("tmp-") > -1
@@ -20,7 +20,7 @@ const PatternSection = ({ path }) => {
           data: {
             query: `
               mutation {
-                DeletePattern(id: "${id}") {
+                DeleteProductLine(id: "${id}") {
                   id
                 }
               }
@@ -28,33 +28,34 @@ const PatternSection = ({ path }) => {
           },
         })
     ).then(() => {
-      onChange(path, [...patterns.slice(0, idx), ...patterns.slice(idx + 1)]);
-      // TO DO
-      // Update any objects that have pattern_id w/ traverse
+      onChange(path, [
+        ...productLines.slice(0, idx),
+        ...productLines.slice(idx + 1),
+      ]);
     });
   };
 
   return (
     <div className="category-section">
       <CollapsibleSection
-        id={"pattern-section"}
-        label={<h5 className="category-name">Patterns</h5>}
+        id={"product-line-section"}
+        label={<h5 className="category-name">Product Lines</h5>}
       >
-        <div className="pattern-list">
-          {!!patterns
-            ? patterns.map((pattern, idx) => (
-                <Pattern
+        <div className="product-line-list">
+          {!!productLines
+            ? productLines.map((productLine, idx) => (
+                <ProductLine
                   key={idx}
                   path={[...path, `${idx}`]}
-                  onRemove={() => onRemove(pattern, idx)}
+                  onRemove={() => onRemove(productLine, idx)}
                 />
               ))
             : ""}
         </div>
-        <AddButton className="pattern" path={path} />
+        <AddButton className="product-line" path={path} />
       </CollapsibleSection>
     </div>
   );
 };
 
-export default PatternSection;
+export default ProductLineSection;

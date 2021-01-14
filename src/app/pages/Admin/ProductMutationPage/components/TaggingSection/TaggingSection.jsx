@@ -3,7 +3,7 @@ import React, { useContext, useState } from "react";
 import axios from "../../../../../utils/axios";
 import CollapsibleSection from "../CollapsibleSection";
 import DiaperMutationContext from "../../../../../contexts/diaper-mutation-context";
-import Tagging from "./TaggingTest";
+import Tagging from "./Tagging";
 import {
   toPascalCase,
   toUpperSnakeCase,
