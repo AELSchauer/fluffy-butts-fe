@@ -4,12 +4,12 @@ import AddButton from "../AddButton";
 import axios from "../../../../../utils/axios";
 import CollapsibleSection from "../CollapsibleSection";
 import DiaperMutationContext from "../../../../../contexts/diaper-mutation-context";
-import ProductLine from "./ProductLineTest";
-import "./_product-line.scss";
+import Product from "./ProductTest";
 
-const ProductLineSection = ({ path }) => {
+const ProductSection = ({ path }) => {
   const { rootData, onChange } = useContext(DiaperMutationContext);
-  const productLines = _.get(rootData, path) || [];
+  const products = _.get(rootData, path) || [];
+  const sectionIndex = _.nth(path, -2);
 
   const onRemove = ({ id }, idx) => {
     (id.indexOf("tmp-") > -1
@@ -20,7 +20,7 @@ const ProductLineSection = ({ path }) => {
           data: {
             query: `
               mutation {
-                DeleteProductLine(id: "${id}") {
+                DeleteProduct(id: "${id}") {
                   id
                 }
               }
@@ -28,34 +28,31 @@ const ProductLineSection = ({ path }) => {
           },
         })
     ).then(() => {
-      onChange(path, [
-        ...productLines.slice(0, idx),
-        ...productLines.slice(idx + 1),
-      ]);
+      onChange(path, [...products.slice(0, idx), ...products.slice(idx + 1)]);
     });
   };
 
   return (
     <div className="category-section">
       <CollapsibleSection
-        id={"product-line-section"}
-        label={<h5 className="category-name">Product Lines</h5>}
+        id={`collapse-products-${sectionIndex}-section`}
+        label={<h6 className="category-name">Products</h6>}
       >
-        <div className="product-line-list">
-          {!!productLines
-            ? productLines.map((productLine, idx) => (
-                <ProductLine
+        <div className="product-list">
+          {!!products
+            ? products.map((product, idx) => (
+                <Product
                   key={idx}
                   path={[...path, `${idx}`]}
-                  onRemove={() => onRemove(productLine, idx)}
+                  onRemove={() => onRemove(product, idx)}
                 />
               ))
             : ""}
         </div>
-        <AddButton className="product-line" path={path} />
+        <AddButton className="product" path={path} />
       </CollapsibleSection>
     </div>
   );
 };
 
-export default ProductLineSection;
+export default ProductSection;

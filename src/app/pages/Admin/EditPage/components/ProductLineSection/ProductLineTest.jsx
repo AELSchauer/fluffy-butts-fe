@@ -6,6 +6,7 @@ import { DefaultEditor } from "react-simple-wysiwyg";
 import Input from "../Input";
 import JSONInput from "react-json-editor-ajrm";
 import locale from "react-json-editor-ajrm/locale/en";
+import ProductSection from "../ProductSection/ProductSectionTest";
 import RemoveButton from "../RemoveButton/RemoveButton";
 import TaggingSection from "../TaggingSection";
 import "./_product-line.scss";
@@ -62,7 +63,7 @@ const ProductLine = ({ onRemove, path }) => {
               children?
             </h5>
             <p>ID: {productLine.id}</p>
-            <p>Name: {productLine.id}</p>
+            <p>Name: {productLine.name}</p>
           </span>
         </RemoveButton>
       </div>
@@ -114,6 +115,11 @@ const ProductLine = ({ onRemove, path }) => {
               }}
             />
           </CollapsibleSection>
+        </li>
+        <li>
+          <ProductSection
+            path={[...path, "products"]}
+          />
         </li>
         <li>
           <TaggingSection

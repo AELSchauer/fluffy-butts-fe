@@ -31,7 +31,7 @@ const MutationPage = (props) => {
                   name
                   details
                   display_order
-                  products(order_by: "name:asc") {
+                  products (order_by: "name:asc") {
                     id
                     name
                     pattern_id
