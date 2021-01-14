@@ -1,1 +1,1 @@
-export { default } from './MutationPage';
+export { default } from './ProductMutationPage';
