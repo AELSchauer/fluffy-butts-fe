@@ -11,14 +11,32 @@ const Input = ({
   title,
 }) => {
   const { rootData, onChange } = useContext(DiaperMutationContext);
+  const value =
+    typeof fieldName === "string"
+      ? _.get(rootData, [...path, fieldName])
+      : _.get(rootData, [...path, ...fieldName]);
 
   const onInputChange = (e) => {
-    onChange(
-      Object.assign(_.get(rootData, path), {
-        [fieldName]: e.target.value,
-        mutation: true,
-      })
-    );
+    if (typeof fieldName === "string") {
+      onChange(
+        Object.assign(_.get(rootData, path), {
+          [fieldName]: e.target.value,
+          mutation: true,
+        })
+      );
+    } else if (fieldName.length === 2) {
+      const data = _.get(rootData, path);
+      onChange(
+        Object.assign(data, {
+          ...data,
+          [fieldName[0]]: {
+            ...data[fieldName[0]],
+            [fieldName[1]]: e.target.value,
+          },
+          mutation: true,
+        })
+      );
+    }
   };
 
   return (
@@ -28,7 +46,7 @@ const Input = ({
         disabled={disabled}
         onChange={disabled ? undefined : onChangeOverride || onInputChange}
         type="text"
-        value={_.get(rootData, [...path, fieldName])}
+        value={value}
       />
     </span>
   );

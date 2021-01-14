@@ -3,14 +3,15 @@ import React, { useContext, useState } from "react";
 import DiaperMutationContext from "../../../../../contexts/diaper-mutation-context";
 import Input from "../Input";
 import RemoveButton from "../RemoveButton/RemoveButton";
+import TaggingSection from "../TaggingSection";
 
 const Pattern = ({ onRemove, path }) => {
   const { rootData } = useContext(DiaperMutationContext);
   const pattern = _.get(rootData, path);
 
   return (
-    <div>
-      <div className="pattern col-12 info-display">
+    <div className="pattern">
+      <div className="col-12 info-display">
         <span
           className="info-toggle"
           data-toggle="collapse"
@@ -30,6 +31,15 @@ const Pattern = ({ onRemove, path }) => {
           </span>
         </RemoveButton>
       </div>
+      <ul className="collapse" id={`collapse-pattern-${pattern.id}`}>
+        <li>
+          <TaggingSection
+            parentClassName="pattern"
+            path={[...path, "taggings"]}
+            taggableId={pattern.id}
+          />
+        </li>
+      </ul>
     </div>
   );
 };

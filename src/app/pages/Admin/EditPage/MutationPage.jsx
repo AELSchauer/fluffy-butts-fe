@@ -11,7 +11,7 @@ const MutationPage = (props) => {
       id: `tmp-${Date.now()}`,
       mutation: true,
     },
-    tags: []
+    tags: [],
   });
   const [isAuthorized, setIsAuthorized] = useState(true);
 
@@ -23,7 +23,7 @@ const MutationPage = (props) => {
         data: {
           query: `
             {
-              brands (filter__name_insensitive: "${props.match.params.brandName}") {
+              brands(filter__name_insensitive: "${props.match.params.brandName}") {
                 id
                 name
                 product_lines {
@@ -31,15 +31,29 @@ const MutationPage = (props) => {
                   name
                   details
                   display_order
-                  products (order_by: "name:asc")  {
+                  products(order_by: "name:asc") {
                     id
                     name
                     pattern_id
                   }
+                  taggings {
+                    id
+                    tag {
+                      id
+                      name
+                    }
+                  }
                 }
-                patterns (order_by: "name:asc") {
+                patterns(order_by: "name:asc") {
                   id
                   name
+                  taggings {
+                    id
+                    tag {
+                      id
+                      name
+                    }
+                  }
                 }
               }
               tags {
@@ -53,7 +67,6 @@ const MutationPage = (props) => {
         },
       }).then(
         ({ data: { data: { brands: [brand] = [], tags = [] } = {} } = {} }) => {
-          console.log('tags', tags)
           setRootData({ brand, tags });
         }
       );

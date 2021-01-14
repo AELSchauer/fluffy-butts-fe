@@ -3,10 +3,11 @@ import React, { useContext } from "react";
 import CollapsibleSection from "../CollapsibleSection/CollapsibleSection";
 import DiaperMutationContext from "../../../../../contexts/diaper-mutation-context";
 import { DefaultEditor } from "react-simple-wysiwyg";
+import Input from "../Input";
 import JSONInput from "react-json-editor-ajrm";
 import locale from "react-json-editor-ajrm/locale/en";
-import Input from "../Input";
 import RemoveButton from "../RemoveButton/RemoveButton";
+import TaggingSection from "../TaggingSection";
 import "./_product-line.scss";
 
 const sampleProductDetails = [
@@ -113,6 +114,13 @@ const ProductLine = ({ onRemove, path }) => {
               }}
             />
           </CollapsibleSection>
+        </li>
+        <li>
+          <TaggingSection
+            parentClassName="productLine"
+            path={[...path, "taggings"]}
+            taggableId={productLine.id}
+          />
         </li>
       </ul>
     </div>
