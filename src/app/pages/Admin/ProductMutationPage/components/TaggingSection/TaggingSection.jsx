@@ -18,7 +18,7 @@ const TaggingSection = ({ path, taggableId }) => {
   const taggings = _.get(rootData, path) || [];
   const tagSelection = _.get(rootData, "tags")
     .filter(
-      ({ category }) =>
+      ({ category = "" }) =>
         category.indexOf(toUpperSnakeCase(parentClassName)) === 0
     )
     .map((tag) => ({
@@ -33,14 +33,21 @@ const TaggingSection = ({ path, taggableId }) => {
       `taggable_id: "${taggableId}"`,
     ].join(", ");
 
-    return axios({
-      method: "POST",
-      url: "/",
-      // headers: {
-      //   Authorization: `Bearer ${token}`,
-      // },
-      data: {
-        query: `
+    if (taggableId.indexOf("tmp") > -1) {
+      onChange(
+        path,
+        taggings.concat([Object.assign(newTag, { mutation: true })])
+      );
+      setNewTag({ id: "" });
+    } else {
+      axios({
+        method: "POST",
+        url: "/",
+        // headers: {
+        //   Authorization: `Bearer ${token}`,
+        // },
+        data: {
+          query: `
           mutation {
             CreateTagging(${queryParams}) {
               id
@@ -51,22 +58,23 @@ const TaggingSection = ({ path, taggableId }) => {
             }
           }
         `,
-      },
-    }).then(
-      ({
-        data: {
-          data: { CreateTagging },
         },
-      }) => {
-        setNewTag({ id: "" });
-        onChange(path, taggings.concat([CreateTagging]));
-      }
-    );
+      }).then(
+        ({
+          data: {
+            data: { CreateTagging },
+          },
+        }) => {
+          setNewTag({ id: "" });
+          onChange(path, taggings.concat([CreateTagging]));
+        }
+      );
+    }
   };
 
   const onRemove = ({ id }, idx) => {
     console.log("onRemove TaggingSection", id);
-    (id.indexOf("tmp-") > -1
+    (id.indexOf("tmp") > -1
       ? Promise.resolve()
       : axios({
           method: "POST",
@@ -109,7 +117,6 @@ const TaggingSection = ({ path, taggableId }) => {
           onChange={(e) =>
             setNewTag(tagSelection.find(({ id }) => e.target.value === id))
           }
-          required
           value={newTag.id}
         >
           <option value="" disabled>

@@ -12,7 +12,7 @@ const ProductLineSection = ({ path }) => {
   const productLines = _.get(rootData, path) || [];
 
   const onRemove = ({ id }, idx) => {
-    (id.indexOf("tmp-") > -1
+    (id.indexOf("tmp") > -1
       ? Promise.resolve()
       : axios({
           method: "POST",

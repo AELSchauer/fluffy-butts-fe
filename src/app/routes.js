@@ -14,7 +14,7 @@ export default [
     component: ProductMutationPage,
   },
   {
-    path: "/admin/product-data/update/:brandName",
+    path: "/admin/product-data/update/:brandId",
     title: "Product Data Update Page",
     includeInNavBar: false,
     component: ProductMutationPage,

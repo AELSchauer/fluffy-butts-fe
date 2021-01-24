@@ -18,25 +18,25 @@ const Input = ({
 
   const onInputChange = (e) => {
     if (typeof fieldName === "string") {
-      onChange(
-        Object.assign(_.get(rootData, path), {
-          [fieldName]: e.target.value,
-          mutation: true,
-        })
-      );
-    } else if (fieldName.length === 2) {
-      const data = _.get(rootData, path);
-      onChange(
-        Object.assign(data, {
-          ...data,
-          [fieldName[0]]: {
-            ...data[fieldName[0]],
-            [fieldName[1]]: e.target.value,
-          },
-          mutation: true,
-        })
-      );
+      onChange(path, {
+        ..._.get(rootData, path),
+        [fieldName]: e.target.value,
+        mutation: true,
+      });
     }
+    // else if (fieldName.length === 2) {
+    //   const data = _.get(rootData, path);
+    //   onChange(
+    //     Object.assign(data, {
+    //       ...data,
+    //       [fieldName[0]]: {
+    //         ...data[fieldName[0]],
+    //         [fieldName[1]]: e.target.value,
+    //       },
+    //       mutation: true,
+    //     })
+    //   );
+    // }
   };
 
   return (

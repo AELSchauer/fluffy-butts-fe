@@ -10,7 +10,7 @@ const AddButton = ({ className, path }) => {
     onChange(
       path,
       (_.get(rootData, path) || []).concat([
-        { id: `tmp-${Date.now()}`, mutation: true },
+        { id: `tmp${Date.now()}`, mutation: true },
       ])
     );
   };

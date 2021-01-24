@@ -78,16 +78,14 @@ const ProductLine = ({ onRemove, path }) => {
               id="product-line-details"
               locale={locale}
               onChange={(e) => {
-                onChange(
-                  Object.assign(productLine, {
-                    ...productLine,
-                    details: {
-                      ...productLine.details,
-                      sizing: e.target.value,
-                    },
-                    mutation: true,
-                  })
-                );
+                onChange(path, {
+                  ...productLine,
+                  details: {
+                    ...productLine.details,
+                    sizing: e.target.value,
+                  },
+                  mutation: true,
+                });
               }}
               placeholder={productLine.details.sizing || sampleProductDetails}
               width="1000px"
@@ -102,24 +100,20 @@ const ProductLine = ({ onRemove, path }) => {
             <DefaultEditor
               value={productLine.details.materials || ""}
               onChange={(e) => {
-                onChange(
-                  Object.assign(productLine, {
-                    ...productLine,
-                    details: {
-                      ...productLine.details,
-                      materials: e.target.value,
-                    },
-                    mutation: true,
-                  })
-                );
+                onChange(path, {
+                  ...productLine,
+                  details: {
+                    ...productLine.details,
+                    materials: e.target.value,
+                  },
+                  mutation: true,
+                });
               }}
             />
           </CollapsibleSection>
         </li>
         <li>
-          <ProductSection
-            path={[...path, "products"]}
-          />
+          <ProductSection path={[...path, "products"]} />
         </li>
         <li>
           <TaggingSection

@@ -19,7 +19,9 @@ const axiosWrapper = axios.create({
           .paths()
           .forEach(
             (path) =>
-              travData.get(path) === null && travData.set(path, undefined)
+              (travData.get(path) === null ||
+                travData.get(path) === "undefined") &&
+              travData.set(path, undefined)
           );
         return deserialize(travData.value, { transformKeys: "camelCase" });
       }

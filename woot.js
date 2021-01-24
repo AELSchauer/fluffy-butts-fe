@@ -46,8 +46,8 @@ const response = {
 };
 
 const tags = [
-  { id: "tmp-1610089099779", name: "test4", category: "PATTERN__COLOR" },
-  { id: "tmp-1610089104634", name: "red", category: "PATTERN__COLOR" },
+  { id: "tmp1610089099779", name: "test4", category: "PATTERN__COLOR" },
+  { id: "tmp1610089104634", name: "red", category: "PATTERN__COLOR" },
 ];
 
 const woot = tags.map((tag) => {

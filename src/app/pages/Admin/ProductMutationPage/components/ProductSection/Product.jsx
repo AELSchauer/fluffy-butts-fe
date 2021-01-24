@@ -27,12 +27,10 @@ const Product = ({ onRemove, path }) => {
                 : ""
             }
             onChange={(e) =>
-              onChange(
-                Object.assign(product, {
-                  patternId: e.target.value,
-                  mutation: true,
-                })
-              )
+              onChange(path, {
+                patternId: e.target.value,
+                mutation: true,
+              })
             }
           >
             <option value="">Select an option</option>

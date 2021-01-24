@@ -10,17 +10,10 @@ import traverse from "traverse";
 const TagSection = ({ path }) => {
   const { rootData, onChange } = useContext(DiaperMutationContext);
   const tags = _.get(rootData, path) || [];
-  const categories = _.chain(tags)
-    .filter(({ id }) => id.indexOf("tmp-") === -1)
-    .map("category")
-    .uniq()
-    .concat("PATTERN__TBD", "PRODUCT__TBD")
-    .sort()
-    .value();
 
   const onRemove = ({ id }, idx) => {
     console.log("remove TagSection");
-    // (id.indexOf("tmp-") > -1
+    // (id.indexOf("tmp") > -1
     //   ? Promise.resolve()
     //   : axios({
     //       method: "POST",
@@ -53,7 +46,6 @@ const TagSection = ({ path }) => {
           {!!tags.length
             ? tags.map((tag, idx) => (
                 <Tag
-                  categories={categories}
                   key={idx}
                   path={[...path, `${idx}`]}
                   onRemove={() => onRemove(tag, idx)}

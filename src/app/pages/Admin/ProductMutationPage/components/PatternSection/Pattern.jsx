@@ -21,7 +21,7 @@ const Pattern = ({ onRemove, path }) => {
         >
           <i className="fas fa-caret-right" />
         </span>
-        <Input disabled fieldName="id" path={path} title="ID" set />
+        <Input disabled fieldName="id" path={path} title="ID" />
         <Input fieldName="name" path={path} />
         <RemoveButton onRemove={onRemove}>
           <span>

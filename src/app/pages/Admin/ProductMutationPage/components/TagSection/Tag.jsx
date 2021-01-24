@@ -2,9 +2,21 @@ import _ from "lodash";
 import React, { useContext } from "react";
 import DiaperMutationContext from "../../../../../contexts/diaper-mutation-context";
 import Input from "../Input";
-import RemoveButton from "../RemoveButton/RemoveButton";
+import RemoveButton from "../RemoveButton";
 
-const Tag = ({ categories, onRemove, path }) => {
+const categories = [
+  "PATTERN__COLOR",
+  "PATTERN__PATTERN_AND_THEME",
+  "PATTERN__TBD",
+  "PRODUCT_LINE__FEATURES",
+  "PRODUCT_LINE__AGE",
+  "PRODUCT_LINE__PRODUCT_TYPE",
+  "PRODUCT_LINE__PRODUCT_SERIES",
+  "PRODUCT_LINE__TBD",
+  "TBD",
+];
+
+const Tag = ({ onRemove, path }) => {
   const { rootData, onChange } = useContext(DiaperMutationContext);
   const tag = _.get(rootData, path);
 
@@ -28,12 +40,11 @@ const Tag = ({ categories, onRemove, path }) => {
             value={tag.category}
             required
             onChange={(e) =>
-              onChange(
-                Object.assign(tag, {
-                  category: e.target.value,
-                  mutation: true,
-                })
-              )
+              onChange(path, {
+                ...tag,
+                category: e.target.value,
+                mutation: true,
+              })
             }
             defaultValue=""
           >
@@ -45,7 +56,6 @@ const Tag = ({ categories, onRemove, path }) => {
                 {category}
               </option>
             ))}
-            <option value="TBD">TBD</option>
           </select>
         </span>
         <Input fieldName="displayOrder" path={path} />

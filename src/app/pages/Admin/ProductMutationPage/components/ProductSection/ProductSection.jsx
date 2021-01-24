@@ -12,7 +12,7 @@ const ProductSection = ({ path }) => {
   const sectionIndex = _.nth(path, -2);
 
   const onRemove = ({ id }, idx) => {
-    (id.indexOf("tmp-") > -1
+    (id.indexOf("tmp") > -1
       ? Promise.resolve()
       : axios({
           method: "POST",

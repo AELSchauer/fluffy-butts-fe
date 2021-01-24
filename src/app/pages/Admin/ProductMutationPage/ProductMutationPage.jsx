@@ -4,11 +4,12 @@ import DiaperMutationContext from "../../../contexts/diaper-mutation-context";
 import axios from "../../../utils/axios";
 import BrandSection from "./components/BrandSection";
 import TagSection from "./components/TagSection";
+import submitForm from "./submit-form";
 
 const MutationPage = (props) => {
   const [rootData, setRootData] = useState({
     brand: {
-      id: `tmp-${Date.now()}`,
+      id: `tmp${Date.now()}`,
       mutation: true,
     },
     tags: [],
@@ -16,14 +17,14 @@ const MutationPage = (props) => {
   const [isAuthorized, setIsAuthorized] = useState(true);
 
   useEffect(() => {
-    props.match.params.brandName &&
+    props.match.params.brandId &&
       axios({
         method: "POST",
         url: "/",
         data: {
           query: `
             {
-              brands(filter__name_insensitive: "${props.match.params.brandName}") {
+              brands(filter__id: "${props.match.params.brandId}") {
                 id
                 name
                 product_lines {
@@ -73,6 +74,7 @@ const MutationPage = (props) => {
   }, []);
 
   const onChange = (path, data) => {
+    console.log("onChange", path, data);
     setRootData({
       brand: _.set(rootData, path, data).brand,
       tags: _.set(rootData, path, data).tags,
@@ -82,6 +84,7 @@ const MutationPage = (props) => {
   const handleSubmit = (e) => {
     e.preventDefault();
     console.log("WOOHOO!");
+    submitForm(rootData, onChange);
   };
 
   return (
