@@ -7,8 +7,8 @@ import DiaperMutationContext from "../../../../../contexts/diaper-mutation-conte
 import Product from "./Product";
 
 const ProductSection = ({ path }) => {
-  const { rootData, onChange } = useContext(DiaperMutationContext);
-  const products = _.get(rootData, path) || [];
+  const { dynamicState, dispatch, onChange } = useContext(DiaperMutationContext);
+  const products = _.get(dynamicState, path) || [];
   const sectionIndex = _.nth(path, -2);
 
   const onRemove = ({ id }, idx) => {
@@ -29,6 +29,7 @@ const ProductSection = ({ path }) => {
         })
     ).then(() => {
       onChange(path, [...products.slice(0, idx), ...products.slice(idx + 1)]);
+      dispatch({ type: "REMOVE", path, idx, list: products });
     });
   };
 
@@ -49,7 +50,11 @@ const ProductSection = ({ path }) => {
               ))
             : ""}
         </div>
-        <AddButton className="product" path={path} />
+        <AddButton
+          className="product"
+          defaultObj={{ id: `tmp${Date.now()}`, name: "", mutation: true }}
+          path={path}
+        />
       </CollapsibleSection>
     </div>
   );

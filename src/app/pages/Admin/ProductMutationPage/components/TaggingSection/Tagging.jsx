@@ -1,13 +1,13 @@
 import _ from "lodash";
 import React, { useContext } from "react";
 import DiaperMutationContext from "../../../../../contexts/diaper-mutation-context";
-import Input from "../Input";
+import Input from "../FormElements/Input";
 import RemoveButton from "../RemoveButton/RemoveButton";
 import { toTitleCase } from "../../../../../utils/case-helper";
 
 const Tagging = ({ parentClassName, path, onRemove }) => {
-  const { rootData } = useContext(DiaperMutationContext);
-  const tagging = _.get(rootData, path);
+  const { state } = useContext(DiaperMutationContext);
+  const tagging = _.get(state, path);
 
   return (
     <div className="tagging col-12 info-display">

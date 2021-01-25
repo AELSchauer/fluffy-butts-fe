@@ -6,8 +6,18 @@ import BrandSection from "./components/BrandSection";
 import TagSection from "./components/TagSection";
 import submitForm from "./submit-form";
 
+import { useReducer } from "react";
+import reducer from "./reducer";
+
 const MutationPage = (props) => {
-  const [rootData, setRootData] = useState({
+  const [state, dispatch] = useReducer(reducer, {
+    brand: {
+      id: `tmp${Date.now()}`,
+      mutation: true,
+    },
+    tags: [],
+  });
+  const [dynamicState, setRootData] = useState({
     brand: {
       id: `tmp${Date.now()}`,
       mutation: true,
@@ -68,6 +78,7 @@ const MutationPage = (props) => {
         },
       }).then(
         ({ data: { data: { brands: [brand] = [], tags = [] } = {} } = {} }) => {
+          dispatch({ type: "INITIAL", data: { brand, tags } });
           setRootData({ brand, tags });
         }
       );
@@ -76,19 +87,21 @@ const MutationPage = (props) => {
   const onChange = (path, data) => {
     console.log("onChange", path, data);
     setRootData({
-      brand: _.set(rootData, path, data).brand,
-      tags: _.set(rootData, path, data).tags,
+      brand: _.set(dynamicState, path, data).brand,
+      tags: _.set(dynamicState, path, data).tags,
     });
   };
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    console.log("WOOHOO!");
-    submitForm(rootData, onChange);
+    console.log("WOOHOO!", state);
+    // submitForm(dynamicState, onChange);
   };
 
   return (
-    <DiaperMutationContext.Provider value={{ rootData, onChange }}>
+    <DiaperMutationContext.Provider
+      value={{ dynamicState, onChange, state, dispatch }}
+    >
       <section className="create-page page">
         {!isAuthorized ? <div>Not authorized. Please login again.</div> : null}
         <form onSubmit={handleSubmit}>
@@ -101,7 +114,6 @@ const MutationPage = (props) => {
           </div>
           <button type="submit">Submit</button>
         </form>
-        {JSON.stringify(rootData)}
       </section>
     </DiaperMutationContext.Provider>
   );

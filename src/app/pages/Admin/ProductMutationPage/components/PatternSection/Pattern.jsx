@@ -1,13 +1,13 @@
 import _ from "lodash";
 import React, { useContext, useState } from "react";
 import DiaperMutationContext from "../../../../../contexts/diaper-mutation-context";
-import Input from "../Input";
+import Input from "../FormElements/Input";
 import RemoveButton from "../RemoveButton/RemoveButton";
 import TaggingSection from "../TaggingSection";
 
 const Pattern = ({ onRemove, path }) => {
-  const { rootData } = useContext(DiaperMutationContext);
-  const pattern = _.get(rootData, path);
+  const { state } = useContext(DiaperMutationContext);
+  const [pattern, setPattern] = useState(_.get(state, path));
 
   return (
     <div className="pattern">
@@ -22,7 +22,7 @@ const Pattern = ({ onRemove, path }) => {
           <i className="fas fa-caret-right" />
         </span>
         <Input disabled fieldName="id" path={path} title="ID" />
-        <Input fieldName="name" path={path} />
+        <Input fieldName="name" path={path} onChange={setPattern} />
         <RemoveButton onRemove={onRemove}>
           <span>
             <h5>Are you sure you want to remove this pattern?</h5>

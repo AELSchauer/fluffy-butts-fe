@@ -1,9 +1,9 @@
 import _ from "lodash";
-import React, { useContext } from "react";
+import React, { useContext, useState } from "react";
 import CollapsibleSection from "../CollapsibleSection/CollapsibleSection";
 import DiaperMutationContext from "../../../../../contexts/diaper-mutation-context";
 import { DefaultEditor } from "react-simple-wysiwyg";
-import Input from "../Input";
+import Input from "../FormElements/Input";
 import JSONInput from "react-json-editor-ajrm";
 import locale from "react-json-editor-ajrm/locale/en";
 import ProductSection from "../ProductSection/ProductSection";
@@ -38,8 +38,8 @@ const sampleProductDetails = [
 ];
 
 const ProductLine = ({ onRemove, path }) => {
-  const { rootData, onChange } = useContext(DiaperMutationContext);
-  const productLine = _.get(rootData, path);
+  const { state, onChange, dispatch } = useContext(DiaperMutationContext);
+  const [productLine, setProductLine] = useState(_.get(state, path));
 
   return (
     <div className="product-line">
@@ -54,8 +54,8 @@ const ProductLine = ({ onRemove, path }) => {
           <i className="fas fa-caret-right" />
         </span>
         <Input disabled fieldName="id" path={path} title="ID" />
-        <Input fieldName="name" required path={path} />
-        <Input fieldName="displayOrder" path={path} />
+        <Input fieldName="name" path={path} onChange={setProductLine} />
+        <Input fieldName="displayOrder" path={path} onChange={setProductLine} />
         <RemoveButton onRemove={onRemove}>
           <span>
             <h5>
@@ -78,16 +78,22 @@ const ProductLine = ({ onRemove, path }) => {
               id="product-line-details"
               locale={locale}
               onChange={(e) => {
-                onChange(path, {
-                  ...productLine,
-                  details: {
-                    ...productLine.details,
-                    sizing: e.target.value,
-                  },
+                dispatch({
+                  type: "UPDATE",
+                  fieldName: ["details", "sizing"],
+                  path,
+                  value: e.jsObject,
+                });
+                setProductLine({
+                  ..._.set(productLine, ["details", "sizing"], e.jsObject),
                   mutation: true,
                 });
               }}
-              placeholder={productLine.details.sizing || sampleProductDetails}
+              placeholder={_.get(
+                productLine,
+                ["details", "sizing"],
+                sampleProductDetails
+              )}
               width="1000px"
             />
           </CollapsibleSection>
@@ -98,14 +104,20 @@ const ProductLine = ({ onRemove, path }) => {
             label={<label>Materials</label>}
           >
             <DefaultEditor
-              value={productLine.details.materials || ""}
+              value={_.get(productLine, ["details", "materials"], "")}
               onChange={(e) => {
-                onChange(path, {
-                  ...productLine,
-                  details: {
-                    ...productLine.details,
-                    materials: e.target.value,
-                  },
+                dispatch({
+                  type: "UPDATE",
+                  fieldName: ["details", "materials"],
+                  path,
+                  value: e.target.value,
+                });
+                setProductLine({
+                  ..._.set(
+                    productLine,
+                    ["details", "materials"],
+                    e.target.value
+                  ),
                   mutation: true,
                 });
               }}

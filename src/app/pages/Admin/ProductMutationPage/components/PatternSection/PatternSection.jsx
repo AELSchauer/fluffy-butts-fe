@@ -5,11 +5,12 @@ import axios from "../../../../../utils/axios";
 import CollapsibleSection from "../CollapsibleSection";
 import DiaperMutationContext from "../../../../../contexts/diaper-mutation-context";
 import Pattern from "./Pattern";
-import traverse from "traverse";
 
 const PatternSection = ({ path }) => {
-  const { rootData, onChange } = useContext(DiaperMutationContext);
-  const patterns = _.get(rootData, path) || [];
+  const { dynamicState, dispatch, onChange } = useContext(
+    DiaperMutationContext
+  );
+  const patterns = _.get(dynamicState, path, []);
 
   const onRemove = ({ id }, idx) => {
     (id.indexOf("tmp") > -1
@@ -19,18 +20,19 @@ const PatternSection = ({ path }) => {
           url: "/",
           data: {
             query: `
-              mutation {
-                DeletePattern(id: "${id}") {
-                  id
+                mutation {
+                  DeletePattern(id: "${id}") {
+                    id
+                  }
                 }
-              }
-            `,
+              `,
           },
         })
     ).then(() => {
       onChange(path, [...patterns.slice(0, idx), ...patterns.slice(idx + 1)]);
+      dispatch({ type: "REMOVE", path, idx, list: patterns });
       // TO DO
-      // Update any objects that have pattern_id w/ traverse
+      // dispatch({ type: "REMOVE_TRAVERSE", fieldName: "pattern_id" });
     });
   };
 
@@ -51,7 +53,11 @@ const PatternSection = ({ path }) => {
               ))
             : ""}
         </div>
-        <AddButton className="pattern" path={path} />
+        <AddButton
+          className="pattern"
+          defaultObj={{ id: `tmp${Date.now()}`, name: "", mutation: true }}
+          path={path}
+        />
       </CollapsibleSection>
     </div>
   );

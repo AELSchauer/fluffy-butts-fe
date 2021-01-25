@@ -3,16 +3,18 @@ import React, { useContext } from "react";
 import DiaperMutationContext from "../../../../../contexts/diaper-mutation-context";
 import { toTitleCase } from "../../../../../utils/case-helper";
 
-const AddButton = ({ className, path }) => {
-  const { rootData, onChange } = useContext(DiaperMutationContext);
+const AddButton = ({
+  className,
+  defaultObj = { id: `tmp${Date.now()}`, mutation: true },
+  path,
+}) => {
+  const { dynamicState, dispatch, onChange } = useContext(
+    DiaperMutationContext
+  );
 
   const onAdd = () => {
-    onChange(
-      path,
-      (_.get(rootData, path) || []).concat([
-        { id: `tmp${Date.now()}`, mutation: true },
-      ])
-    );
+    dispatch({ type: "CREATE", path, data: defaultObj });
+    onChange(path, _.get(dynamicState, path, []).concat([defaultObj]));
   };
 
   return (

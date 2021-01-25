@@ -1,7 +1,8 @@
 import _ from "lodash";
-import React, { useContext } from "react";
+import React, { useContext, useState } from "react";
 import DiaperMutationContext from "../../../../../contexts/diaper-mutation-context";
-import Input from "../Input";
+import Input from "../FormElements/Input";
+import Select from "../FormElements/Select";
 import RemoveButton from "../RemoveButton";
 
 const categories = [
@@ -17,8 +18,8 @@ const categories = [
 ];
 
 const Tag = ({ onRemove, path }) => {
-  const { rootData, onChange } = useContext(DiaperMutationContext);
-  const tag = _.get(rootData, path);
+  const { state } = useContext(DiaperMutationContext);
+  const [tag, setTag] = useState(_.get(state, path));
 
   return (
     <div>
@@ -32,36 +33,31 @@ const Tag = ({ onRemove, path }) => {
         >
           <i className="fas fa-caret-right" />
         </span>
-        <Input disabled fieldName="id" path={path} title="ID" set />
-        <Input fieldName="name" path={path} />
-        <span>
-          <label>Category</label>
-          <select
-            value={tag.category}
-            required
-            onChange={(e) =>
-              onChange(path, {
-                ...tag,
-                category: e.target.value,
-                mutation: true,
-              })
-            }
-            defaultValue=""
-          >
-            <option value="" disabled>
-              Select your option
-            </option>
-            {categories.map((category, idx) => (
-              <option key={idx} value={category}>
-                {category}
-              </option>
-            ))}
-          </select>
-        </span>
-        <Input fieldName="displayOrder" path={path} />
+        <Input
+          disabled
+          fieldName="id"
+          path={path}
+          title="ID"
+        />
+        <Input
+          fieldName="name"
+          path={path}
+          onChange={setTag}
+        />
+        <Select
+          fieldName="category"
+          optionList={categories}
+          path={path}
+          onChange={setTag}
+        />
+        <Input
+          fieldName="displayOrder"
+          path={path}
+          onChange={setTag}
+        />
         <RemoveButton onRemove={onRemove}>
           <span>
-            <h5>Are you sure you want to remove this pattern?</h5>
+            <h5>Are you sure you want to remove this tag?</h5>
             <p>ID: {tag.id}</p>
             <p>Name: {tag.name}</p>
           </span>

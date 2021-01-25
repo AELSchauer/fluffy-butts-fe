@@ -1,13 +1,13 @@
 import _ from "lodash";
-import React, { useContext } from "react";
+import React, { useContext, useState } from "react";
 import DiaperMutationContext from "../../../../../contexts/diaper-mutation-context";
-import Input from "../Input";
+import Input from "../FormElements/Input";
 import RemoveButton from "../RemoveButton/RemoveButton";
 
 const Product = ({ onRemove, path }) => {
-  const { rootData, onChange } = useContext(DiaperMutationContext);
-  const product = _.get(rootData, path);
-  const patterns = _.get(rootData, ["brand", "patterns"]);
+  const { state, dispatch } = useContext(DiaperMutationContext);
+  const [product, setProduct] = useState(_.get(state, path));
+  const patterns = _.get(state, ["brand", "patterns"]);
   const patternSelection = _.chain(patterns)
     .filter(({ name }) => !!name)
     .sortBy(["name"])
@@ -17,7 +17,7 @@ const Product = ({ onRemove, path }) => {
     <div className="product">
       <div className="col-12 info-display">
         <Input disabled fieldName="id" path={path} title="ID" />
-        <Input fieldName="name" required path={path} />
+        <Input fieldName="name" path={path} onChange={setProduct} />
         <span>
           <label>Pattern</label>
           <select
@@ -26,16 +26,22 @@ const Product = ({ onRemove, path }) => {
                 ? product.patternId
                 : ""
             }
-            onChange={(e) =>
-              onChange(path, {
-                patternId: e.target.value,
+            onChange={(e) => {
+              setProduct({
+                ..._.set(product, "patternId", e.target.value),
                 mutation: true,
-              })
-            }
+              });
+              dispatch({
+                type: "UPDATE",
+                fieldName: "patternId",
+                path,
+                value: e.target.value,
+              });
+            }}
           >
             <option value="">Select an option</option>
-            {patternSelection.map(({ id, name }) => (
-              <option key={id} value={id}>
+            {patternSelection.map(({ id, name }, idx) => (
+              <option key={idx} value={id}>
                 {name}
               </option>
             ))}
@@ -44,7 +50,7 @@ const Product = ({ onRemove, path }) => {
         <RemoveButton onRemove={onRemove}>
           <span>
             <h5>
-              Are you sure you want to remove this Product and all its children?
+              Are you sure you want to remove this product and all its children?
             </h5>
             <p>ID: {product.id}</p>
             <p>Name: {product.name}</p>

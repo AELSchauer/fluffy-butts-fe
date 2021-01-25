@@ -10,13 +10,13 @@ import {
 } from "../../../../../utils/case-helper";
 
 const TaggingSection = ({ path, taggableId }) => {
-  const { rootData, onChange } = useContext(DiaperMutationContext);
+  const { state, dispatch, onChange } = useContext(DiaperMutationContext);
   const [newTag, setNewTag] = useState({ id: "" });
 
   const parentClassName = _.nth(path, -3).slice(0, -1);
   const sectionIndex = _.nth(path, -2);
-  const taggings = _.get(rootData, path) || [];
-  const tagSelection = _.get(rootData, "tags")
+  const taggings = _.get(state, path) || [];
+  const tagSelection = _.get(state, "tags")
     .filter(
       ({ category = "" }) =>
         category.indexOf(toUpperSnakeCase(parentClassName)) === 0
@@ -62,11 +62,12 @@ const TaggingSection = ({ path, taggableId }) => {
       }).then(
         ({
           data: {
-            data: { CreateTagging },
+            data: { CreateTagging: data },
           },
         }) => {
           setNewTag({ id: "" });
-          onChange(path, taggings.concat([CreateTagging]));
+          onChange(path, taggings.concat([data]));
+          dispatch({ type: "CREATE", path, data });
         }
       );
     }
@@ -94,8 +95,10 @@ const TaggingSection = ({ path, taggableId }) => {
         })
     ).then(() => {
       onChange(path, [...taggings.slice(0, idx), ...taggings.slice(idx + 1)]);
+      dispatch({ type: "REMOVE", path, idx, list: taggings });
     });
   };
+
   return (
     <CollapsibleSection
       id={`collapse-${parentClassName}-${sectionIndex}-taggings-section`}

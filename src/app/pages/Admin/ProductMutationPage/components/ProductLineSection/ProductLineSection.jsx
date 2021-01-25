@@ -8,8 +8,10 @@ import ProductLine from "./ProductLine";
 import "./_product-line.scss";
 
 const ProductLineSection = ({ path }) => {
-  const { rootData, onChange } = useContext(DiaperMutationContext);
-  const productLines = _.get(rootData, path) || [];
+  const { dynamicState, dispatch, onChange } = useContext(
+    DiaperMutationContext
+  );
+  const productLines = _.get(dynamicState, path) || [];
 
   const onRemove = ({ id }, idx) => {
     (id.indexOf("tmp") > -1
@@ -32,6 +34,7 @@ const ProductLineSection = ({ path }) => {
         ...productLines.slice(0, idx),
         ...productLines.slice(idx + 1),
       ]);
+      dispatch({ type: "REMOVE", path, idx, list: productLines });
     });
   };
 
@@ -52,7 +55,11 @@ const ProductLineSection = ({ path }) => {
               ))
             : ""}
         </div>
-        <AddButton className="product-line" path={path} />
+        <AddButton
+          className="product-line"
+          defaultObj={{ id: `tmp${Date.now()}`, name: "", mutation: true }}
+          path={path}
+        />
       </CollapsibleSection>
     </div>
   );
