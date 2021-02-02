@@ -6,15 +6,15 @@ import Select from "../FormElements/Select";
 import RemoveButton from "../RemoveButton";
 
 const categories = [
-  "PATTERN__COLOR",
-  "PATTERN__PATTERN_AND_THEME",
-  "PATTERN__TBD",
-  "PRODUCT_LINE__FEATURES",
-  "PRODUCT_LINE__AGE",
-  "PRODUCT_LINE__PRODUCT_TYPE",
-  "PRODUCT_LINE__PRODUCT_SERIES",
-  "PRODUCT_LINE__TBD",
-  "TBD",
+  { value: "PATTERN__COLOR" },
+  { value: "PATTERN__PATTERN_AND_THEME" },
+  { value: "PATTERN__TBD" },
+  { value: "PRODUCT_LINE__FEATURES" },
+  { value: "PRODUCT_LINE__AGE" },
+  { value: "PRODUCT_LINE__PRODUCT_TYPE" },
+  { value: "PRODUCT_LINE__PRODUCT_SERIES" },
+  { value: "PRODUCT_LINE__TBD" },
+  { value: "TBD" },
 ];
 
 const Tag = ({ onRemove, path }) => {
@@ -33,28 +33,15 @@ const Tag = ({ onRemove, path }) => {
         >
           <i className="fas fa-caret-right" />
         </span>
-        <Input
-          disabled
-          fieldName="id"
-          path={path}
-          title="ID"
-        />
-        <Input
-          fieldName="name"
-          path={path}
-          onChange={setTag}
-        />
+        <Input disabled fieldName="id" path={path} title="ID" />
+        <Input fieldName="name" path={path} onChange={setTag} />
         <Select
           fieldName="category"
           optionList={categories}
           path={path}
-          onChange={setTag}
+          setParent={setTag}
         />
-        <Input
-          fieldName="displayOrder"
-          path={path}
-          onChange={setTag}
-        />
+        <Input fieldName="displayOrder" path={path} onChange={setTag} />
         <RemoveButton onRemove={onRemove}>
           <span>
             <h5>Are you sure you want to remove this tag?</h5>

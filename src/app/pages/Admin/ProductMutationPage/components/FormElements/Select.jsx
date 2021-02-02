@@ -3,12 +3,20 @@ import React, { useContext } from "react";
 import DiaperMutationContext from "../../../../../contexts/diaper-mutation-context";
 import { toTitleCase } from "../../../../../utils/case-helper";
 
-const Select = ({ fieldName, onChange, optionList, path, title }) => {
+const Select = ({
+  fieldName,
+  optionList,
+  path,
+  required,
+  setParent,
+  title,
+  value: valueOverride,
+}) => {
   const { state, dispatch } = useContext(DiaperMutationContext);
   const parent = _.get(state, path);
 
   const onSelectChange = (e) => {
-    onChange({ ..._.set(parent, fieldName, e.target.value), mutation: true });
+    setParent({ ..._.set(parent, fieldName, e.target.value), mutation: true });
     dispatch({
       type: "UPDATE",
       fieldName,
@@ -23,15 +31,15 @@ const Select = ({ fieldName, onChange, optionList, path, title }) => {
       <select
         defaultValue=""
         onChange={onSelectChange}
-        required
-        value={_.get(parent, fieldName)}
+        required={required}
+        value={valueOverride || _.get(parent, fieldName)}
       >
-        <option value="" disabled>
+        <option value="">
           Select your option
         </option>
-        {optionList.map((option, idx) => (
-          <option key={idx} value={option}>
-            {option}
+        {optionList.map(({ disabled = false, text, value }, idx) => (
+          <option key={idx} value={value} disabled={disabled}>
+            {text || value}
           </option>
         ))}
       </select>

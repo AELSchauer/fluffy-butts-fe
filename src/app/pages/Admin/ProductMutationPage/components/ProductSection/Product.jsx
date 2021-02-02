@@ -3,6 +3,7 @@ import React, { useContext, useState } from "react";
 import DiaperMutationContext from "../../../../../contexts/diaper-mutation-context";
 import Input from "../FormElements/Input";
 import RemoveButton from "../RemoveButton/RemoveButton";
+import Select from "../FormElements/Select";
 
 const Product = ({ onRemove, path }) => {
   const { state, dispatch } = useContext(DiaperMutationContext);
@@ -11,6 +12,10 @@ const Product = ({ onRemove, path }) => {
   const patternSelection = _.chain(patterns)
     .filter(({ name }) => !!name)
     .sortBy(["name"])
+    .map(({ id, name }) => ({
+      text: name,
+      value: id,
+    }))
     .value();
 
   return (
@@ -18,35 +23,19 @@ const Product = ({ onRemove, path }) => {
       <div className="col-12 info-display">
         <Input disabled fieldName="id" path={path} title="ID" />
         <Input fieldName="name" path={path} onChange={setProduct} />
-        <span>
-          <label>Pattern</label>
-          <select
-            value={
-              patterns.map(({ id }) => id).includes(product.patternId)
-                ? product.patternId
-                : ""
-            }
-            onChange={(e) => {
-              setProduct({
-                ..._.set(product, "patternId", e.target.value),
-                mutation: true,
-              });
-              dispatch({
-                type: "UPDATE",
-                fieldName: "patternId",
-                path,
-                value: e.target.value,
-              });
-            }}
-          >
-            <option value="">Select an option</option>
-            {patternSelection.map(({ id, name }, idx) => (
-              <option key={idx} value={id}>
-                {name}
-              </option>
-            ))}
-          </select>
-        </span>
+        <Select
+          fieldName="patternId"
+          optionList={patternSelection}
+          path={path}
+          required={true}
+          setParent={setProduct}
+          title="Pattern"
+          value={
+            patterns.map(({ id }) => id).includes(product.patternId)
+              ? product.patternId
+              : ""
+          }
+        />
         <RemoveButton onRemove={onRemove}>
           <span>
             <h5>
