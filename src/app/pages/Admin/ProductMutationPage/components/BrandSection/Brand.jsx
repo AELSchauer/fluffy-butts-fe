@@ -6,7 +6,7 @@ import PatternSection from "../PatternSection";
 import ProductLineSection from "../ProductLineSection";
 import "./_brand-section.scss";
 
-const BrandTest = ({ path }) => {
+const Brand = ({ path }) => {
   const { state } = useContext(DiaperMutationContext);
   const [brand, setBrand] = useState(_.get(state, path));
 
@@ -22,4 +22,4 @@ const BrandTest = ({ path }) => {
   );
 };
 
-export default BrandTest;
+export default Brand;

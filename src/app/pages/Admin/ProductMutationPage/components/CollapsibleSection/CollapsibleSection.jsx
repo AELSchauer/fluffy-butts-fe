@@ -7,13 +7,13 @@ const CollapsibleSection = ({ children, id, label }) => {
         className="info-toggle"
         data-toggle="collapse"
         data-target={`#${id}`}
-        aria-expanded="false"
+        aria-expanded="true"
         aria-controls={id}
       >
         <i className="fas fa-caret-right" />
         {label}
       </span>
-      <div className="collapse" id={id}>
+      <div className="collapse show" id={id}>
         {children}
       </div>
     </Fragment>

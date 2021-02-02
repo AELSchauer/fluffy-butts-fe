@@ -27,7 +27,6 @@ const Product = ({ onRemove, path }) => {
           fieldName="patternId"
           optionList={patternSelection}
           path={path}
-          required={true}
           setParent={setProduct}
           title="Pattern"
           value={

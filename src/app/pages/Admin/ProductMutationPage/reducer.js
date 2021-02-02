@@ -20,7 +20,20 @@ export default (state, { data, fieldName, idx, list, path, type, value }) => {
         ...list.slice(idx + 1),
       ]);
     case "REMOVE_TRAVERSE":
-      // Update any objects that have specified fieldName (e.g. patternId) w/ traverse
+      traverse(state).forEach(function (val) {
+        if (
+          !!val &&
+          val.constructor.name === "Object" &&
+          Object.keys(val).includes(fieldName) &&
+          val[fieldName] === value
+        ) {
+          this.update({
+            ...val,
+            [fieldName]: undefined
+          });
+        }
+      });
+      return state;
     default:
       return state;
   }

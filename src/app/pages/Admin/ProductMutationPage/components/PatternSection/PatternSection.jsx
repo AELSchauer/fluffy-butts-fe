@@ -31,8 +31,7 @@ const PatternSection = ({ path }) => {
     ).then(() => {
       onChange(path, [...patterns.slice(0, idx), ...patterns.slice(idx + 1)]);
       dispatch({ type: "REMOVE", path, idx, list: patterns });
-      // TO DO
-      // dispatch({ type: "REMOVE_TRAVERSE", fieldName: "pattern_id" });
+      dispatch({ type: "REMOVE_TRAVERSE", fieldName: "patternId", value: id });
     });
   };
 
