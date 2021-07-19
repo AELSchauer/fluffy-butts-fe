@@ -4,6 +4,7 @@ import DiaperMutationContext from "../../../../../contexts/diaper-mutation-conte
 import Input from "../FormElements/Input";
 import Select from "../FormElements/Select";
 import RemoveButton from "../RemoveButton";
+import { toTitleCase } from "../../../../../utils/case-helper";
 
 const categories = [
   { value: "PATTERN__COLOR" },
@@ -42,13 +43,6 @@ const Tag = ({ onRemove, path }) => {
           setParent={setTag}
         />
         <Input fieldName="displayOrder" path={path} onChange={setTag} />
-        <RemoveButton onRemove={onRemove}>
-          <span>
-            <h5>Are you sure you want to remove this tag?</h5>
-            <p>ID: {tag.id}</p>
-            <p>Name: {tag.name}</p>
-          </span>
-        </RemoveButton>
       </div>
     </div>
   );
