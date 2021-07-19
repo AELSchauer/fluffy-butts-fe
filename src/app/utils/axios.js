@@ -4,8 +4,8 @@ import traverse from "traverse";
 
 const baseURLs = {
   development: "http://localhost:8000",
-  test: "https://enigmatic-wildwood-23801.herokuapp.com/api/v1",
-  production: "https://api-fluffy-butts.herokuapp.com/api/v1",
+  test: "https://fluffy-butts-api.herokuapp.com/",
+  production: "https://fluffy-butts-api.herokuapp.com/",
 };
 
 const axiosWrapper = axios.create({
