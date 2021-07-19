@@ -48,8 +48,8 @@ const BrowsePage = () => {
         )
         .filter(({ tags }) => {
           const tagNames = tags.map(({ name }) => name);
-          return _.values(queryTagGroups.product).length
-            ? _.values(queryTagGroups.product).every((queryTags) =>
+          return _.values(queryTagGroups.product_line).length
+            ? _.values(queryTagGroups.product_line).every((queryTags) =>
                 queryTags.some(({ name }) => tagNames.includes(name))
               )
             : true;

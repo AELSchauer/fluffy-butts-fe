@@ -19,12 +19,12 @@ export default [
     includeInNavBar: false,
     component: ProductMutationPage,
   },
-  {
-    path: "/diaper-types",
-    title: "Diaper Types",
-    includeInNavBar: true,
-    component: DiaperTypesPage,
-  },
+  // {
+  //   path: "/diaper-types",
+  //   title: "Diaper Types",
+  //   includeInNavBar: true,
+  //   component: DiaperTypesPage,
+  // },
   {
     path: "/brands/:brandName/products/:productLineSlug",
     title: "Product",

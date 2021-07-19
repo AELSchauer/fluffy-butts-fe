@@ -58,7 +58,44 @@ const BrowseFilter = ({ brands, tagCategoryGroups }) => {
     );
   };
 
-  const renderTagSection = (categories) =>
+  const renderBrandSection = () => {
+    return (
+      <div className="category-group" key="brands">
+        <h5
+          className="category-header"
+          data-toggle="collapse"
+          data-target="#collapse-brands"
+          aria-expanded="false"
+          aria-controls="collapse-brands"
+        >
+          <i className="fas fa-caret-right" />
+          <span className="category-name">Brands</span>
+        </h5>
+        <div className="collapse" id="collapse-brands">
+          <ul className="category-items">
+            {brands.map((brand, index) => {
+              const brandNameSlug = brand.name.replace(/ /g, "-");
+              return (
+                <li className="category-item" key={index}>
+                  <input
+                    type="checkbox"
+                    checked={isParamActive("brands", brand.name)}
+                    id={`checkbox-${brandNameSlug}`}
+                    onChange={() => toggleParam("brands", brand.name)}
+                  />
+                  <label htmlFor={`checkbox-${brandNameSlug}`}>
+                    {brand.name}
+                  </label>
+                </li>
+              );
+            })}
+          </ul>
+        </div>
+      </div>
+    );
+  };
+
+  const renderTagSection = (categories = {}) =>
     Object.entries(categories).map(([categoryName, tags], index) => {
       const categoryDisplayName = toTitleCase(
         categoryName.split("__")[1].replace(/_/g, " ")
@@ -103,40 +140,8 @@ const BrowseFilter = ({ brands, tagCategoryGroups }) => {
   return (
     <div className="browse-bar">
       {renderResetButton()}
-      <div className="category-group" key="brands">
-        <h5
-          className="category-header"
-          data-toggle="collapse"
-          data-target="#collapse-brands"
-          aria-expanded="false"
-          aria-controls="collapse-brands"
-        >
-          <i className="fas fa-caret-right" />
-          <span className="category-name">Brands</span>
-        </h5>
-        <div className="collapse" id="collapse-brands">
-          <ul className="category-items">
-            {brands.map((brand, index) => {
-              const brandNameSlug = brand.name.replace(/ /g, "-");
-              return (
-                <li className="category-item" key={index}>
-                  <input
-                    type="checkbox"
-                    checked={isParamActive("brands", brand.name)}
-                    id={`checkbox-${brandNameSlug}`}
-                    onChange={() => toggleParam("brands", brand.name)}
-                  />
-                  <label htmlFor={`checkbox-${brandNameSlug}`}>
-                    {brand.name}
-                  </label>
-                </li>
-              );
-            })}
-          </ul>
-        </div>
-      </div>
-
-      {renderTagSection(tagCategoryGroups.product)}
+      {renderBrandSection()}
+      {renderTagSection(tagCategoryGroups.product_line)}
       {renderTagSection(tagCategoryGroups.pattern)}
       {renderResetButton()}
     </div>
