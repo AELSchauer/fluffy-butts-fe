@@ -32,8 +32,8 @@ const ProductPage = (props) => {
   const getProduct = () => {
     const productLineId = props.match.params.productLineSlug.match(/\d+$/)[0];
     return axios({
-      method: "get",
-      url: `/graphql`,
+      method: "POST",
+      url: "/",
       data: {
         query: `
           {

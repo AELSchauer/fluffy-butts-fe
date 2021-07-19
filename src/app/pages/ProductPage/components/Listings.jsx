@@ -17,52 +17,55 @@ const Listings = ({
     let formattedListings = [];
     try {
       const { name: userCountry, currency: userCurrency } = country;
-      const availableListings =
-        userCountry === "World"
-          ? propListings
-          : _.chain(propListings)
-              .filter(({ retailer: { shipping: { shipsTo = [] } = {} } }) =>
-                shipsTo.map(({ country }) => country).includes(userCountry)
-              )
-              .groupBy("retailer.name")
-              .values()
-              .reduce(
-                (availableListings, listings) =>
-                  availableListings.concat(
-                    listings.find(
-                      ({ currency }) => currency === userCurrency
-                    ) || listings[0]
-                  ),
-                []
-              )
-              .value();
+      // Hide this functionality for the time being while I figure out a new way to get exchange rates
+      const availableListings = propListings;
 
-      if (
-        !userCurrency ||
-        !availableListings.some(({ currency }) => currency !== userCurrency)
-      ) {
-        formattedListings = availableListings.map(({ price, ...listing }) => ({
-          ...listing,
-          price: parseFloat(price).toFixed(2),
-        }));
-      } else {
-        const { data: { rates = {} } = {} } =
-          (await axios.get(
-            `https://api.exchangeratesapi.io/latest?base=${userCurrency}`
-          )) || {};
+      // const availableListings =
+      //   userCountry === "World" || userCountry === ""
+      //     ? propListings
+      //     : _.chain(propListings)
+      //         .filter(({ retailer: { shipping: { shipsTo = [] } = {} } }) =>
+      //           shipsTo.map(({ country }) => country).includes(userCountry)
+      //         )
+      //         .groupBy("retailer.name")
+      //         .values()
+      //         .reduce(
+      //           (availableListings, listings) =>
+      //             availableListings.concat(
+      //               listings.find(
+      //                 ({ currency }) => currency === userCurrency
+      //               ) || listings[0]
+      //             ),
+      //           []
+      //         )
+      //         .value();
 
-        formattedListings = availableListings.map((listing) => {
-          return {
-            ...listing,
-            calculated: listing.currency !== userCurrency && listing.currency,
-            currency: userCurrency,
-            price: (
-              parseFloat(listing.price) / rates[listing.currency]
-            ).toFixed(2),
-          };
-        });
-      }
-      setIsCurrencyConverted(true);
+      // if (
+      //   !userCurrency ||
+      //   !availableListings.some(({ currency }) => currency !== userCurrency)
+      // ) {
+      formattedListings = availableListings.map(({ price, ...listing }) => ({
+        ...listing,
+        price: parseFloat(price).toFixed(2),
+      }));
+      // } else {
+      //   const { data: { rates = {} } = {} } =
+      //     (await axios.get(
+      //       `http://api.exchangeratesapi.io/v1/latest?access_key=${process.env.$REACT_APP_EXCHANGE_RATE_KEY}symbols=${userCurrency}`
+      //     )) || {};
+
+      //   formattedListings = availableListings.map((listing) => {
+      //     return {
+      //       ...listing,
+      //       calculated: listing.currency !== userCurrency && listing.currency,
+      //       currency: userCurrency,
+      //       price: (
+      //         parseFloat(listing.price) / rates[listing.currency]
+      //       ).toFixed(2),
+      //     };
+      //   });
+      // }
+      // setIsCurrencyConverted(true);
     } catch (err) {
       formattedListings = propListings.map(({ price, ...listing }) => ({
         ...listing,
@@ -78,23 +81,40 @@ const Listings = ({
     formatListings().catch((err) => console.log(err));
   }, [product, country]);
 
+  const renderPriceDisplay = ({ calculated, currency, price }) => {
+    const symbol = supportedCountries.find(
+      (supportedCountry) => supportedCountry.currency === currency
+    ).symbol;
+
+    // Hide this functionality for the time being while I figure out a new way to get exchange rates
+    // const symbol =
+    //   country.name === "World"
+    //     ? supportedCountries.find(
+    //         (supportedCountry) => supportedCountry.currency === currency
+    //       ).symbol
+    //     : country.symbol[2];
+    return (
+      <div className="listing-price listing-prop">
+        <span className="listing-currency">{symbol}</span>
+        {price}
+        {calculated ? (
+          <span className="listing-price-is-calculated">*</span>
+        ) : (
+          ""
+        )}
+      </div>
+    );
+  };;
+
   const buildSingleSizeRow = ({
     id,
-    currency,
     url: productUrl,
-    price,
-    calculated,
     retailer,
     sizes: [{ url: sizeUrl } = {}] = [],
+    ...listing
   }) => {
     const url = sizeUrl || productUrl;
     const title = retailer.name || (url.match(/\w*\.com/g) || [])[0];
-    const symbol =
-      country.name === "World"
-        ? supportedCountries.find(
-            (supportedCountry) => supportedCountry.currency === currency
-          ).symbol
-        : country.symbol[2];
     return (
       <a className="listing listing-link" href={url} target="_blank" key={id}>
         <div className="listing-title listing-prop">
@@ -106,35 +126,13 @@ const Listings = ({
           />
           {title}
         </div>
-        <div className="listing-price listing-prop">
-          <span className="listing-currency">{symbol}</span>
-          {price}
-          {calculated ? (
-            <span className="listing-price-is-calculated">*</span>
-          ) : (
-            ""
-          )}
-        </div>
+        {renderPriceDisplay(listing)}
       </a>
     );
   };
 
-  const buildMutliSizeRow = ({
-    id,
-    currency,
-    url,
-    price,
-    calculated,
-    retailer,
-    sizes = [],
-  }) => {
+  const buildMutliSizeRow = ({ id, url, retailer, sizes = [], ...listing }) => {
     const title = retailer.name || (url.match(/\w*\.com/g) || [])[0];
-    const symbol =
-      country.name === "World"
-        ? supportedCountries.find(
-            (supportedCountry) => supportedCountry.currency === currency
-          ).symbol
-        : country.symbol[2];
     return (
       <div className="listing" key={id}>
         <div
@@ -153,15 +151,7 @@ const Listings = ({
             />
             {title}
           </div>
-          <div className="listing-price listing-prop">
-            <span className="listing-currency">{symbol}</span>
-            {price}
-            {calculated ? (
-              <span className="listing-price-is-calculated">*</span>
-            ) : (
-              ""
-            )}
-          </div>
+          {renderPriceDisplay(listing)}
         </div>
         <div
           id={`collapse-${id}`}
