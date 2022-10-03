@@ -2,6 +2,10 @@
   "name": "fluffy-butts-fe",
   "version": "0.1.0",
   "private": true,
+  "engines": {
+    "node": "v18.8.0",
+    "npm": "8.19.2"
+  },
   "dependencies": {
     "@brainhubeu/react-carousel": "^1.19.26",
     "@coreui/coreui": "^3.2.2",
@@ -12,6 +16,7 @@
     "axios": "^0.27.2",
     "bootstrap": "^4.5.2",
     "classnames": "^2.2.6",
+    "create-app-react": "^1.0.6",
     "deserialize-json-api": "^1.4.0",
     "js-cookie": "^2.2.1",
     "lodash": "^4.17.15",
