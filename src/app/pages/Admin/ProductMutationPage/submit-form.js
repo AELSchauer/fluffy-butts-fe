@@ -43,7 +43,7 @@ export default (rootData, onChange) => {
                   ...val,
                   mutation: false,
                 })
-              : console.log("tags shit.", qid.replace("id", ""));
+              : console.log("tags stuff.", qid.replace("id", ""));
           });
 
         return !brand.mutation

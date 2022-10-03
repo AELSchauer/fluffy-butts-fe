@@ -8,7 +8,6 @@ const BrandIndexPage = () => {
   useEffect(() => {
     axios({
       method: "POST",
-      url: "/",
       data: {
         query: `
           {
@@ -22,7 +21,8 @@ const BrandIndexPage = () => {
           }
         `,
       },
-    }).then(({ data: { data: { brands = [] } = {} } = {} }) =>
+    })
+    .then(({ data: { data: { brands = [] } = {} } = {} }) =>
       setBrands(brands)
     );
   }, []);

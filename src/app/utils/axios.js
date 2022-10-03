@@ -11,9 +11,10 @@ const baseURLs = {
 const axiosWrapper = axios.create({
   baseURL: baseURLs[process.env.NODE_ENV],
   responseType: "json",
+  headers: {'Accept': 'application/json'},
   transformResponse: [
     function (data) {
-      const travData = traverse(data);
+      const travData = traverse(JSON.parse(data));
       if (data !== null) {
         travData
           .paths()

@@ -3,9 +3,9 @@ import ItemImageCarousel from "./ItemImageCarousel";
 import "../_browse-page.scss";
 
 const DisplayGrid = ({ filteredByPattern = false, productLines = [] }) => {
-  const getProductHref = ({ id, name, brand = {}, product } = {}) => {
+  const getProductHref = ({ id, name, brand = {}, product = {} } = {}) => {
     return `/brands/${brand.name}/products/${name}-${id}${
-      !product ? "" : `?variant=${product.name}--${product.id}`
+      Object.keys(product).length === 0 ? "" : `?variant=${product.name}--${product.id}`
     }`
       .toLowerCase()
       .replace(/ /g, "-");
@@ -19,7 +19,7 @@ const DisplayGrid = ({ filteredByPattern = false, productLines = [] }) => {
         </a>
       );
     }
-    if (products.length > 1) {
+    else if (products.length > 1) {
       return (
         <ItemImageCarousel
           items={products.map((product) => ({
@@ -29,12 +29,14 @@ const DisplayGrid = ({ filteredByPattern = false, productLines = [] }) => {
         />
       );
     }
-    const [{ images: [image = {}] = [], ...product } = {}] = products;
-    return (
-      <a href={getProductHref({ id, name, brand, product })}>
-        <img className="product-image" alt={image.name} src={image.url} />
-      </a>
-    );
+    else {
+      const [{ images: [image = {}] = [], ...product } = {}] = products;
+      return (
+        <a href={getProductHref({ id, name, brand, product })}>
+          <img className="product-image" alt={image.name} src={image.url} />
+        </a>
+      );
+    }
   };
 
   return (

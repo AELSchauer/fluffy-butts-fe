@@ -85,7 +85,6 @@ const MutationPage = (props) => {
   }, []);
 
   const onChange = (path, data) => {
-    console.log("onChange", path, data);
     setRootData({
       brand: _.set(dynamicState, path, data).brand,
       tags: _.set(dynamicState, path, data).tags,

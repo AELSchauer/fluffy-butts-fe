@@ -29,6 +29,7 @@ const ItemImageCarousel = ({ items = [] }) => {
             <a
               className={dynamicClassNames(imageClassNames)}
               href={href}
+              key={idx}
             >
               <img className="product-image" src={url} />
             </a>
